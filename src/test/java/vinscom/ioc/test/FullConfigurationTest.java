@@ -12,17 +12,11 @@ import vinscom.ioc.test.component.PropertiesComponent;
 
 public class FullConfigurationTest {
 
-  private final List<String> layers = new ArrayList<>(2);
   ComponentManager iocc;
-
-  public FullConfigurationTest() {
-    layers.add("/Users/vinay/Desktop/Workspace/glue/testdata/layer1");
-    layers.add("/Users/vinay/Desktop/Workspace/glue/testdata/layer2");
-  }
 
   @Before
   public void setUp() {
-    iocc = ComponentManager.instance(layers);
+    iocc = ComponentManager.instance();
   }
 
   @Test
