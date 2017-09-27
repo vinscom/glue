@@ -7,21 +7,22 @@ import java.util.Map;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import vinscom.ioc.Initial;
 import vinscom.ioc.test.component.PropertiesComponent;
 
 public class FullConfigurationTest {
 
-  private List<String> layers = new ArrayList<>(2);
+  private final List<String> layers = new ArrayList<>(2);
   ComponentManager iocc;
 
   public FullConfigurationTest() {
-    layers.add("/Users/vinay/Desktop/IoCContainer/testdata/layer1");
-    layers.add("/Users/vinay/Desktop/IoCContainer/testdata/layer2");
+    layers.add("/Users/vinay/Desktop/Workspace/glue/testdata/layer1");
+    layers.add("/Users/vinay/Desktop/Workspace/glue/testdata/layer2");
   }
 
   @Before
   public void setUp() {
-    iocc = ComponentManager.create(layers);
+    iocc = ComponentManager.instance(layers);
   }
 
   @Test
@@ -101,20 +102,30 @@ public class FullConfigurationTest {
   }
 
   @Test
-  public void mergeProperties(){
+  public void mergeProperties() {
     PropertiesComponent inst = iocc.<PropertiesComponent>resolve("/vinscom/ioc/test/component/MergedComponent", PropertiesComponent.class);
     assertEquals("TestString2", inst.getPropString());
     assertArrayEquals(new String[]{"a"}, inst.getPropArray());
     assertEquals(1, inst.getPropList().size());
     assertEquals(1, inst.getPropMap().size());
-    
-    Object refInst = iocc.<Object>resolve("/vinscom/ioc/test/component/GlobalObjectSetSpecifically", Object.class);
-    assertSame(refInst, inst.getPropComponent());
+
+    PropertiesComponent refInst = iocc.<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent2", PropertiesComponent.class);
+    assertEquals(refInst.getPropString(), "TestString3");
   }
 
   @Test
   public void componentStartUp() {
     PropertiesComponent inst = iocc.<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
     assertTrue(inst.isStartup());
+  }
+
+  @Test
+  public void componentInitial() {
+    Initial inst = iocc.<Initial>resolve("/vinscom/ioc/test/component/Initial", Initial.class);
+    List<Object> comps = inst.getComponents();
+    assertEquals(comps.size(), 4);
+    comps.forEach((comp) -> {
+      assertEquals(comp.getClass(), PropertiesComponent.class);
+    });
   }
 }

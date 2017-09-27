@@ -1,6 +1,6 @@
 package vinscom.ioc;
 
-import vinscom.ioc.common.PropertyInfo;
+import vinscom.ioc.common.PropertyContext;
 import vinscom.ioc.common.Tuple;
 import vinscom.ioc.common.Constant;
 import vinscom.ioc.common.Util;
@@ -14,17 +14,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import vinscom.ioc.annotation.StartService;
 import vinscom.ioc.enumeration.MethodArgumentType;
 
 public class ComponentManager extends PropertiesHolder {
 
+  private static ComponentManager self = null;
   private final Map<String, Object> mSingletonRepository;
-  private final Deque<PropertyInfo> mPropertyStack;
+  private final Deque<PropertyContext> mPropertyStack;
 
   public ComponentManager() {
     mSingletonRepository = new HashMap<>();
-    mPropertyStack = new ArrayDeque();
+    mPropertyStack = new ArrayDeque<>();
   }
 
   protected Object resolve(String pPath, Properties pProperties) {
@@ -50,35 +52,35 @@ public class ComponentManager extends PropertiesHolder {
     }
   }
 
-  protected void processProperty(PropertyInfo pPropertyInfo) {
+  protected void processProperty(PropertyContext pPropCtx) {
 
-    if (pPropertyInfo.getMethod() == null) {
+    if (pPropCtx.getMethod() == null) {
       return;
     }
 
     try {
-      switch (pPropertyInfo.getMethodArgumentType()) {
+      switch (pPropCtx.getMethodArgumentType()) {
         case STRING:
-          pPropertyInfo.getMethod().invoke(pPropertyInfo.getInstance(), pPropertyInfo.getValue());
+          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), pPropCtx.getValue());
           break;
         case ARRAY:
-          pPropertyInfo.getMethod().invoke(pPropertyInfo.getInstance(), new Object[]{pPropertyInfo.getValue().split(",")});
+          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), new Object[]{pPropCtx.getValue().split(",")});
           break;
         case LIST:
-          pPropertyInfo.getMethod().invoke(pPropertyInfo.getInstance(), Arrays.asList((Object[]) pPropertyInfo.getValue().split(",")));
+          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), Arrays.asList((Object[]) pPropCtx.getValue().split(",")));
           break;
         case MAP:
-          pPropertyInfo.getMethod().invoke(pPropertyInfo.getInstance(), Util.getMapFromValue(pPropertyInfo.getValue()));
+          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), Util.getMapFromValue(pPropCtx.getValue()));
           break;
         case COMPONENT:
-          Tuple<Boolean, Object> instance = getInstance(pPropertyInfo.getValue(), getPropertiesCache().get(pPropertyInfo.getValue()));
-          pPropertyInfo.getMethod().invoke(pPropertyInfo.getInstance(), instance.value2);
+          Tuple<Boolean, Object> instance = getInstance(pPropCtx.getValue(), getPropertiesCache().get(pPropCtx.getValue()));
+          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), instance.value2);
           if (instance.value1) {
-            loadPropertiesInStack(instance.value2, getPropertiesCache().get(pPropertyInfo.getValue()));
+            loadPropertiesInStack(instance.value2, getPropertiesCache().get(pPropCtx.getValue()));
           }
           break;
         case NONE:
-          pPropertyInfo.getMethod().invoke(pPropertyInfo.getInstance());
+          pPropCtx.getMethod().invoke(pPropCtx.getInstance());
       }
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
       throw new RuntimeException(ex);
@@ -91,12 +93,12 @@ public class ComponentManager extends PropertiesHolder {
     Method startupmethod = Util.getMethodWithAnnotation(pInstance.getClass(), StartService.class);
 
     if (startupmethod != null) {
-      PropertyInfo propertyInfo = new PropertyInfo();
-      propertyInfo.setInstance(pInstance);
-      propertyInfo.setMethod(startupmethod);
-      propertyInfo.setValue(null);
-      propertyInfo.setMethodArgumentType(MethodArgumentType.NONE);
-      mPropertyStack.push(propertyInfo);
+      PropertyContext propCtx = new PropertyContext();
+      propCtx.setInstance(pInstance);
+      propCtx.setMethod(startupmethod);
+      propCtx.setValue(null);
+      propCtx.setMethodArgumentType(MethodArgumentType.NONE);
+      mPropertyStack.push(propCtx);
     }
 
     pProperties
@@ -104,12 +106,12 @@ public class ComponentManager extends PropertiesHolder {
             .stream()
             .filter((t) -> !(Constant.Component.CLASS.equals(t.getKey()) || Constant.Component.SCOPE.equals(t.getKey())))
             .map((entry) -> {
-              PropertyInfo propertyInfo = new PropertyInfo();
-              propertyInfo.setInstance(pInstance);
-              propertyInfo.setMethod(Util.getMethod(pInstance.getClass(), Util.buildSetPropertyName((String) entry.getKey())));
-              propertyInfo.setValue((String) entry.getValue());
-              propertyInfo.setMethodArgumentType(Util.findMethodArgumentType(propertyInfo.getMethod()));
-              return propertyInfo;
+              PropertyContext propCtx = new PropertyContext();
+              propCtx.setInstance(pInstance);
+              propCtx.setMethod(Util.getMethod(pInstance.getClass(), Util.buildSetPropertyName((String) entry.getKey())));
+              propCtx.setValue((String) entry.getValue());
+              propCtx.setMethodArgumentType(Util.findMethodArgumentType(propCtx.getMethod()));
+              return propCtx;
             })
             .forEachOrdered((propertyInfo) -> {
               mPropertyStack.push(propertyInfo);
@@ -152,18 +154,26 @@ public class ComponentManager extends PropertiesHolder {
     return pClass.cast(resolve(pPath));
   }
 
-  public static ComponentManager create(List<String> pLayers) {
-    ComponentManager repo = new ComponentManager();
-    repo.setLayers(pLayers);
-    repo.init().await();
-    return repo;
+  public synchronized static ComponentManager instance() {
+    return self;
+  }
+  
+  public synchronized static ComponentManager instance(List<String> pLayers) {
+    if (self != null) {
+      return self;
+    }
+
+    self = new ComponentManager();
+    self.setLayers(pLayers);
+    self.init().await();
+    return self;
   }
 
   protected Map<String, Object> getSingletonRepository() {
     return mSingletonRepository;
   }
 
-  protected Deque getPropertyStack() {
+  protected Deque<PropertyContext> getPropertyStack() {
     return mPropertyStack;
   }
 

@@ -3,7 +3,7 @@ package vinscom.ioc.common;
 import vinscom.ioc.enumeration.MethodArgumentType;
 import java.lang.reflect.Method;
 
-public class PropertyInfo {
+public class PropertyContext {
   
   private Object instance;
   private Method method;
