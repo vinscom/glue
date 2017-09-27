@@ -5,4 +5,8 @@ public class Constant {
     public static final String CLASS = "$class";
     public static final String SCOPE = "$scope";
   }
+  public static class SystemProperties {
+    public static final String LAYERS = "glue.layers";
+    public static final String SEPERATOR = ",";
+  }
 }

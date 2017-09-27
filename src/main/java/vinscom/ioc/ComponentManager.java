@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -20,9 +21,11 @@ import vinscom.ioc.enumeration.MethodArgumentType;
 
 public class ComponentManager extends PropertiesHolder {
 
-  private static ComponentManager self = null;
+  private static ComponentManager mSelf = null;
+  private static List<String> mSystemLayers = null;
   private final Map<String, Object> mSingletonRepository;
   private final Deque<PropertyContext> mPropertyStack;
+  
 
   public ComponentManager() {
     mSingletonRepository = new HashMap<>();
@@ -155,20 +158,38 @@ public class ComponentManager extends PropertiesHolder {
   }
 
   public synchronized static ComponentManager instance() {
-    return self;
+    return instance(getSystemLayers());
   }
   
   public synchronized static ComponentManager instance(List<String> pLayers) {
-    if (self != null) {
-      return self;
+    
+    if (mSelf != null) {
+      return mSelf;
     }
 
-    self = new ComponentManager();
-    self.setLayers(pLayers);
-    self.init().await();
-    return self;
+    mSelf = new ComponentManager();
+    mSelf.setLayers(pLayers);
+    mSelf.init().await();
+    return mSelf;
   }
 
+  protected static List<String> getSystemLayers(){
+    
+    if(mSystemLayers != null) {
+      return mSystemLayers;
+    }
+    
+    String layer = System.getProperty(Constant.SystemProperties.LAYERS);
+    
+    if(layer == null){
+      mSystemLayers = Collections.emptyList();
+    } else {
+      mSystemLayers = Arrays.asList(layer.split(Constant.SystemProperties.SEPERATOR));
+    }
+    
+    return mSystemLayers;
+  }
+  
   protected Map<String, Object> getSingletonRepository() {
     return mSingletonRepository;
   }

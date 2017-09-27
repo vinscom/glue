@@ -5,10 +5,10 @@ import java.util.List;
 import vinscom.ioc.annotation.StartService;
 
 public class Initial {
-  
+
   private String[] initial;
   private final List<Object> components = new ArrayList<>();
-  
+
   @StartService
   public void startup() {
     for (String path : initial) {
@@ -27,5 +27,5 @@ public class Initial {
   public List<Object> getComponents() {
     return components;
   }
-  
+
 }
