@@ -21,6 +21,7 @@ public class Util {
     return "set" + propName.substring(0, 1).toUpperCase() + propName.substring(1, propName.length());
   }
 
+  @SuppressWarnings("rawtypes")
   public static Method getMethod(Class pClass, String pMethodName) {
 
     Method[] methods = pClass.getMethods();
@@ -35,6 +36,7 @@ public class Util {
   }
 
   
+  @SuppressWarnings("rawtypes")
   public static <T extends Annotation> Method getMethodWithAnnotation(Class pClass, Class<T> pAnnotation) {
     
     Method[] methods = pClass.getMethods();
@@ -49,6 +51,7 @@ public class Util {
     return null;
   }
   
+  @SuppressWarnings("rawtypes")
   public static MethodArgumentType findMethodArgumentType(Method pMethod) {
     Class params = pMethod.getParameterTypes()[0];
 
@@ -69,6 +72,7 @@ public class Util {
     return pProperty.endsWith("^");
   }
 
+  @SuppressWarnings("rawtypes")
   public static Object createInstance(String pClass) {
 
     Object inst = null;
