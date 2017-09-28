@@ -4,7 +4,8 @@ import vinscom.ioc.enumeration.MethodArgumentType;
 import java.lang.reflect.Method;
 
 public class PropertyContext {
-  
+
+  private String componentPath;
   private Object instance;
   private Method method;
   private String value;
@@ -40,6 +41,14 @@ public class PropertyContext {
 
   public void setMethodArgumentType(MethodArgumentType methodArgumentType) {
     this.methodArgumentType = methodArgumentType;
+  }
+
+  public String getComponentPath() {
+    return componentPath;
+  }
+
+  public void setComponentPath(String pComponentPath) {
+    this.componentPath = pComponentPath;
   }
   
 }

@@ -10,15 +10,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import rx.Completable;
 import rx.Observable;
 
 public class PropertiesHolder {
 
+  protected Logger logger = LogManager.getLogger(PropertiesHolder.class.getCanonicalName());
   private static final String PROPERTY_EXTENSION = ".properties";
   private static final int PROPERTY_EXTENSION_LENGTH = PROPERTY_EXTENSION.length();
 
   private final Map<String, Properties> propertiesCache;
+  
   private boolean initialized = false;
   private List<String> layers;
 
@@ -53,9 +59,11 @@ public class PropertiesHolder {
     return pPath
             .map((p) -> {
               Properties item = new Properties();
+              logger.debug(()-> "Loading Property File:" + p.value2);
               try {
                 item.load(Files.newBufferedReader(p.value2));
               } catch (IOException ex) {
+                ex.printStackTrace();
               }
               return item;
             });
