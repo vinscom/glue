@@ -6,5 +6,7 @@ public enum MethodArgumentType {
   ARRAY,
   LIST,
   MAP,
+  BOOLEAN,
+  JSON,
   NONE
 }

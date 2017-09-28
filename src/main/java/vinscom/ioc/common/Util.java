@@ -1,14 +1,23 @@
 package vinscom.ioc.common;
 
 import java.lang.annotation.Annotation;
-import vinscom.ioc.enumeration.MethodArgumentType;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.vertx.core.json.JsonObject;
+import vinscom.ioc.enumeration.MethodArgumentType;
+
 public class Util {
 
+  private static Logger logger = LogManager.getLogger(Util.class.getCanonicalName());
+  
   public static String sanatizePropertyName(String pProperty) {
     if (pProperty.endsWith("^")) {
       return pProperty.substring(0, pProperty.length() - 1);
@@ -24,21 +33,24 @@ public class Util {
   @SuppressWarnings("rawtypes")
   public static Method getMethod(Class pClass, String pMethodName) {
 
+    logger.debug(()-> "Trying to find Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
+    
     Method[] methods = pClass.getMethods();
 
     for (Method method : methods) {
       if (method.getName().equals(pMethodName)) {
+        logger.debug(()-> "Found Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
         return method;
       }
     }
 
+    logger.debug(()-> "Not Found Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
     return null;
   }
 
-  
   @SuppressWarnings("rawtypes")
   public static <T extends Annotation> Method getMethodWithAnnotation(Class pClass, Class<T> pAnnotation) {
-    
+
     Method[] methods = pClass.getMethods();
 
     for (Method method : methods) {
@@ -50,9 +62,17 @@ public class Util {
 
     return null;
   }
-  
+
   @SuppressWarnings("rawtypes")
   public static MethodArgumentType findMethodArgumentType(Method pMethod) {
+
+    if(pMethod == null) {
+      Thread.currentThread().dumpStack();
+      return MethodArgumentType.NONE;
+    }
+    
+    logger.debug(()-> "findMethodArgumentType:" + pMethod.getName() + ",Args:" + pMethod.getParameterCount());
+    
     Class params = pMethod.getParameterTypes()[0];
 
     if (Map.class.isAssignableFrom(params)) {
@@ -61,8 +81,12 @@ public class Util {
       return MethodArgumentType.LIST;
     } else if (String.class.isAssignableFrom(params)) {
       return MethodArgumentType.STRING;
+    } else if (params.isPrimitive() && boolean.class.equals(params)) {
+      return MethodArgumentType.BOOLEAN;
     } else if (params.isArray()) {
       return MethodArgumentType.ARRAY;
+    } else if (JsonObject.class.isAssignableFrom(params)) {
+      return MethodArgumentType.JSON;
     }
 
     return MethodArgumentType.COMPONENT;
@@ -99,4 +123,14 @@ public class Util {
     return result;
   }
 
+  public static List<String> getSystemLayers() {
+
+    String layer = System.getProperty(Constant.SystemProperties.LAYERS);
+
+    if (layer == null) {
+      return Collections.emptyList();
+    }
+
+    return Arrays.asList(layer.split(Constant.SystemProperties.SEPERATOR));
+  }
 }

@@ -1,5 +1,6 @@
 package vinscom.ioc.test.component;
 
+import io.vertx.core.json.JsonObject;
 import java.util.List;
 import java.util.Map;
 import vinscom.ioc.annotation.StartService;
@@ -11,7 +12,9 @@ public class PropertiesComponent {
   public List<String> propList;
   public Map<String, String> propMap;
   public Object propComponent;
+  public boolean propBoolean = false;
   public boolean startup = false;
+  public JsonObject propJson;
   
   @StartService
   public void startup(){
@@ -64,6 +67,22 @@ public class PropertiesComponent {
 
   public void setPropComponent(Object pPropComponent) {
     this.propComponent = pPropComponent;
+  }
+
+  public boolean isPropBoolean() {
+    return propBoolean;
+  }
+
+  public void setPropBoolean(boolean pPropBoolean) {
+    propBoolean = pPropBoolean;
+  }
+
+  public JsonObject getPropJson() {
+    return propJson;
+  }
+
+  public void setPropJson(JsonObject pPropJson) {
+    this.propJson = pPropJson;
   }
 
 }
