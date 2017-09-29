@@ -8,5 +8,6 @@ public enum MethodArgumentType {
   MAP,
   BOOLEAN,
   JSON,
+  ENUM,
   NONE
 }

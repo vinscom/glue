@@ -12,6 +12,7 @@ import org.junit.Test;
 import vinscom.ioc.Glue;
 import vinscom.ioc.Initial;
 import vinscom.ioc.common.TestConstant;
+import vinscom.ioc.test.component.EnumTestValues;
 import vinscom.ioc.test.component.PropertiesComponent;
 
 public class FullConfigurationTest {
@@ -122,6 +123,12 @@ public class FullConfigurationTest {
     assertEquals(new JsonObject(TestConstant.TEST_JSON).toString(), inst.getPropJson().toString());
   }
 
+  @Test
+  public void enumProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
+    assertEquals(EnumTestValues.TWO, inst.getPropEnum());
+  }
+  
   @Test
   public void componentInitial() {
     Initial inst = Glue.instance().<Initial>resolve("/vinscom/ioc/test/component/Initial", Initial.class);
