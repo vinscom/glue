@@ -90,6 +90,9 @@ public class ComponentManager extends PropertiesHolder implements Glue {
         case JSON:
           pPropCtx.getMethod().invoke(pPropCtx.getInstance(), JsonLoader.load(pPropCtx.getComponentPath(), pPropCtx.getValue()));
           break;
+        case ENUM:
+          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), Util.getEnumFromValue(pPropCtx.getMethod(), pPropCtx.getValue()));
+          break;
         case COMPONENT:
           logger.debug(() -> "Component[" + pPropCtx.getComponentPath() + "]:Processing component property: " + pPropCtx.getValue());
           String componentPath = pPropCtx.getValue();

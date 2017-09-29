@@ -15,6 +15,7 @@ public class PropertiesComponent {
   public boolean propBoolean = false;
   public boolean startup = false;
   public JsonObject propJson;
+  public EnumTestValues propEnum;
   
   @StartService
   public void startup(){
@@ -83,6 +84,14 @@ public class PropertiesComponent {
 
   public void setPropJson(JsonObject pPropJson) {
     this.propJson = pPropJson;
+  }
+
+  public EnumTestValues getPropEnum() {
+    return propEnum;
+  }
+
+  public void setPropEnum(EnumTestValues pPropEnum) {
+    this.propEnum = pPropEnum;
   }
 
 }

@@ -65,11 +65,6 @@ public class Util {
 
   @SuppressWarnings("rawtypes")
   public static MethodArgumentType findMethodArgumentType(Method pMethod) {
-
-    if(pMethod == null) {
-      Thread.currentThread().dumpStack();
-      return MethodArgumentType.NONE;
-    }
     
     logger.debug(()-> "findMethodArgumentType:" + pMethod.getName() + ",Args:" + pMethod.getParameterCount());
     
@@ -85,6 +80,8 @@ public class Util {
       return MethodArgumentType.BOOLEAN;
     } else if (params.isArray()) {
       return MethodArgumentType.ARRAY;
+    } else if (params.isEnum()) {
+      return MethodArgumentType.ENUM;
     } else if (JsonObject.class.isAssignableFrom(params)) {
       return MethodArgumentType.JSON;
     }
@@ -123,6 +120,11 @@ public class Util {
     return result;
   }
 
+  public static Enum getEnumFromValue(Method pMethod, String pValue){
+    Class params = pMethod.getParameterTypes()[0];
+    return Enum.valueOf(params, pValue);
+  }
+  
   public static List<String> getSystemLayers() {
 
     String layer = System.getProperty(Constant.SystemProperties.LAYERS);
