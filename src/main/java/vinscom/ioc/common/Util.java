@@ -12,12 +12,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.vertx.core.json.JsonObject;
+import java.lang.reflect.Parameter;
+import java.util.regex.Matcher;
 import vinscom.ioc.enumeration.MethodArgumentType;
 
 public class Util {
 
   private static Logger logger = LogManager.getLogger(Util.class.getCanonicalName());
-  
+
   public static String sanatizePropertyName(String pProperty) {
     if (pProperty.endsWith("^")) {
       return pProperty.substring(0, pProperty.length() - 1);
@@ -30,21 +32,29 @@ public class Util {
     return "set" + propName.substring(0, 1).toUpperCase() + propName.substring(1, propName.length());
   }
 
+  public static String buildGetPropertyName(String pProperty, boolean pIsBoolean) {
+    String propName = sanatizePropertyName(pProperty);
+    if(pIsBoolean){
+      return "is" + propName.substring(0, 1).toUpperCase() + propName.substring(1, propName.length());
+    }
+    return "get" + propName.substring(0, 1).toUpperCase() + propName.substring(1, propName.length());
+  }
+  
   @SuppressWarnings("rawtypes")
   public static Method getMethod(Class pClass, String pMethodName) {
 
-    logger.debug(()-> "Trying to find Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
-    
+    logger.debug(() -> "Trying to find Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
+
     Method[] methods = pClass.getMethods();
 
     for (Method method : methods) {
       if (method.getName().equals(pMethodName)) {
-        logger.debug(()-> "Found Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
+        logger.debug(() -> "Found Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
         return method;
       }
     }
 
-    logger.debug(()-> "Not Found Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
+    logger.debug(() -> "Not Found Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
     return null;
   }
 
@@ -63,11 +73,19 @@ public class Util {
     return null;
   }
 
+  public static Class getMethodFirstArgumentClass(Method pMethod){
+    Parameter[] param = pMethod.getParameters();
+    if(param.length == 0){
+      throw new RuntimeException("No arguments in method:" + pMethod.getName());
+    }
+    return param[0].getType();
+  }
+  
   @SuppressWarnings("rawtypes")
   public static MethodArgumentType findMethodArgumentType(Method pMethod) {
-    
-    logger.debug(()-> "findMethodArgumentType:" + pMethod.getName() + ",Args:" + pMethod.getParameterCount());
-    
+
+    logger.debug(() -> "findMethodArgumentType:" + pMethod.getName() + ",Args:" + pMethod.getParameterCount());
+
     Class params = pMethod.getParameterTypes()[0];
 
     if (Map.class.isAssignableFrom(params)) {
@@ -120,11 +138,11 @@ public class Util {
     return result;
   }
 
-  public static Enum getEnumFromValue(Method pMethod, String pValue){
+  public static Enum getEnumFromValue(Method pMethod, String pValue) {
     Class params = pMethod.getParameterTypes()[0];
     return Enum.valueOf(params, pValue);
   }
-  
+
   public static List<String> getSystemLayers() {
 
     String layer = System.getProperty(Constant.SystemProperties.LAYERS);
@@ -135,4 +153,5 @@ public class Util {
 
     return Arrays.asList(layer.split(Constant.SystemProperties.SEPERATOR));
   }
+
 }
