@@ -8,19 +8,17 @@ import vinscom.ioc.enumeration.ComponentScopeType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import vinscom.ioc.annotation.StartService;
-import vinscom.ioc.common.JsonLoader;
-import vinscom.ioc.enumeration.MethodArgumentType;
 
 public class ComponentManager extends PropertiesHolder implements Glue {
 
@@ -43,13 +41,13 @@ public class ComponentManager extends PropertiesHolder implements Glue {
     Object objInstance = instance.value2;
 
     logger.debug(() -> "Component[" + pPath + "]:Got instance isNewInstance[" + isNewInstance + "]");
-    
+
     if (!isNewInstance) {
       return objInstance;
     }
 
     logger.debug(() -> "Component[" + pPath + "]:Loading properties");
-    loadPropertiesInStack(objInstance, pProperties,pPath);
+    loadPropertiesInStack(objInstance, pProperties, pPath);
     processPropertyStack();
 
     logger.debug(() -> "Component[" + pPath + "]:Loading Finished");
@@ -57,56 +55,44 @@ public class ComponentManager extends PropertiesHolder implements Glue {
   }
 
   protected void processPropertyStack() {
-    while (!mPropertyStack.isEmpty()) {
-      processProperty(mPropertyStack.pop());
+    try {
+      while (!mPropertyStack.isEmpty()) {
+        PropertyContext propCtx = mPropertyStack.pop();
+        processProperty(propCtx);
+      }
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+      java.util.logging.Logger.getLogger(ComponentManager.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 
-  protected void processProperty(PropertyContext pPropCtx) {
+  protected void processProperty(PropertyContext pPropCtx) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-    if (pPropCtx.getMethod() == null) {
-      return;
-    }
+    ValueProxy v = pPropCtx.getValue();
 
-    logger.debug(() -> "Component[" + pPropCtx.getComponentPath() + "]:Processing " + pPropCtx.getMethod().getName() + pPropCtx.getMethodArgumentType().toString());
-    
-    try {
-      switch (pPropCtx.getMethodArgumentType()) {
-        case STRING:
-          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), pPropCtx.getValue());
-          break;
-        case ARRAY:
-          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), new Object[]{pPropCtx.getValue().split(",")});
-          break;
-        case LIST:
-          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), Arrays.asList((Object[]) pPropCtx.getValue().split(",")));
-          break;
-        case BOOLEAN:
-          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), Boolean.parseBoolean(pPropCtx.getValue()));
-          break;
-        case MAP:
-          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), Util.getMapFromValue(pPropCtx.getValue()));
-          break;
-        case JSON:
-          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), JsonLoader.load(pPropCtx.getComponentPath(), pPropCtx.getValue()));
-          break;
-        case ENUM:
-          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), Util.getEnumFromValue(pPropCtx.getMethod(), pPropCtx.getValue()));
-          break;
-        case COMPONENT:
-          logger.debug(() -> "Component[" + pPropCtx.getComponentPath() + "]:Processing component property: " + pPropCtx.getValue());
-          String componentPath = pPropCtx.getValue();
-          Tuple<Boolean, Object> instance = getInstance(componentPath, getPropertiesCache().get(componentPath));
-          pPropCtx.getMethod().invoke(pPropCtx.getInstance(), instance.value2);
+    if (v != null) {
+
+      if (v.isStage1ProcessingRequired()) {
+        v.processStage1();
+        String defCompPath = v.getDeferredComponentPath();
+        if (getPropertiesCache().containsKey(defCompPath)) {
+          v.setDeferredValue(true);
+          Tuple<Boolean, Object> instance = getInstance(defCompPath, getPropertiesCache().get(defCompPath));
+          v.setDeferredComponent(instance.value2);
+          mPropertyStack.push(pPropCtx);
           if (instance.value1) {
-            loadPropertiesInStack(instance.value2, getPropertiesCache().get(componentPath),componentPath);
+            loadPropertiesInStack(instance.value2, getPropertiesCache().get(defCompPath), defCompPath);
           }
-          break;
-        case NONE:
-          pPropCtx.getMethod().invoke(pPropCtx.getInstance());
+          return;
+        }
       }
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-      throw new RuntimeException(ex);
+
+      if (v.isStage2ProcessingRequired()) {
+        v.processStage2();
+        pPropCtx.getMethod().invoke(pPropCtx.getInstance(), v.getValue());
+      }
+
+    } else {
+      pPropCtx.getMethod().invoke(pPropCtx.getInstance());
     }
 
   }
@@ -120,7 +106,6 @@ public class ComponentManager extends PropertiesHolder implements Glue {
       propCtx.setInstance(pInstance);
       propCtx.setMethod(startupmethod);
       propCtx.setValue(null);
-      propCtx.setMethodArgumentType(MethodArgumentType.NONE);
       propCtx.setComponentPath(pComponentPath);
       logger.debug(() -> "Component[" + pComponentPath + "]:Found start service method:" + propCtx.getMethod().getName());
       mPropertyStack.push(propCtx);
@@ -134,13 +119,13 @@ public class ComponentManager extends PropertiesHolder implements Glue {
               PropertyContext propCtx = new PropertyContext();
               propCtx.setInstance(pInstance);
               propCtx.setMethod(Util.getMethod(pInstance.getClass(), Util.buildSetPropertyName((String) entry.getKey())));
-              propCtx.setValue((String) entry.getValue());
-              propCtx.setMethodArgumentType(Util.findMethodArgumentType(propCtx.getMethod()));
+              ValueProxy v = new ValueProxy(Util.getMethodFirstArgumentClass(propCtx.getMethod()), (String) entry.getValue(), pComponentPath);
+              propCtx.setValue(v);
               propCtx.setComponentPath(pComponentPath);
               return propCtx;
             })
             .forEachOrdered((propertyCtx) -> {
-              logger.debug(() -> "Component[" + pComponentPath + "]:Ready to process:" + propertyCtx.getMethod().getName() + ", Value=" + propertyCtx.getValue() + "," + propertyCtx.getMethodArgumentType());
+              logger.debug(() -> "Component[" + pComponentPath + "]:Ready to process:" + propertyCtx.getMethod().getName() + ", Value=" + propertyCtx.getValue());
               mPropertyStack.push(propertyCtx);
             });
 
@@ -157,9 +142,9 @@ public class ComponentManager extends PropertiesHolder implements Glue {
     String clazz = pProperties.getProperty(Constant.Component.CLASS);
     ComponentScopeType scope = ComponentScopeType.valueOf(pProperties.getProperty(Constant.Component.SCOPE, ComponentScopeType.GLOBAL.toString()));
 
-    logger.debug(() -> "Component[" + pPath + "]:Class=" +  clazz);
-    logger.debug(() -> "Component[" + pPath + "]:Scope=" +  scope);
-    
+    logger.debug(() -> "Component[" + pPath + "]:Class=" + clazz);
+    logger.debug(() -> "Component[" + pPath + "]:Scope=" + scope);
+
     if (ComponentScopeType.GLOBAL == scope) {
       Map<String, Object> repo = getSingletonRepository();
       if (repo.containsKey(pPath)) {
@@ -197,7 +182,7 @@ public class ComponentManager extends PropertiesHolder implements Glue {
     if (mSelf != null) {
       return mSelf;
     }
-    
+
     mSelf = new ComponentManager();
 
     if (pLayers == null) {

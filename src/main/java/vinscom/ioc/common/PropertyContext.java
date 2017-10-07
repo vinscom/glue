@@ -1,15 +1,14 @@
 package vinscom.ioc.common;
 
-import vinscom.ioc.enumeration.MethodArgumentType;
 import java.lang.reflect.Method;
+import vinscom.ioc.ValueProxy;
 
 public class PropertyContext {
 
   private String componentPath;
   private Object instance;
   private Method method;
-  private String value;
-  private MethodArgumentType methodArgumentType;
+  private ValueProxy value;
 
   public Object getInstance() {
     return instance;
@@ -27,20 +26,12 @@ public class PropertyContext {
     this.method = method;
   }
 
-  public String getValue() {
+  public ValueProxy getValue() {
     return value;
   }
 
-  public void setValue(String value) {
-    this.value = value;
-  }
-
-  public MethodArgumentType getMethodArgumentType() {
-    return methodArgumentType;
-  }
-
-  public void setMethodArgumentType(MethodArgumentType methodArgumentType) {
-    this.methodArgumentType = methodArgumentType;
+  public void setValue(ValueProxy pValue) {
+    this.value = pValue;
   }
 
   public String getComponentPath() {

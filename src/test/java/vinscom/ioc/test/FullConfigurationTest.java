@@ -138,4 +138,11 @@ public class FullConfigurationTest {
       assertEquals(comp.getClass(), PropertiesComponent.class);
     });
   }
+  
+  @Test
+  public void refComponentTest(){
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst2 = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/RefPropertiesComponent", PropertiesComponent.class);
+    assertEquals(inst.getPropString(),inst2.getPropString());
+  }
 }
