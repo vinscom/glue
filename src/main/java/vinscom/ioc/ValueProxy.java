@@ -3,19 +3,26 @@ package vinscom.ioc;
 import io.vertx.core.json.JsonObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import vinscom.ioc.common.JsonLoader;
 import vinscom.ioc.common.Util;
+import vinscom.ioc.common.ValueWithModifier;
+import vinscom.ioc.enumeration.PropertyValueModifier;
 
 public class ValueProxy {
 
   private static final Pattern DEFERRED_PROPERTY_VALUE_PATTER = Pattern.compile("(?<component>^[^.]+)($|(\\.(?<property>.*)$))");
   private Class targetClass;
-  private String propertyValue;
+  private Collection<ValueWithModifier> propertyValue;
   private String componentPath;
 
   private Object value;
@@ -23,53 +30,170 @@ public class ValueProxy {
   private String deferredComponentProperty;
   private Object deferredComponent;
   private boolean deferredValue = false;
-  private boolean stage1ProcessingRequired = true;
-  private boolean stage2ProcessingRequired = true;
+  private boolean processed = false;
 
   public ValueProxy() {
   }
 
-  public ValueProxy(Class pTargetClass, String pPropertyValue, String pComponentPath) {
+  public ValueProxy(Class pTargetClass, Collection<ValueWithModifier> pPropertyValue, String pComponentPath) {
     this.targetClass = pTargetClass;
     this.propertyValue = pPropertyValue;
     this.componentPath = pComponentPath;
+
+    ValueWithModifier propValue = getLastValueWithModifier();
+
+    if (PropertyValueModifier.FROM.equals(propValue.getPropertyValueModifier())) {
+      deferredValue = true;
+    }
+
+    if (!(targetClass.isArray()
+            || String.class.isAssignableFrom(targetClass)
+            || List.class.isAssignableFrom(targetClass)
+            || Map.class.isAssignableFrom(targetClass)
+            || Enum.class.isAssignableFrom(targetClass)
+            || boolean.class.isAssignableFrom(targetClass)
+            || Boolean.class.isAssignableFrom(targetClass)
+            || JsonObject.class.isAssignableFrom(targetClass)
+            || Set.class.isAssignableFrom(targetClass))) {
+      deferredValue = true;
+    }
+
+    if (deferredValue) {
+      Matcher m = DEFERRED_PROPERTY_VALUE_PATTER.matcher(propValue.getValue());
+      if (m.find()) {
+        deferredComponentPath = m.group("component");
+        deferredComponentProperty = m.group("property");
+      }
+    }
   }
 
-  public void processStage2() {
+  public void process() {
 
-    if(isDeferredValue()){
+    setProcessed(true);
+
+    if (isDeferredValue()) {
       return;
     }
-    
+
     if (getTargetClass().isArray()) {
-      setValue(getPropertyValue().split(","));
+      setValue(getValueAsArray());
     } else if (String.class.isAssignableFrom(getTargetClass())) {
-      setValue(getPropertyValue());
+      setValue(getValueAsString());
     } else if (List.class.isAssignableFrom(getTargetClass())) {
-      setValue(Arrays.asList(getPropertyValue().split(",")));
+      setValue(getValueAsList());
     } else if (Map.class.isAssignableFrom(getTargetClass())) {
-      setValue(Util.getMapFromValue(getPropertyValue()));
+      setValue(getValueAsMap());
     } else if (Enum.class.isAssignableFrom(getTargetClass())) {
-      setValue(Enum.valueOf(getTargetClass(), getPropertyValue()));
+      setValue(getValueAsEnum());
     } else if (boolean.class.isAssignableFrom(getTargetClass())) {
-      setValue(Boolean.parseBoolean(getPropertyValue()));
+      setValue(getValueAsboolean());
     } else if (Boolean.class.isAssignableFrom(getTargetClass())) {
-      setValue(Boolean.valueOf(getPropertyValue()));
+      setValue(getValueAsBoolean());
     } else if (JsonObject.class.isAssignableFrom(getTargetClass())) {
-      setValue(JsonLoader.load(getComponentPath(), getPropertyValue()));
+      setValue(getValueAsJson());
+    } else if (Set.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsSet());
     }
 
-    setStage2ProcessingRequired(false);
   }
 
-  public void processStage1() {
-    Matcher m = DEFERRED_PROPERTY_VALUE_PATTER.matcher(getPropertyValue());
-    if (!m.find()) {
-      return;
-    }
-    setDeferredComponentPath(m.group("component"));
-    setDeferredComponentProperty(m.group("property"));
-    setStage1ProcessingRequired(false);
+  private String[] getValueAsArray() {
+    return getValueAsString().split(",");
+  }
+
+  private String getValueAsString() {
+    return getLastValueWithModifier().getValue();
+  }
+
+  private Set<String> getValueAsSet() {
+
+    final Set<String> result = new HashSet<>();
+
+    List<ValueWithModifier> v = (List) getPropertyValue();
+    v.stream().forEach((vwm) -> {
+      List<String> l = Arrays.asList(vwm.getValue().split(","));
+      switch (vwm.getPropertyValueModifier()) {
+        case PLUS:
+          result.addAll(l);
+          break;
+        case MINUS:
+          result.removeAll(l);
+          break;
+        default:
+          result.clear();
+          result.addAll(l);
+      }
+    });
+
+    return result;
+
+  }
+
+  private List<String> getValueAsList() {
+
+    final List<String> result = new ArrayList<>();
+
+    List<ValueWithModifier> v = (List) getPropertyValue();
+    v.stream().forEach((vwm) -> {
+      List<String> l = Arrays.asList(vwm.getValue().split(","));
+      switch (vwm.getPropertyValueModifier()) {
+        case PLUS:
+          result.addAll(l);
+          break;
+        case MINUS:
+          result.removeAll(l);
+          break;
+        default:
+          result.clear();
+          result.addAll(l);
+      }
+    });
+
+    return result;
+
+  }
+
+  private HashMap<String, String> getValueAsMap() {
+
+    final HashMap<String, String> result = new HashMap<>();
+
+    List<ValueWithModifier> v = (List) getPropertyValue();
+    v.stream().forEach((vwm) -> {
+      Map m = Util.getMapFromValue(vwm.getValue());
+      switch (vwm.getPropertyValueModifier()) {
+        case PLUS:
+          result.putAll(m);
+          break;
+        case MINUS:
+          result.keySet().removeAll(m.keySet());
+          break;
+        default:
+          result.clear();
+          result.putAll(m);
+      }
+    });
+
+    return result;
+  }
+
+  private Enum getValueAsEnum() {
+    return Enum.valueOf(getTargetClass(), getValueAsString());
+  }
+
+  private Boolean getValueAsBoolean() {
+    return Boolean.valueOf(getValueAsString());
+  }
+
+  private boolean getValueAsboolean() {
+    return Boolean.parseBoolean(getValueAsString());
+  }
+
+  private JsonObject getValueAsJson() {
+    return JsonLoader.load(getComponentPath(), getValueAsString());
+  }
+
+  private ValueWithModifier getLastValueWithModifier() {
+    return Util.getLastValueWithModifier(getPropertyValue());
   }
 
   public Object getValue() {
@@ -78,7 +202,7 @@ public class ValueProxy {
         setValue(getDeferredComponent());
       } else {
         String getValueMethodName = Util.buildGetPropertyName(getDeferredComponentProperty(),
-                boolean.class.isAssignableFrom(getTargetClass()) || Boolean.parseBoolean(getPropertyValue()));
+                boolean.class.isAssignableFrom(getTargetClass()) || Boolean.class.isAssignableFrom(getTargetClass()));
         Method getValueMethod = Util.getMethod(getDeferredComponent().getClass(), getValueMethodName);
         try {
           Object getValue = getValueMethod.invoke(getDeferredComponent());
@@ -95,14 +219,6 @@ public class ValueProxy {
     this.value = pValue;
   }
 
-  public String getPropertyValue() {
-    return propertyValue;
-  }
-
-  public void setPropertyValue(String pPropertyValue) {
-    this.propertyValue = pPropertyValue;
-  }
-
   public Class getTargetClass() {
     return targetClass;
   }
@@ -113,6 +229,14 @@ public class ValueProxy {
 
   public String getDeferredComponentPath() {
     return deferredComponentPath;
+  }
+
+  public Collection<ValueWithModifier> getPropertyValue() {
+    return propertyValue;
+  }
+
+  public void setPropertyValue(Collection<ValueWithModifier> pPropertyValue) {
+    this.propertyValue = pPropertyValue;
   }
 
   public void setDeferredComponentPath(String pDeferredComponentPath) {
@@ -156,20 +280,12 @@ public class ValueProxy {
     return getComponentPath() + ":" + getClass().getCanonicalName() + ":" + getPropertyValue();
   }
 
-  public boolean isStage1ProcessingRequired() {
-    return stage1ProcessingRequired;
+  public boolean isProcessed() {
+    return processed;
   }
 
-  public void setStage1ProcessingRequired(boolean pStage1ProcessingRequired) {
-    this.stage1ProcessingRequired = pStage1ProcessingRequired;
-  }
-
-  public boolean isStage2ProcessingRequired() {
-    return stage2ProcessingRequired;
-  }
-
-  public void setStage2ProcessingRequired(boolean pStage2ProcessingRequired) {
-    this.stage2ProcessingRequired = pStage2ProcessingRequired;
+  public void setProcessed(boolean pProcessed) {
+    this.processed = pProcessed;
   }
 
 }

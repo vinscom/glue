@@ -4,13 +4,15 @@ import io.vertx.core.json.JsonObject;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
 import vinscom.ioc.Glue;
-import vinscom.ioc.Initial;
+import vinscom.ioc.component.Initial;
 import vinscom.ioc.common.TestConstant;
 import vinscom.ioc.test.component.EnumTestValues;
 import vinscom.ioc.test.component.PropertiesComponent;
@@ -62,7 +64,7 @@ public class FullConfigurationTest {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
     assertTrue(inst.isPropBoolean());
   }
-  
+
   @Test
   public void stringArrayProperty() {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
@@ -81,6 +83,17 @@ public class FullConfigurationTest {
     expected.add("b");
     expected.add("c");
     expected.removeAll(inst.getPropList());
+    assertEquals(expected.size(), 0);
+  }
+
+  @Test
+  public void stringSetProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
+    Set<String> expected = new HashSet<>();
+    expected.add("a");
+    expected.add("b");
+    expected.add("c");
+    expected.removeAll(inst.getPropSet());
     assertEquals(expected.size(), 0);
   }
 
@@ -104,8 +117,9 @@ public class FullConfigurationTest {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/MergedComponent", PropertiesComponent.class);
     assertEquals("TestString2", inst.getPropString());
     assertArrayEquals(new String[]{"a"}, inst.getPropArray());
-    assertEquals(1, inst.getPropList().size());
-    assertEquals(1, inst.getPropMap().size());
+    assertEquals(5, inst.getPropList().size());
+    assertEquals(3, inst.getPropMap().size());
+    assertEquals(3, inst.getPropSet().size());
 
     PropertiesComponent refInst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent2", PropertiesComponent.class);
     assertEquals(refInst.getPropString(), "TestString3");
@@ -116,7 +130,7 @@ public class FullConfigurationTest {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
     assertTrue(inst.isStartup());
   }
-  
+
   @Test
   public void jsonProperty() {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/MergedComponent", PropertiesComponent.class);
@@ -128,7 +142,7 @@ public class FullConfigurationTest {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
     assertEquals(EnumTestValues.TWO, inst.getPropEnum());
   }
-  
+
   @Test
   public void componentInitial() {
     Initial inst = Glue.instance().<Initial>resolve("/vinscom/ioc/test/component/Initial", Initial.class);
@@ -138,11 +152,19 @@ public class FullConfigurationTest {
       assertEquals(comp.getClass(), PropertiesComponent.class);
     });
   }
-  
+
   @Test
-  public void refComponentTest(){
+  public void refComponentTest() {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
     PropertiesComponent inst2 = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/RefPropertiesComponent", PropertiesComponent.class);
-    assertEquals(inst.getPropString(),inst2.getPropString());
+    PropertiesComponent inst3 = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/MergedComponent", PropertiesComponent.class);
+    assertEquals(inst.getPropString(), inst2.getPropString());
+    assertArrayEquals(inst.getPropArray(), inst2.getPropArray());
+    assertTrue(inst.getPropList().equals(inst2.getPropList()));
+    assertTrue(inst.getPropMap().keySet().equals(inst2.getPropMap().keySet()));
+    assertSame(inst.getPropComponent(), inst2.getPropComponent());
+    assertEquals(inst.isPropBoolean(), inst2.isPropBoolean());
+    assertEquals(inst.getPropEnum(), inst2.getPropEnum());
+    assertEquals(inst3.getPropJson(), inst2.getPropJson());
   }
 }
