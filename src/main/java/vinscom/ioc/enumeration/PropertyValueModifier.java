@@ -9,16 +9,4 @@ public enum PropertyValueModifier {
   MINUS,
   FROM,
   NONE;
-  
-  public static PropertyValueModifier parse(String pModifer){
-    switch(pModifer){
-      case "+":
-        return PLUS;
-      case "-":
-        return MINUS;
-      case "^":
-        return FROM;
-    }
-    return NONE;
-  }
 }

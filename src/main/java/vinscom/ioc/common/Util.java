@@ -20,24 +20,15 @@ public class Util {
 
   private static Logger logger = LogManager.getLogger(Util.class.getCanonicalName());
 
-  public static String sanatizePropertyName(String pProperty) {
-    if (pProperty.endsWith("^")) {
-      return pProperty.substring(0, pProperty.length() - 1);
-    }
-    return pProperty;
-  }
-
   public static String buildSetPropertyName(String pProperty) {
-    String propName = sanatizePropertyName(pProperty);
-    return "set" + propName.substring(0, 1).toUpperCase() + propName.substring(1, propName.length());
+    return "set" + pProperty.substring(0, 1).toUpperCase() + pProperty.substring(1, pProperty.length());
   }
 
   public static String buildGetPropertyName(String pProperty, boolean pIsBoolean) {
-    String propName = sanatizePropertyName(pProperty);
     if(pIsBoolean){
-      return "is" + propName.substring(0, 1).toUpperCase() + propName.substring(1, propName.length());
+      return "is" + pProperty.substring(0, 1).toUpperCase() + pProperty.substring(1, pProperty.length());
     }
-    return "get" + propName.substring(0, 1).toUpperCase() + propName.substring(1, propName.length());
+    return "get" + pProperty.substring(0, 1).toUpperCase() + pProperty.substring(1, pProperty.length());
   }
   
   @SuppressWarnings("rawtypes")
@@ -81,10 +72,6 @@ public class Util {
     return param[0].getType();
   }
 
-  public static boolean doesPropertyReferToComponent(String pProperty) {
-    return pProperty.endsWith("^");
-  }
-
   @SuppressWarnings("rawtypes")
   public static Object createInstance(String pClass) {
 
@@ -110,11 +97,6 @@ public class Util {
     }
 
     return result;
-  }
-
-  public static Enum getEnumFromValue(Method pMethod, String pValue) {
-    Class params = pMethod.getParameterTypes()[0];
-    return Enum.valueOf(params, pValue);
   }
 
   public static List<String> getSystemLayers() {

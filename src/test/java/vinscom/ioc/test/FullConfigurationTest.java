@@ -63,6 +63,7 @@ public class FullConfigurationTest {
   public void booleanProperty() {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
     assertTrue(inst.isPropBoolean());
+    assertTrue(inst.isPropBoolean2());
   }
 
   @Test

@@ -13,7 +13,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,14 +21,14 @@ import org.apache.logging.log4j.Logger;
 import vinscom.ioc.annotation.StartService;
 import vinscom.ioc.common.ValueWithModifier;
 
-public class ComponentManager extends PropertiesHolder implements Glue {
+public class ComponentRepository extends PropertiesRepository implements Glue {
 
-  protected Logger logger = LogManager.getLogger(ComponentManager.class.getCanonicalName());
-  private static ComponentManager mSelf = null;
+  protected Logger logger = LogManager.getLogger(ComponentRepository.class.getCanonicalName());
+  private static ComponentRepository mSelf = null;
   private final Map<String, Object> mSingletonRepository;
   private final Deque<PropertyContext> mPropertyStack;
 
-  public ComponentManager() {
+  public ComponentRepository() {
     mSingletonRepository = new HashMap<>();
     mPropertyStack = new ArrayDeque<>();
   }
@@ -63,7 +62,7 @@ public class ComponentManager extends PropertiesHolder implements Glue {
         processProperty(propCtx);
       }
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-      java.util.logging.Logger.getLogger(ComponentManager.class.getName()).log(Level.SEVERE, null, ex);
+      java.util.logging.Logger.getLogger(ComponentRepository.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 
@@ -170,16 +169,16 @@ public class ComponentManager extends PropertiesHolder implements Glue {
     return pClass.cast(resolve(pPath));
   }
 
-  public static ComponentManager instance() {
+  public static ComponentRepository instance() {
     return instance(null);
   }
 
-  public synchronized static ComponentManager instance(List<String> pLayers) {
+  public synchronized static ComponentRepository instance(List<String> pLayers) {
     if (mSelf != null) {
       return mSelf;
     }
 
-    mSelf = new ComponentManager();
+    mSelf = new ComponentRepository();
 
     if (pLayers == null) {
       mSelf.setLayers(Util.getSystemLayers());
