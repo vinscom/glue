@@ -3,6 +3,7 @@ package vinscom.ioc.test.component;
 import io.vertx.core.json.JsonObject;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import vinscom.ioc.annotation.StartService;
 
 public class PropertiesComponent {
@@ -16,6 +17,7 @@ public class PropertiesComponent {
   public boolean startup = false;
   public JsonObject propJson;
   public EnumTestValues propEnum;
+  public Set<String> propSet;
   
   @StartService
   public void startup(){
@@ -92,6 +94,14 @@ public class PropertiesComponent {
 
   public void setPropEnum(EnumTestValues pPropEnum) {
     this.propEnum = pPropEnum;
+  }
+
+  public Set<String> getPropSet() {
+    return propSet;
+  }
+
+  public void setPropSet(Set<String> pPropSet) {
+    this.propSet = pPropSet;
   }
 
 }

@@ -1,5 +1,6 @@
 package vinscom.ioc;
 
+import com.google.common.collect.ListMultimap;
 import vinscom.ioc.common.PropertyContext;
 import vinscom.ioc.common.Tuple;
 import vinscom.ioc.common.Constant;
@@ -19,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import vinscom.ioc.annotation.StartService;
+import vinscom.ioc.common.ValueWithModifier;
 
 public class ComponentManager extends PropertiesHolder implements Glue {
 
@@ -32,7 +34,7 @@ public class ComponentManager extends PropertiesHolder implements Glue {
     mPropertyStack = new ArrayDeque<>();
   }
 
-  protected synchronized Object resolve(String pPath, Properties pProperties) {
+  protected synchronized Object resolve(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
 
     logger.debug(() -> "Component[" + pPath + "]:Loading");
     Tuple<Boolean, Object> instance = getInstance(pPath, pProperties);
@@ -71,25 +73,18 @@ public class ComponentManager extends PropertiesHolder implements Glue {
 
     if (v != null) {
 
-      if (v.isStage1ProcessingRequired()) {
-        v.processStage1();
-        String defCompPath = v.getDeferredComponentPath();
-        if (getPropertiesCache().containsKey(defCompPath)) {
-          v.setDeferredValue(true);
-          Tuple<Boolean, Object> instance = getInstance(defCompPath, getPropertiesCache().get(defCompPath));
-          v.setDeferredComponent(instance.value2);
-          mPropertyStack.push(pPropCtx);
-          if (instance.value1) {
-            loadPropertiesInStack(instance.value2, getPropertiesCache().get(defCompPath), defCompPath);
-          }
-          return;
+      if (v.isDeferredValue() && v.getDeferredComponent() == null) {
+        Tuple<Boolean, Object> instance = getInstance(v.getDeferredComponentPath(), getPropertiesCache().get(v.getDeferredComponentPath()));
+        v.setDeferredComponent(instance.value2);
+        mPropertyStack.push(pPropCtx);
+        if (instance.value1) {
+          loadPropertiesInStack(instance.value2, getPropertiesCache().get(v.getDeferredComponentPath()), v.getDeferredComponentPath());
         }
+        return;
       }
 
-      if (v.isStage2ProcessingRequired()) {
-        v.processStage2();
-        pPropCtx.getMethod().invoke(pPropCtx.getInstance(), v.getValue());
-      }
+      v.process();
+      pPropCtx.getMethod().invoke(pPropCtx.getInstance(), v.getValue());
 
     } else {
       pPropCtx.getMethod().invoke(pPropCtx.getInstance());
@@ -97,7 +92,7 @@ public class ComponentManager extends PropertiesHolder implements Glue {
 
   }
 
-  protected void loadPropertiesInStack(Object pInstance, Properties pProperties, String pComponentPath) {
+  protected void loadPropertiesInStack(Object pInstance, ListMultimap<String, ValueWithModifier> pProperties, String pComponentPath) {
 
     Method startupmethod = Util.getMethodWithAnnotation(pInstance.getClass(), StartService.class);
 
@@ -112,6 +107,7 @@ public class ComponentManager extends PropertiesHolder implements Glue {
     }
 
     pProperties
+            .asMap()
             .entrySet()
             .stream()
             .filter((t) -> !(Constant.Component.CLASS.equals(t.getKey()) || Constant.Component.SCOPE.equals(t.getKey())))
@@ -119,7 +115,7 @@ public class ComponentManager extends PropertiesHolder implements Glue {
               PropertyContext propCtx = new PropertyContext();
               propCtx.setInstance(pInstance);
               propCtx.setMethod(Util.getMethod(pInstance.getClass(), Util.buildSetPropertyName((String) entry.getKey())));
-              ValueProxy v = new ValueProxy(Util.getMethodFirstArgumentClass(propCtx.getMethod()), (String) entry.getValue(), pComponentPath);
+              ValueProxy v = new ValueProxy(Util.getMethodFirstArgumentClass(propCtx.getMethod()), entry.getValue(), pComponentPath);
               propCtx.setValue(v);
               propCtx.setComponentPath(pComponentPath);
               return propCtx;
@@ -137,10 +133,10 @@ public class ComponentManager extends PropertiesHolder implements Glue {
    * @param pProperties
    * @return Returns Tuple where value1 = true if new Object is created. Or else false
    */
-  protected Tuple<Boolean, Object> getInstance(String pPath, Properties pProperties) {
+  protected Tuple<Boolean, Object> getInstance(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
 
-    String clazz = pProperties.getProperty(Constant.Component.CLASS);
-    ComponentScopeType scope = ComponentScopeType.valueOf(pProperties.getProperty(Constant.Component.SCOPE, ComponentScopeType.GLOBAL.toString()));
+    String clazz = Util.getLastValue(pProperties, Constant.Component.CLASS);
+    ComponentScopeType scope = ComponentScopeType.valueOf(Util.getLastValue(pProperties, Constant.Component.SCOPE, ComponentScopeType.GLOBAL.toString()));
 
     logger.debug(() -> "Component[" + pPath + "]:Class=" + clazz);
     logger.debug(() -> "Component[" + pPath + "]:Scope=" + scope);

@@ -1,7 +1,8 @@
-package vinscom.ioc;
+package vinscom.ioc.component;
 
 import java.util.ArrayList;
 import java.util.List;
+import vinscom.ioc.ComponentManager;
 import vinscom.ioc.annotation.StartService;
 
 public class Initial {

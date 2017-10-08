@@ -1,5 +1,6 @@
 package vinscom.ioc.common;
 
+import com.google.common.collect.ListMultimap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -11,10 +12,9 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.vertx.core.json.JsonObject;
 import java.lang.reflect.Parameter;
-import java.util.regex.Matcher;
-import vinscom.ioc.enumeration.MethodArgumentType;
+import java.util.Collection;
+import vinscom.ioc.enumeration.PropertyValueModifier;
 
 public class Util {
 
@@ -80,32 +80,6 @@ public class Util {
     }
     return param[0].getType();
   }
-  
-  @SuppressWarnings("rawtypes")
-  public static MethodArgumentType findMethodArgumentType(Method pMethod) {
-
-    logger.debug(() -> "findMethodArgumentType:" + pMethod.getName() + ",Args:" + pMethod.getParameterCount());
-
-    Class params = pMethod.getParameterTypes()[0];
-
-    if (Map.class.isAssignableFrom(params)) {
-      return MethodArgumentType.MAP;
-    } else if (List.class.isAssignableFrom(params)) {
-      return MethodArgumentType.LIST;
-    } else if (String.class.isAssignableFrom(params)) {
-      return MethodArgumentType.STRING;
-    } else if (params.isPrimitive() && boolean.class.equals(params)) {
-      return MethodArgumentType.BOOLEAN;
-    } else if (params.isArray()) {
-      return MethodArgumentType.ARRAY;
-    } else if (params.isEnum()) {
-      return MethodArgumentType.ENUM;
-    } else if (JsonObject.class.isAssignableFrom(params)) {
-      return MethodArgumentType.JSON;
-    }
-
-    return MethodArgumentType.COMPONENT;
-  }
 
   public static boolean doesPropertyReferToComponent(String pProperty) {
     return pProperty.endsWith("^");
@@ -154,4 +128,25 @@ public class Util {
     return Arrays.asList(layer.split(Constant.SystemProperties.SEPERATOR));
   }
 
+  public static ValueWithModifier getLastValueWithModifier(Collection<ValueWithModifier> pList) {
+    
+    if(pList.isEmpty()){
+      return new ValueWithModifier(null, PropertyValueModifier.NONE);
+    }
+    
+    List<ValueWithModifier> v = (List)pList;
+    return v.get(v.size() - 1);
+  }
+  
+  public static String getLastValue(ListMultimap<String,ValueWithModifier> pMap, String pPropertyName){
+    return getLastValueWithModifier(pMap.get(pPropertyName)).getValue();
+  }
+  
+  public static String getLastValue(ListMultimap<String,ValueWithModifier> pMap, String pPropertyName, String pDefault){
+    String result = getLastValue(pMap, pPropertyName);
+    if(result == null){
+      return pDefault;
+    }
+    return result;
+  }
 }
