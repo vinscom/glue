@@ -8,10 +8,10 @@ public interface Glue {
   <T> T resolve(String pPath, Class<T> pClass);
 
   static Glue instance() {
-    return ComponentManager.instance();
+    return ComponentRepository.instance();
   }
 
   static Glue instance(List<String> pLayers) {
-    return ComponentManager.instance(pLayers);
+    return ComponentRepository.instance(pLayers);
   }
 }

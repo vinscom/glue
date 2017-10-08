@@ -11,6 +11,13 @@ public class Constant {
 
       public static final String INITIAL = "/Initial";
     }
+
+    public static class Modifier {
+
+      public static final String PLUS = "+";
+      public static final String MINU = "-";
+      public static final String FROM = "^";
+    }
   }
 
   public static class SystemProperties {

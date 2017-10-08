@@ -19,13 +19,13 @@ import org.apache.logging.log4j.Logger;
 
 import rx.Completable;
 import rx.Observable;
-import rx.observables.ConnectableObservable;
+import vinscom.ioc.common.Constant;
 import vinscom.ioc.common.ValueWithModifier;
 import vinscom.ioc.enumeration.PropertyValueModifier;
 
-public class PropertiesHolder {
+public class PropertiesRepository {
 
-  protected Logger logger = LogManager.getLogger(PropertiesHolder.class.getCanonicalName());
+  protected Logger logger = LogManager.getLogger(PropertiesRepository.class.getCanonicalName());
   private static final String PROPERTY_EXTENSION = ".properties";
   private static final int PROPERTY_EXTENSION_LENGTH = PROPERTY_EXTENSION.length();
 
@@ -34,7 +34,7 @@ public class PropertiesHolder {
   private boolean initialized = false;
   private List<String> layers;
 
-  public PropertiesHolder() {
+  public PropertiesRepository() {
     this.propertiesRepository = new HashMap<>();
   }
 
@@ -78,28 +78,35 @@ public class PropertiesHolder {
   }
 
   private String extractKey(String pEntry) {
-    if (pEntry.endsWith("+") || pEntry.endsWith("-") || pEntry.endsWith("^")) {
-      return pEntry.substring(0, pEntry.length() - 1);
+
+    String modifier = pEntry.substring(pEntry.length() - 1);
+
+    switch (modifier) {
+      case Constant.Component.Modifier.PLUS:
+      case Constant.Component.Modifier.MINU:
+      case Constant.Component.Modifier.FROM:
+        return pEntry.substring(0, pEntry.length() - 1);
+      default:
+        return pEntry;
     }
 
-    return pEntry;
   }
 
   private PropertyValueModifier extractPropertyValueModifier(String pEntry) {
 
-    if (pEntry.endsWith("+")) {
-      return PropertyValueModifier.PLUS;
-    }
-    
-    if (pEntry.endsWith("-")) {
-      return PropertyValueModifier.MINUS;
-    }
-    
-    if (pEntry.endsWith("^")) {
-      return PropertyValueModifier.FROM;
+    String modifier = pEntry.substring(pEntry.length() - 1);
+
+    switch (modifier) {
+      case Constant.Component.Modifier.PLUS:
+        return PropertyValueModifier.PLUS;
+      case Constant.Component.Modifier.MINU:
+        return PropertyValueModifier.MINUS;
+      case Constant.Component.Modifier.FROM:
+        return PropertyValueModifier.FROM;
+      default:
+        return PropertyValueModifier.NONE;
     }
 
-    return PropertyValueModifier.NONE;
   }
 
   private Observable<Properties> loadUncachedProperties(Observable<Tuple<Path, Path>> pPath) {

@@ -14,13 +14,14 @@ public class PropertiesComponent {
   public Map<String, String> propMap;
   public Object propComponent;
   public boolean propBoolean = false;
+  public Boolean propBoolean2 = false;
   public boolean startup = false;
   public JsonObject propJson;
   public EnumTestValues propEnum;
   public Set<String> propSet;
-  
+
   @StartService
-  public void startup(){
+  public void startup() {
     setStartup(true);
   }
 
@@ -31,7 +32,7 @@ public class PropertiesComponent {
   public void setStartup(boolean pStartup) {
     this.startup = pStartup;
   }
-  
+
   public String getPropString() {
     return propString;
   }
@@ -104,4 +105,11 @@ public class PropertiesComponent {
     this.propSet = pPropSet;
   }
 
+  public Boolean isPropBoolean2() {
+    return propBoolean2;
+  }
+
+  public void setPropBoolean2(Boolean pPropBoolean2) {
+    this.propBoolean2 = pPropBoolean2;
+  }
 }

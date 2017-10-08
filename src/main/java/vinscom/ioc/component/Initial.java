@@ -2,7 +2,7 @@ package vinscom.ioc.component;
 
 import java.util.ArrayList;
 import java.util.List;
-import vinscom.ioc.ComponentManager;
+import vinscom.ioc.ComponentRepository;
 import vinscom.ioc.annotation.StartService;
 
 public class Initial {
@@ -13,7 +13,7 @@ public class Initial {
   @StartService
   public void startup() {
     for (String path : initial) {
-      components.add(ComponentManager.instance().resolve(path));
+      components.add(ComponentRepository.instance().resolve(path));
     }
   }
 
