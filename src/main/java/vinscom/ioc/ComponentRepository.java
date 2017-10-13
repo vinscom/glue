@@ -10,9 +10,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.apache.logging.log4j.LogManager;
@@ -21,20 +20,23 @@ import org.apache.logging.log4j.Logger;
 import vinscom.ioc.annotation.StartService;
 import vinscom.ioc.common.ValueWithModifier;
 
-public class ComponentRepository extends PropertiesRepository implements Glue {
+public class ComponentRepository implements Glue {
+
+  private static final PropertiesRepository mPropertiesRepository;
+  private static final Map<String, Object> mSingletonRepository;
+
+  static {
+    mSingletonRepository = new ConcurrentHashMap<>();
+    mPropertiesRepository = new PropertiesRepository();
+    mPropertiesRepository.setLayers(Util.getSystemLayers());
+    mPropertiesRepository.init().await();
+  }
 
   protected Logger logger = LogManager.getLogger(ComponentRepository.class.getCanonicalName());
-  private static ComponentRepository mSelf = null;
-  private final Map<String, Object> mSingletonRepository;
-  private final Deque<PropertyContext> mPropertyStack;
-
-  public ComponentRepository() {
-    mSingletonRepository = new HashMap<>();
-    mPropertyStack = new ArrayDeque<>();
-  }
 
   protected synchronized Object resolve(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
 
+    ArrayDeque<PropertyContext> propertyStack = new ArrayDeque<>();
     logger.debug(() -> "Component[" + pPath + "]:Loading");
     Tuple<Boolean, Object> instance = getInstance(pPath, pProperties);
 
@@ -48,25 +50,26 @@ public class ComponentRepository extends PropertiesRepository implements Glue {
     }
 
     logger.debug(() -> "Component[" + pPath + "]:Loading properties");
-    loadPropertiesInStack(objInstance, pProperties, pPath);
-    processPropertyStack();
+    loadPropertiesInStack(objInstance, pProperties, pPath, propertyStack);
+    processPropertyStack(propertyStack);
 
     logger.debug(() -> "Component[" + pPath + "]:Loading Finished");
     return objInstance;
   }
 
-  protected void processPropertyStack() {
+  protected void processPropertyStack(Deque<PropertyContext> pPropertyStack) {
     try {
-      while (!mPropertyStack.isEmpty()) {
-        PropertyContext propCtx = mPropertyStack.pop();
-        processProperty(propCtx);
+      while (!pPropertyStack.isEmpty()) {
+        PropertyContext propCtx = pPropertyStack.pop();
+        logger.debug(() -> "Component[" + propCtx.getComponentPath() + "]:Processing property " + propCtx.getMethod().getName());
+        processProperty(propCtx, pPropertyStack);
       }
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
       java.util.logging.Logger.getLogger(ComponentRepository.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 
-  protected void processProperty(PropertyContext pPropCtx) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  protected void processProperty(PropertyContext pPropCtx, Deque<PropertyContext> pPropertyStack) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
     ValueProxy v = pPropCtx.getValue();
 
@@ -75,9 +78,9 @@ public class ComponentRepository extends PropertiesRepository implements Glue {
       if (v.isDeferredValue() && v.getDeferredComponent() == null) {
         Tuple<Boolean, Object> instance = getInstance(v.getDeferredComponentPath(), getPropertiesCache().get(v.getDeferredComponentPath()));
         v.setDeferredComponent(instance.value2);
-        mPropertyStack.push(pPropCtx);
+        pPropertyStack.push(pPropCtx);
         if (instance.value1) {
-          loadPropertiesInStack(instance.value2, getPropertiesCache().get(v.getDeferredComponentPath()), v.getDeferredComponentPath());
+          loadPropertiesInStack(instance.value2, getPropertiesCache().get(v.getDeferredComponentPath()), v.getDeferredComponentPath(), pPropertyStack);
         }
         return;
       }
@@ -91,7 +94,7 @@ public class ComponentRepository extends PropertiesRepository implements Glue {
 
   }
 
-  protected void loadPropertiesInStack(Object pInstance, ListMultimap<String, ValueWithModifier> pProperties, String pComponentPath) {
+  protected void loadPropertiesInStack(Object pInstance, ListMultimap<String, ValueWithModifier> pProperties, String pComponentPath, Deque<PropertyContext> pPropertyStack) {
 
     Method startupmethod = Util.getMethodWithAnnotation(pInstance.getClass(), StartService.class);
 
@@ -102,7 +105,7 @@ public class ComponentRepository extends PropertiesRepository implements Glue {
       propCtx.setValue(null);
       propCtx.setComponentPath(pComponentPath);
       logger.debug(() -> "Component[" + pComponentPath + "]:Found start service method:" + propCtx.getMethod().getName());
-      mPropertyStack.push(propCtx);
+      pPropertyStack.push(propCtx);
     }
 
     pProperties
@@ -121,7 +124,7 @@ public class ComponentRepository extends PropertiesRepository implements Glue {
             })
             .forEachOrdered((propertyCtx) -> {
               logger.debug(() -> "Component[" + pComponentPath + "]:Ready to process:" + propertyCtx.getMethod().getName() + ", Value=" + propertyCtx.getValue());
-              mPropertyStack.push(propertyCtx);
+              pPropertyStack.push(propertyCtx);
             });
 
   }
@@ -132,7 +135,7 @@ public class ComponentRepository extends PropertiesRepository implements Glue {
    * @param pProperties
    * @return Returns Tuple where value1 = true if new Object is created. Or else false
    */
-  protected Tuple<Boolean, Object> getInstance(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
+  protected synchronized Tuple<Boolean, Object> getInstance(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
 
     String clazz = Util.getLastValue(pProperties, Constant.Component.CLASS);
     ComponentScopeType scope = ComponentScopeType.valueOf(Util.getLastValue(pProperties, Constant.Component.SCOPE, ComponentScopeType.GLOBAL.toString()));
@@ -170,32 +173,14 @@ public class ComponentRepository extends PropertiesRepository implements Glue {
   }
 
   public static ComponentRepository instance() {
-    return instance(null);
-  }
-
-  public synchronized static ComponentRepository instance(List<String> pLayers) {
-    if (mSelf != null) {
-      return mSelf;
-    }
-
-    mSelf = new ComponentRepository();
-
-    if (pLayers == null) {
-      mSelf.setLayers(Util.getSystemLayers());
-    } else {
-      mSelf.setLayers(pLayers);
-    }
-
-    mSelf.init().await();
-    return mSelf;
+    return new ComponentRepository();
   }
 
   protected Map<String, Object> getSingletonRepository() {
     return mSingletonRepository;
   }
 
-  protected Deque<PropertyContext> getPropertyStack() {
-    return mPropertyStack;
+  public static Map<String, ListMultimap<String, ValueWithModifier>> getPropertiesCache() {
+    return mPropertiesRepository.getPropertiesCache();
   }
-
 }

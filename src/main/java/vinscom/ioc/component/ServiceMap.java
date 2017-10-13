@@ -1,6 +1,5 @@
 package vinscom.ioc.component;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import vinscom.ioc.Glue;
