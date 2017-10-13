@@ -135,7 +135,7 @@ public class ComponentRepository implements Glue {
    * @param pProperties
    * @return Returns Tuple where value1 = true if new Object is created. Or else false
    */
-  protected synchronized Tuple<Boolean, Object> getInstance(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
+  protected Tuple<Boolean, Object> getInstance(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
 
     String clazz = Util.getLastValue(pProperties, Constant.Component.CLASS);
     ComponentScopeType scope = ComponentScopeType.valueOf(Util.getLastValue(pProperties, Constant.Component.SCOPE, ComponentScopeType.GLOBAL.toString()));
@@ -143,23 +143,26 @@ public class ComponentRepository implements Glue {
     logger.debug(() -> "Component[" + pPath + "]:Class=" + clazz);
     logger.debug(() -> "Component[" + pPath + "]:Scope=" + scope);
 
-    if (ComponentScopeType.GLOBAL == scope) {
-      Map<String, Object> repo = getSingletonRepository();
-      if (repo.containsKey(pPath)) {
+    Tuple<Boolean, Object> result;
+
+    synchronized (mSingletonRepository) {
+
+      if (ComponentScopeType.GLOBAL == scope && mSingletonRepository.containsKey(pPath)) {
         logger.debug(() -> "Component[" + pPath + "]:Singleton already initialised");
-        return new Tuple<>(false, repo.get(pPath));
+        result = new Tuple<>(false, mSingletonRepository.get(pPath));
+      } else {
+        logger.debug(() -> "Component[" + pPath + "]:Creating instance");
+        Object instance = Util.createInstance(clazz);
+        result = new Tuple<>(true, instance);
+      }
+
+      if (ComponentScopeType.GLOBAL == scope) {
+        logger.debug(() -> "Component[" + pPath + "]:Adding instance to singleton repository");
+        mSingletonRepository.put(pPath, result.value2);
       }
     }
 
-    logger.debug(() -> "Component[" + pPath + "]:Creating instance");
-    Object instance = Util.createInstance(clazz);
-
-    if (ComponentScopeType.GLOBAL == scope) {
-      logger.debug(() -> "Component[" + pPath + "]:Adding instance to singleton repository");
-      getSingletonRepository().put(pPath, instance);
-    }
-
-    return new Tuple<>(true, instance);
+    return result;
   }
 
   @Override
@@ -174,10 +177,6 @@ public class ComponentRepository implements Glue {
 
   public static ComponentRepository instance() {
     return new ComponentRepository();
-  }
-
-  protected Map<String, Object> getSingletonRepository() {
-    return mSingletonRepository;
   }
 
   public static Map<String, ListMultimap<String, ValueWithModifier>> getPropertiesCache() {
