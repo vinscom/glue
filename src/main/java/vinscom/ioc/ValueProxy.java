@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import vinscom.ioc.common.JsonLoader;
 import vinscom.ioc.common.Util;
 import vinscom.ioc.common.ValueWithModifier;
+import vinscom.ioc.component.ServiceMap;
 import vinscom.ioc.enumeration.PropertyValueModifier;
 
 public class ValueProxy {
@@ -54,7 +55,8 @@ public class ValueProxy {
             || boolean.class.isAssignableFrom(targetClass)
             || Boolean.class.isAssignableFrom(targetClass)
             || JsonObject.class.isAssignableFrom(targetClass)
-            || Set.class.isAssignableFrom(targetClass))) {
+            || Set.class.isAssignableFrom(targetClass)
+            || ServiceMap.class.isAssignableFrom(targetClass))) {
       deferredValue = true;
     }
 
@@ -93,6 +95,8 @@ public class ValueProxy {
       setValue(getValueAsJson());
     } else if (Set.class.isAssignableFrom(getTargetClass())) {
       setValue(getValueAsSet());
+    } else if (ServiceMap.class.isAssignableFrom(getTargetClass())){
+      setValue(new ServiceMap(getValueAsMap()));
     }
 
   }

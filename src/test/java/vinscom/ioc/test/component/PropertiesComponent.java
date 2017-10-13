@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import vinscom.ioc.annotation.StartService;
+import vinscom.ioc.component.ServiceMap;
 
 public class PropertiesComponent {
 
@@ -19,6 +20,7 @@ public class PropertiesComponent {
   public JsonObject propJson;
   public EnumTestValues propEnum;
   public Set<String> propSet;
+  public ServiceMap propServiceMap;
 
   @StartService
   public void startup() {
@@ -112,4 +114,13 @@ public class PropertiesComponent {
   public void setPropBoolean2(Boolean pPropBoolean2) {
     this.propBoolean2 = pPropBoolean2;
   }
+
+  public ServiceMap getPropServiceMap() {
+    return propServiceMap;
+  }
+
+  public void setPropServiceMap(ServiceMap pPropServiceMap) {
+    this.propServiceMap = pPropServiceMap;
+  }
+  
 }

@@ -145,6 +145,16 @@ public class FullConfigurationTest {
   }
 
   @Test
+  public void serviceMapProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
+    Object inst2 = Glue.instance().<Object>resolve("/vinscom/ioc/test/component/GlobalObjectByDefault", Object.class);
+    assertEquals(3, inst.getPropServiceMap().getServices().size());
+    assertSame(inst2, inst.getPropServiceMap().get("a"));
+    assertSame(inst2, inst.getPropServiceMap().get("b"));
+    assertSame(inst2, inst.getPropServiceMap().get("c"));
+  }
+  
+  @Test
   public void componentInitial() {
     Initial inst = Glue.instance().<Initial>resolve("/vinscom/ioc/test/component/Initial", Initial.class);
     List<Object> comps = inst.getComponents();
@@ -159,6 +169,7 @@ public class FullConfigurationTest {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
     PropertiesComponent inst2 = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/RefPropertiesComponent", PropertiesComponent.class);
     PropertiesComponent inst3 = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/MergedComponent", PropertiesComponent.class);
+    Object inst4 = Glue.instance().<Object>resolve("/vinscom/ioc/test/component/GlobalObjectByDefault", Object.class);
     assertEquals(inst.getPropString(), inst2.getPropString());
     assertArrayEquals(inst.getPropArray(), inst2.getPropArray());
     assertTrue(inst.getPropList().equals(inst2.getPropList()));
@@ -167,5 +178,10 @@ public class FullConfigurationTest {
     assertEquals(inst.isPropBoolean(), inst2.isPropBoolean());
     assertEquals(inst.getPropEnum(), inst2.getPropEnum());
     assertEquals(inst3.getPropJson(), inst2.getPropJson());
+    
+    assertEquals(3, inst2.getPropServiceMap().getServices().size());
+    assertSame(inst4, inst2.getPropServiceMap().get("a"));
+    assertSame(inst4, inst2.getPropServiceMap().get("b"));
+    assertSame(inst4, inst2.getPropServiceMap().get("c"));
   }
 }
