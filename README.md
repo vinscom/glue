@@ -14,5 +14,7 @@ Checkout testcase for better understanding on usage. Below features are supporte
     7. Set<String>
     8. ServiceMap<String,ComponentObject>
     9. Property refering to another componet
+    10. Vertx JsonObject
 3. Connect component property using ^
 4. Map,Set,List + and - operation
+5. JsonObject merger between layers
