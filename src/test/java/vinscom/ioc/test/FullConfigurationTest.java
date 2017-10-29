@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.logging.log4j.Logger;
 
 import org.junit.Test;
 
@@ -67,6 +68,19 @@ public class FullConfigurationTest {
   }
 
   @Test
+  public void longProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
+    assertEquals(inst.getPropLong(), 2l);
+    assertTrue(inst.getPropLong2().equals(2l));
+  }
+
+  @Test
+  public void fileProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
+    assertEquals(inst.getPropFile().getName(), "testconfig.json");
+  }
+
+  @Test
   public void stringArrayProperty() {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
     assertArrayEquals(new String[]{"a", "b", "c"}, inst.getPropArray());
@@ -105,6 +119,20 @@ public class FullConfigurationTest {
     assertEquals("b", result.remove("a"));
     assertEquals("d", result.remove("c"));
     assertEquals("f", result.remove("e"));
+  }
+
+  @Test
+  public void integerProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
+    assertEquals(inst.getPropInt(), 2);
+    assertTrue(inst.getPropInteger().equals(2));
+  }
+
+  @Test
+  public void loggerAsProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
+    Logger logger = inst.getPropLogger();
+    assertEquals(logger.getName(), "vinscom.ioc.test.component.PropertiesComponent");
   }
 
   @Test
@@ -153,7 +181,17 @@ public class FullConfigurationTest {
     assertSame(inst2, inst.getPropServiceMap().get("b"));
     assertSame(inst2, inst.getPropServiceMap().get("c"));
   }
-  
+
+  @Test
+  public void serviceArrayProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
+    Object inst2 = Glue.instance().<Object>resolve("/vinscom/ioc/test/component/GlobalObjectByDefault", Object.class);
+    assertEquals(3, inst.getPropServiceArray().getServices().size());
+    assertSame(inst2, inst.getPropServiceArray().get(0));
+    assertSame(inst2, inst.getPropServiceArray().get(1));
+    assertSame(inst2, inst.getPropServiceArray().get(2));
+  }
+
   @Test
   public void componentInitial() {
     Initial inst = Glue.instance().<Initial>resolve("/vinscom/ioc/test/component/Initial", Initial.class);
@@ -178,10 +216,16 @@ public class FullConfigurationTest {
     assertEquals(inst.isPropBoolean(), inst2.isPropBoolean());
     assertEquals(inst.getPropEnum(), inst2.getPropEnum());
     assertEquals(inst3.getPropJson(), inst2.getPropJson());
-    
+
     assertEquals(3, inst2.getPropServiceMap().getServices().size());
     assertSame(inst4, inst2.getPropServiceMap().get("a"));
     assertSame(inst4, inst2.getPropServiceMap().get("b"));
     assertSame(inst4, inst2.getPropServiceMap().get("c"));
+  }
+  
+  @Test
+  public void basedOnComponentTest() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/BasedOnPropertiesComponent", PropertiesComponent.class);
+    assertEquals("TestString2",inst.getPropString());
   }
 }

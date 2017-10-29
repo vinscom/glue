@@ -1,6 +1,7 @@
 package vinscom.ioc;
 
 import io.vertx.core.json.JsonObject;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -13,9 +14,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import vinscom.ioc.common.FileLoader;
 import vinscom.ioc.common.JsonLoader;
 import vinscom.ioc.common.Util;
 import vinscom.ioc.common.ValueWithModifier;
+import vinscom.ioc.component.ServiceArray;
 import vinscom.ioc.component.ServiceMap;
 import vinscom.ioc.enumeration.PropertyValueModifier;
 
@@ -56,7 +61,14 @@ public class ValueProxy {
             || Boolean.class.isAssignableFrom(targetClass)
             || JsonObject.class.isAssignableFrom(targetClass)
             || Set.class.isAssignableFrom(targetClass)
-            || ServiceMap.class.isAssignableFrom(targetClass))) {
+            || ServiceMap.class.isAssignableFrom(targetClass)
+            || int.class.isAssignableFrom(targetClass)
+            || Integer.class.isAssignableFrom(targetClass)
+            || long.class.isAssignableFrom(targetClass)
+            || Long.class.isAssignableFrom(targetClass)
+            || File.class.isAssignableFrom(targetClass)
+            || Logger.class.isAssignableFrom(targetClass)
+            || ServiceArray.class.isAssignableFrom(targetClass))) {
       deferredValue = true;
     }
 
@@ -95,10 +107,52 @@ public class ValueProxy {
       setValue(getValueAsJson());
     } else if (Set.class.isAssignableFrom(getTargetClass())) {
       setValue(getValueAsSet());
-    } else if (ServiceMap.class.isAssignableFrom(getTargetClass())){
+    } else if (ServiceMap.class.isAssignableFrom(getTargetClass())) {
       setValue(new ServiceMap(getValueAsMap()));
+    } else if (int.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsInt());
+    } else if (Integer.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsInteger());
+    } else if (long.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAslong());
+    } else if (Long.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsLong());
+    } else if (File.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsFile());
+    } else if (Logger.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsLogger());
+    } else if (ServiceArray.class.isAssignableFrom(getTargetClass())) {
+      setValue(new ServiceArray(getValueAsList()));
     }
 
+  }
+
+  private Logger getValueAsLogger() {
+    String loggerName = getComponentPath();
+    if (loggerName.startsWith("/") && loggerName.length() >= 2) {
+      loggerName = loggerName.substring(1);
+    }
+    return LogManager.getLogger(loggerName.replace("/", "."));
+  }
+
+  private File getValueAsFile() {
+    return FileLoader.load(getComponentPath(), getValueAsString());
+  }
+
+  private int getValueAsInt() {
+    return Integer.parseInt(getLastValueWithModifier().getValue());
+  }
+
+  private Integer getValueAsInteger() {
+    return getValueAsInt();
+  }
+
+  private long getValueAslong() {
+    return Long.parseLong(getLastValueWithModifier().getValue());
+  }
+
+  private Long getValueAsLong() {
+    return getValueAslong();
   }
 
   private String[] getValueAsArray() {

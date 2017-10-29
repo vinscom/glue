@@ -29,7 +29,7 @@ public class ComponentRepository implements Glue {
     mSingletonRepository = new ConcurrentHashMap<>();
     mPropertiesRepository = new PropertiesRepository();
     mPropertiesRepository.setLayers(Util.getSystemLayers());
-    mPropertiesRepository.init().await();
+    mPropertiesRepository.init();
   }
 
   protected Logger logger = LogManager.getLogger(ComponentRepository.class.getCanonicalName());
@@ -76,6 +76,7 @@ public class ComponentRepository implements Glue {
     if (v != null) {
 
       if (v.isDeferredValue() && v.getDeferredComponent() == null) {
+        logger.debug(() -> "Component[" + pPropCtx.getComponentPath() + "]: Property referes to another component. Processing " + v.getDeferredComponentPath());
         Tuple<Boolean, Object> instance = getInstance(v.getDeferredComponentPath(), getPropertiesCache().get(v.getDeferredComponentPath()));
         v.setDeferredComponent(instance.value2);
         pPropertyStack.push(pPropCtx);
@@ -86,9 +87,11 @@ public class ComponentRepository implements Glue {
       }
 
       v.process();
+      logger.debug(() -> "Component[" + pPropCtx.getComponentPath() + "]: Property :" + pPropCtx.getMethod().getName() + ", Value derived :" + v.getValue());
       pPropCtx.getMethod().invoke(pPropCtx.getInstance(), v.getValue());
 
     } else {
+      logger.debug(() -> "Component[" + pPropCtx.getComponentPath() + "]: Invoking Property without arguments :" + pPropCtx.getMethod().getName());
       pPropCtx.getMethod().invoke(pPropCtx.getInstance());
     }
 

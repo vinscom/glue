@@ -2,6 +2,9 @@ package vinscom.ioc;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+
+import io.reactivex.Completable;
+import io.reactivex.Observable;
 import vinscom.ioc.common.Tuple;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,9 +20,8 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import rx.Completable;
-import rx.Observable;
 import vinscom.ioc.common.Constant;
+import vinscom.ioc.common.Util;
 import vinscom.ioc.common.ValueWithModifier;
 import vinscom.ioc.enumeration.PropertyValueModifier;
 
@@ -38,28 +40,65 @@ public class PropertiesRepository {
     this.propertiesRepository = new HashMap<>();
   }
 
-  protected Completable init() {
+  protected void init() {
 
     Observable<Tuple<Path, Path>> paths = Observable
-            .from(getLayers())
+            .fromIterable(getLayers())
             .map(path -> Paths.get(path))
             .flatMap(this::findAllPropertiesFile);
 
     Observable<ListMultimap<String, ValueWithModifier>> cachedProperties = loadCachedProperties(paths);
     Observable<Properties> newProperties = loadUncachedProperties(paths);
 
-    return cachedProperties
+    cachedProperties
             .zipWith(newProperties, this::mergeUncachedIntoCachedProperties)
             .flatMap((t) -> t)
-            .doOnCompleted(() -> setInitialized(true))
-            .toCompletable();
-
+            .doOnComplete(() -> setInitialized(true))
+            .blockingSubscribe();
+    
+    
+    propertiesRepository
+            .entrySet()
+            .stream()
+            .filter((t) -> Util.getLastValue(t.getValue(), Constant.Component.BASED_ON) != null)
+            .forEachOrdered((t) -> updateBasedOnProperties(t.getKey(),t.getValue()));
+    
   }
 
+  private void updateBasedOnProperties(String componentPath, ListMultimap<String, ValueWithModifier> properties){
+    
+    String baseOnComponentPath = Util.getLastValue(properties, Constant.Component.BASED_ON);
+    
+    ListMultimap<String, ValueWithModifier> baseOnProperties = propertiesRepository.get(baseOnComponentPath);
+    
+    if(Util.getLastValue(baseOnProperties, Constant.Component.BASED_ON) != null){
+      updateBasedOnProperties(baseOnComponentPath, baseOnProperties);
+    }
+    
+    ListMultimap<String, ValueWithModifier> newProperties = ArrayListMultimap.create();
+    
+    baseOnProperties
+            .entries()
+            .stream()
+            .forEachOrdered((e) -> {
+              newProperties.put(e.getKey(),e.getValue());
+            });
+    
+    properties
+            .entries()
+            .stream()
+            .filter((p) -> !Constant.Component.BASED_ON.equals(p.getKey()))
+            .forEachOrdered((e) -> {
+              newProperties.put(e.getKey(),e.getValue());
+            });
+    
+    propertiesRepository.put(componentPath, newProperties);
+  }
+  
   private Observable<Boolean> mergeUncachedIntoCachedProperties(ListMultimap<String, ValueWithModifier> pCached, Properties pUncached) {
 
     Observable<Map.Entry<String, String>> property = Observable
-            .from(pUncached.entrySet())
+            .fromIterable(pUncached.entrySet())
             .map(e -> (Map.Entry<String, String>) new AbstractMap.SimpleEntry<>(e.getKey().toString(), e.getValue().toString()));
 
     Observable<String> key = property.map(e -> e.getKey()).map(this::extractKey);
@@ -150,7 +189,7 @@ public class PropertiesRepository {
   private Observable<Tuple<Path, Path>> findAllPropertiesFile(Path pPath) {
 
     return Observable
-            .from((Iterable<Path>) () -> {
+            .fromIterable((Iterable<Path>) () -> {
               try {
                 return Files.walk(pPath).filter((t) -> {
                   return t.toString().endsWith(PROPERTY_EXTENSION);

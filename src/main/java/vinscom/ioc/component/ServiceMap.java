@@ -2,6 +2,7 @@ package vinscom.ioc.component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import vinscom.ioc.Glue;
 
 /**
@@ -26,7 +27,7 @@ public class ServiceMap {
 
   public synchronized Map<String, Object> getServices() {
     if (mResolvedServices == null) {
-      mResolvedServices = new HashMap<>();
+      mResolvedServices = new TreeMap<>();
       mServices
               .entrySet()
               .stream()
