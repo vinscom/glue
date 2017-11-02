@@ -31,6 +31,9 @@ public class PropertiesComponent {
   public Long propLong2;
   public Logger propLogger;
   public ServiceArray propServiceArray;
+  public String propNullString;
+  public ServiceMap propNullServiceMap;
+  public Object propNullComponent;
 
   @StartService
   public void startup() {
@@ -188,5 +191,30 @@ public class PropertiesComponent {
   public void setPropServiceArray(ServiceArray pPropServiceArray) {
     this.propServiceArray = pPropServiceArray;
   }
+
+  public String getPropNullString() {
+    return propNullString;
+  }
+
+  public void setPropNullString(String pPropNullString) {
+    this.propNullString = pPropNullString;
+  }
+
+  public ServiceMap getPropNullServiceMap() {
+    return propNullServiceMap;
+  }
+
+  public void setPropNullServiceMap(ServiceMap pPropNullServiceMap) {
+    this.propNullServiceMap = pPropNullServiceMap;
+  }
+
+  public Object getPropNullComponent() {
+    return propNullComponent;
+  }
+
+  public void setPropNullComponent(Object pPropNullComponent) {
+    this.propNullComponent = pPropNullComponent;
+  }
+  
   
 }

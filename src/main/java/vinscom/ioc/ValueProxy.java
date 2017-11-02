@@ -1,5 +1,6 @@
 package vinscom.ioc;
 
+import com.google.common.base.Strings;
 import io.vertx.core.json.JsonObject;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -68,7 +69,8 @@ public class ValueProxy {
             || Long.class.isAssignableFrom(targetClass)
             || File.class.isAssignableFrom(targetClass)
             || Logger.class.isAssignableFrom(targetClass)
-            || ServiceArray.class.isAssignableFrom(targetClass))) {
+            || ServiceArray.class.isAssignableFrom(targetClass)
+            || Strings.isNullOrEmpty(propValue.getValue()))) {
       deferredValue = true;
     }
 
@@ -89,6 +91,11 @@ public class ValueProxy {
       return;
     }
 
+    if(Strings.isNullOrEmpty(getLastValueWithModifier().getValue())){
+      setValue(null);
+      return;
+    }
+    
     if (getTargetClass().isArray()) {
       setValue(getValueAsArray());
     } else if (String.class.isAssignableFrom(getTargetClass())) {

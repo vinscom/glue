@@ -228,4 +228,12 @@ public class FullConfigurationTest {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/BasedOnPropertiesComponent", PropertiesComponent.class);
     assertEquals("TestString2",inst.getPropString());
   }
+  
+   @Test
+   public void nullProperty(){
+     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/vinscom/ioc/test/component/PropertiesComponent", PropertiesComponent.class);
+     assertNull(inst.getPropNullString());
+     assertNull(inst.getPropNullServiceMap());
+     assertNull(inst.getPropNullComponent());
+   }
 }
