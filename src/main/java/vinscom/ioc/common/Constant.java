@@ -6,6 +6,7 @@ public class Constant {
 
     public static final String CLASS = "$class";
     public static final String SCOPE = "$scope";
+    public static final String BASED_ON = "$basedOn";
 
     public static class Path {
 

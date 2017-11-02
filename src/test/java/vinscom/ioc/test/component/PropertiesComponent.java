@@ -1,10 +1,13 @@
 package vinscom.ioc.test.component;
 
 import io.vertx.core.json.JsonObject;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.logging.log4j.Logger;
 import vinscom.ioc.annotation.StartService;
+import vinscom.ioc.component.ServiceArray;
 import vinscom.ioc.component.ServiceMap;
 
 public class PropertiesComponent {
@@ -21,6 +24,16 @@ public class PropertiesComponent {
   public EnumTestValues propEnum;
   public Set<String> propSet;
   public ServiceMap propServiceMap;
+  public int propInt;
+  public Integer propInteger; 
+  public File propFile;
+  public long propLong;
+  public Long propLong2;
+  public Logger propLogger;
+  public ServiceArray propServiceArray;
+  public String propNullString;
+  public ServiceMap propNullServiceMap;
+  public Object propNullComponent;
 
   @StartService
   public void startup() {
@@ -122,5 +135,86 @@ public class PropertiesComponent {
   public void setPropServiceMap(ServiceMap pPropServiceMap) {
     this.propServiceMap = pPropServiceMap;
   }
+
+  public int getPropInt() {
+    return propInt;
+  }
+
+  public void setPropInt(int pPropInt) {
+    this.propInt = pPropInt;
+  }
+
+  public Integer getPropInteger() {
+    return propInteger;
+  }
+
+  public void setPropInteger(Integer pPropInteger) {
+    this.propInteger = pPropInteger;
+  }
+
+  public File getPropFile() {
+    return propFile;
+  }
+
+  public void setPropFile(File pPropFile) {
+    this.propFile = pPropFile;
+  }
+
+  public long getPropLong() {
+    return propLong;
+  }
+
+  public void setPropLong(long pPropLong) {
+    this.propLong = pPropLong;
+  }
+
+  public Long getPropLong2() {
+    return propLong2;
+  }
+
+  public void setPropLong2(Long pPropLong2) {
+    this.propLong2 = pPropLong2;
+  }
+
+  public Logger getPropLogger() {
+    return propLogger;
+  }
+
+  public void setPropLogger(Logger pPropLogger) {
+    this.propLogger = pPropLogger;
+  }
+
+  public ServiceArray getPropServiceArray() {
+    return propServiceArray;
+  }
+
+  public void setPropServiceArray(ServiceArray pPropServiceArray) {
+    this.propServiceArray = pPropServiceArray;
+  }
+
+  public String getPropNullString() {
+    return propNullString;
+  }
+
+  public void setPropNullString(String pPropNullString) {
+    this.propNullString = pPropNullString;
+  }
+
+  public ServiceMap getPropNullServiceMap() {
+    return propNullServiceMap;
+  }
+
+  public void setPropNullServiceMap(ServiceMap pPropNullServiceMap) {
+    this.propNullServiceMap = pPropNullServiceMap;
+  }
+
+  public Object getPropNullComponent() {
+    return propNullComponent;
+  }
+
+  public void setPropNullComponent(Object pPropNullComponent) {
+    this.propNullComponent = pPropNullComponent;
+  }
+  
   
 }
