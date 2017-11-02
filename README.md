@@ -1,4 +1,4 @@
-#Glue - Draft
+# Glue - Draft
 Proven and opinionated programming, and configuration model for java based applications. Inspired from ATG Nucleus (Oracle Web Commerce), provide features such as configuration layers and property based component initialization.
 
 ## What is Glue ?
