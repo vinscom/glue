@@ -1,5 +1,6 @@
 package in.erail.glue.common;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ListMultimap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -89,6 +90,10 @@ public class Util {
 
   public static Map<String, String> getMapFromValue(String pValue) {
 
+    if(Strings.isNullOrEmpty(pValue)){
+      return Collections.emptyMap();
+    }
+    
     Map<String, String> result = new HashMap<>();
 
     for (String s : pValue.split(",")) {

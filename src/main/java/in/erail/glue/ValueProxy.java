@@ -27,6 +27,7 @@ import in.erail.glue.enumeration.PropertyValueModifier;
 
 public class ValueProxy {
 
+  protected Logger logger = LogManager.getLogger(ValueProxy.class.getCanonicalName());
   private static final Pattern DEFERRED_PROPERTY_VALUE_PATTER = Pattern.compile("(?<component>^[^.]+)($|(\\.(?<property>.*)$))");
   private Class targetClass;
   private Collection<ValueWithModifier> propertyValue;
@@ -91,11 +92,6 @@ public class ValueProxy {
       return;
     }
 
-    if(Strings.isNullOrEmpty(getLastValueWithModifier().getValue())){
-      setValue(null);
-      return;
-    }
-    
     if (getTargetClass().isArray()) {
       setValue(getValueAsArray());
     } else if (String.class.isAssignableFrom(getTargetClass())) {
@@ -130,6 +126,8 @@ public class ValueProxy {
       setValue(getValueAsLogger());
     } else if (ServiceArray.class.isAssignableFrom(getTargetClass())) {
       setValue(new ServiceArray(getValueAsList()));
+    } else if (Strings.isNullOrEmpty(getValueAsString())) {
+      setValue(null);
     }
 
   }
@@ -147,27 +145,49 @@ public class ValueProxy {
   }
 
   private int getValueAsInt() {
-    return Integer.parseInt(getLastValueWithModifier().getValue());
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      logger.error(componentPath + ":: int value can't be empty. Setting it to 0");
+      return 0;
+    }
+    return Integer.parseInt(getValueAsString());
   }
 
   private Integer getValueAsInteger() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      return null;
+    }
     return getValueAsInt();
   }
 
   private long getValueAslong() {
-    return Long.parseLong(getLastValueWithModifier().getValue());
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      logger.error(componentPath + ":: long value can't be empty. Setting it to 0");
+      return 0l;
+    }
+    return Long.parseLong(getValueAsString());
   }
 
   private Long getValueAsLong() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      return null;
+    }
     return getValueAslong();
   }
 
   private String[] getValueAsArray() {
-    return getValueAsString().split(",");
+    String v = getValueAsString();
+    if (Strings.isNullOrEmpty(v)) {
+      return new String[0];
+    }
+    return v.split(",");
   }
 
   private String getValueAsString() {
-    return getLastValueWithModifier().getValue();
+    String v = getLastValueWithModifier().getValue();
+    if(Strings.isNullOrEmpty(v)){
+      return null;
+    }
+    return v;
   }
 
   private Set<String> getValueAsSet() {
@@ -242,18 +262,32 @@ public class ValueProxy {
   }
 
   private Enum getValueAsEnum() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      logger.error(componentPath + ":: Enum of type:" + getTargetClass().getCanonicalName() + " not set");
+      return null;
+    }
     return Enum.valueOf(getTargetClass(), getValueAsString());
   }
 
   private Boolean getValueAsBoolean() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      return null;
+    }
     return Boolean.valueOf(getValueAsString());
   }
 
   private boolean getValueAsboolean() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      logger.error(componentPath + ":: boolean value can't be empty. Setting it to false");
+      return false;
+    }
     return Boolean.parseBoolean(getValueAsString());
   }
 
   private JsonObject getValueAsJson() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      return new JsonObject();
+    }
     return JsonLoader.load(getComponentPath(), getValueAsString());
   }
 

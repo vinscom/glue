@@ -3,6 +3,7 @@ package in.erail.glue.component;
 import java.util.ArrayList;
 import java.util.List;
 import in.erail.glue.Glue;
+import java.util.Collections;
 
 /**
  *
@@ -15,9 +16,10 @@ public class ServiceArray {
 
   public ServiceArray(List<String> pServices) {
     if (pServices == null) {
-      throw new RuntimeException("Services Array can't be null");
+      mServices = Collections.emptyList();
+    } else {
+      this.mServices = pServices;
     }
-    this.mServices = pServices;
   }
 
   public Object get(int pKey) {
