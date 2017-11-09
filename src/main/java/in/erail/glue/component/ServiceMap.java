@@ -3,6 +3,7 @@ package in.erail.glue.component;
 import java.util.Map;
 import java.util.TreeMap;
 import in.erail.glue.Glue;
+import java.util.Collections;
 
 /**
  *
@@ -15,9 +16,10 @@ public class ServiceMap {
 
   public ServiceMap(Map<String, String> pServices) {
     if (pServices == null) {
-      throw new RuntimeException("Services Map can't be null");
+      this.mServices = Collections.emptyMap();
+    } else {
+      this.mServices = pServices;
     }
-    this.mServices = pServices;
   }
 
   public Object get(String pKey) {

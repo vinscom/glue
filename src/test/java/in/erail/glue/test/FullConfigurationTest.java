@@ -233,7 +233,7 @@ public class FullConfigurationTest {
    public void nullProperty(){
      PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
      assertNull(inst.getPropNullString());
-     assertNull(inst.getPropNullServiceMap());
+     assertTrue(inst.getPropNullServiceMap().getServices().isEmpty());
      assertNull(inst.getPropNullComponent());
    }
 }
