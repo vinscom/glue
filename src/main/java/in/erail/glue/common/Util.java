@@ -16,6 +16,17 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Parameter;
 import java.util.Collection;
 import in.erail.glue.enumeration.PropertyValueModifier;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class Util {
 
@@ -26,12 +37,12 @@ public class Util {
   }
 
   public static String buildGetPropertyName(String pProperty, boolean pIsBoolean) {
-    if(pIsBoolean){
+    if (pIsBoolean) {
       return "is" + pProperty.substring(0, 1).toUpperCase() + pProperty.substring(1, pProperty.length());
     }
     return "get" + pProperty.substring(0, 1).toUpperCase() + pProperty.substring(1, pProperty.length());
   }
-  
+
   @SuppressWarnings("rawtypes")
   public static Method getMethod(Class pClass, String pMethodName) {
 
@@ -65,9 +76,9 @@ public class Util {
     return null;
   }
 
-  public static Class getMethodFirstArgumentClass(Method pMethod){
+  public static Class getMethodFirstArgumentClass(Method pMethod) {
     Parameter[] param = pMethod.getParameters();
-    if(param.length == 0){
+    if (param.length == 0) {
       throw new RuntimeException("No arguments in method:" + pMethod.getName());
     }
     return param[0].getType();
@@ -90,10 +101,10 @@ public class Util {
 
   public static Map<String, String> getMapFromValue(String pValue) {
 
-    if(Strings.isNullOrEmpty(pValue)){
+    if (Strings.isNullOrEmpty(pValue)) {
       return Collections.emptyMap();
     }
-    
+
     Map<String, String> result = new HashMap<>();
 
     for (String s : pValue.split(",")) {
@@ -116,24 +127,55 @@ public class Util {
   }
 
   public static ValueWithModifier getLastValueWithModifier(Collection<ValueWithModifier> pList) {
-    
-    if(pList.isEmpty()){
+
+    if (pList.isEmpty()) {
       return new ValueWithModifier(null, PropertyValueModifier.NONE);
     }
-    
-    List<ValueWithModifier> v = (List)pList;
+
+    List<ValueWithModifier> v = (List) pList;
     return v.get(v.size() - 1);
   }
-  
-  public static String getLastValue(ListMultimap<String,ValueWithModifier> pMap, String pPropertyName){
+
+  public static String getLastValue(ListMultimap<String, ValueWithModifier> pMap, String pPropertyName) {
     return getLastValueWithModifier(pMap.get(pPropertyName)).getValue();
   }
-  
-  public static String getLastValue(ListMultimap<String,ValueWithModifier> pMap, String pPropertyName, String pDefault){
+
+  public static String getLastValue(ListMultimap<String, ValueWithModifier> pMap, String pPropertyName, String pDefault) {
     String result = getLastValue(pMap, pPropertyName);
-    if(result == null){
+    if (result == null) {
       return pDefault;
     }
     return result;
   }
+
+  public static String unzip(String zipFilePath) {
+
+    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath))) {
+      //Create Temp Folder
+      Path configLayer = Files.createTempDirectory("layer");
+
+      ZipEntry entry = zipIn.getNextEntry();
+      // iterates over entries in the zip file
+      while (entry != null) {
+        String filePath = configLayer + File.separator + entry.getName();
+        if (entry.isDirectory()) {
+          // if the entry is a directory, make the directory
+          File dir = new File(filePath);
+          dir.mkdir();
+        } else {
+          // if the entry is a file, extracts it
+          Files.copy(zipIn, Paths.get(filePath));
+        }
+        zipIn.closeEntry();
+        entry = zipIn.getNextEntry();
+      }
+
+      return configLayer.toString();
+    } catch (IOException ex) {
+      logger.error(ex);
+    }
+
+    return null;
+  }
+
 }

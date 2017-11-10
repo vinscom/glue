@@ -1,5 +1,6 @@
 package in.erail.glue;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
@@ -23,6 +24,9 @@ import in.erail.glue.common.Constant;
 import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
 import in.erail.glue.enumeration.PropertyValueModifier;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class PropertiesRepository {
 
@@ -54,46 +58,45 @@ public class PropertiesRepository {
             .flatMap((t) -> t)
             .doOnComplete(() -> setInitialized(true))
             .blockingSubscribe();
-    
-    
+
     propertiesRepository
             .entrySet()
             .stream()
             .filter((t) -> Util.getLastValue(t.getValue(), Constant.Component.BASED_ON) != null)
-            .forEachOrdered((t) -> updateBasedOnProperties(t.getKey(),t.getValue()));
-    
+            .forEachOrdered((t) -> updateBasedOnProperties(t.getKey(), t.getValue()));
+
   }
 
-  private void updateBasedOnProperties(String componentPath, ListMultimap<String, ValueWithModifier> properties){
-    
+  private void updateBasedOnProperties(String componentPath, ListMultimap<String, ValueWithModifier> properties) {
+
     String baseOnComponentPath = Util.getLastValue(properties, Constant.Component.BASED_ON);
-    
+
     ListMultimap<String, ValueWithModifier> baseOnProperties = propertiesRepository.get(baseOnComponentPath);
-    
-    if(Util.getLastValue(baseOnProperties, Constant.Component.BASED_ON) != null){
+
+    if (Util.getLastValue(baseOnProperties, Constant.Component.BASED_ON) != null) {
       updateBasedOnProperties(baseOnComponentPath, baseOnProperties);
     }
-    
+
     ListMultimap<String, ValueWithModifier> newProperties = ArrayListMultimap.create();
-    
+
     baseOnProperties
             .entries()
             .stream()
             .forEachOrdered((e) -> {
-              newProperties.put(e.getKey(),e.getValue());
+              newProperties.put(e.getKey(), e.getValue());
             });
-    
+
     properties
             .entries()
             .stream()
             .filter((p) -> !Constant.Component.BASED_ON.equals(p.getKey()))
             .forEachOrdered((e) -> {
-              newProperties.put(e.getKey(),e.getValue());
+              newProperties.put(e.getKey(), e.getValue());
             });
-    
+
     propertiesRepository.put(componentPath, newProperties);
   }
-  
+
   private Observable<Boolean> mergeUncachedIntoCachedProperties(ListMultimap<String, ValueWithModifier> pCached, Properties pUncached) {
 
     Observable<Map.Entry<String, String>> property = Observable
@@ -218,6 +221,29 @@ public class PropertiesRepository {
   }
 
   public void setLayers(List<String> layers) {
-    this.layers = layers;
+    this.layers = layers
+            .stream()
+            .map((path) -> {
+              if (path.endsWith(".jar") || path.endsWith(".zip")) {
+                try {
+                  String dir = Util.unzip(path);
+                  Object[] configFolder = Files
+                          .walk(Paths.get(dir))
+                          .filter((p) -> p.endsWith("config"))
+                          .limit(1)
+                          .toArray();
+                  if (configFolder.length > 0) {
+                    return ((Path) configFolder[0]).toString();
+                  }
+                  return null;
+                } catch (IOException ex) {
+                  java.util.logging.Logger.getLogger(PropertiesRepository.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+              }
+              return path;
+            })
+            .filter((path) -> !Strings.isNullOrEmpty(path))
+            .collect(Collectors.toList());
   }
 }
