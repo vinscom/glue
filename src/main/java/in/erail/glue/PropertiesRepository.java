@@ -24,7 +24,6 @@ import in.erail.glue.common.Constant;
 import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
 import in.erail.glue.enumeration.PropertyValueModifier;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,7 @@ public class PropertiesRepository {
   private final Map<String, ListMultimap<String, ValueWithModifier>> propertiesRepository;
 
   private boolean initialized = false;
-  private List<String> layers;
+  public static List<String> layers;
 
   public PropertiesRepository() {
     this.propertiesRepository = new HashMap<>();
