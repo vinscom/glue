@@ -236,4 +236,10 @@ public class FullConfigurationTest {
      assertTrue(inst.getPropNullServiceMap().getServices().isEmpty());
      assertNull(inst.getPropNullComponent());
    }
+   
+   @Test
+   public void componetFromZipFile(){
+     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent3", PropertiesComponent.class);
+     assertEquals("ZipString", inst.getPropString());
+   }
 }
