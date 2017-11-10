@@ -1,5 +1,6 @@
 package in.erail.glue.common;
 
+import in.erail.glue.PropertiesRepository;
 import java.util.List;
 
 import io.vertx.core.json.JsonObject;
@@ -12,7 +13,7 @@ public class JsonLoader {
   public static List<String> layers;
 
   static {
-    layers = Util.getSystemLayers();
+    layers = PropertiesRepository.layers;
   }
   
   public static JsonObject load(String pComponentPath, String pFile) {

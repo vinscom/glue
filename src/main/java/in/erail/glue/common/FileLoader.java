@@ -1,5 +1,6 @@
 package in.erail.glue.common;
 
+import in.erail.glue.PropertiesRepository;
 import java.util.List;
 
 import java.io.File;
@@ -13,7 +14,7 @@ public class FileLoader {
   public static List<String> layers;
 
   static {
-    layers = Util.getSystemLayers();
+    layers = PropertiesRepository.layers;
   }
 
   public static File load(String pComponentPath, String pFile) {
