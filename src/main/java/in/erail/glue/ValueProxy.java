@@ -184,7 +184,7 @@ public class ValueProxy {
 
   private String getValueAsString() {
     String v = getLastValueWithModifier().getValue();
-    if(Strings.isNullOrEmpty(v)){
+    if (Strings.isNullOrEmpty(v)) {
       return null;
     }
     return v;
@@ -196,6 +196,9 @@ public class ValueProxy {
 
     List<ValueWithModifier> v = (List) getPropertyValue();
     v.stream().forEach((vwm) -> {
+      if (Strings.isNullOrEmpty(vwm.getValue())) {
+        return;
+      }
       List<String> l = Arrays.asList(vwm.getValue().split(","));
       switch (vwm.getPropertyValueModifier()) {
         case PLUS:
@@ -220,6 +223,9 @@ public class ValueProxy {
 
     List<ValueWithModifier> v = (List) getPropertyValue();
     v.stream().forEach((vwm) -> {
+      if (Strings.isNullOrEmpty(vwm.getValue())) {
+        return;
+      }
       List<String> l = Arrays.asList(vwm.getValue().split(","));
       switch (vwm.getPropertyValueModifier()) {
         case PLUS:
@@ -244,6 +250,9 @@ public class ValueProxy {
 
     List<ValueWithModifier> v = (List) getPropertyValue();
     v.stream().forEach((vwm) -> {
+      if (Strings.isNullOrEmpty(vwm.getValue())) {
+        return;
+      }
       Map m = Util.getMapFromValue(vwm.getValue());
       switch (vwm.getPropertyValueModifier()) {
         case PLUS:
