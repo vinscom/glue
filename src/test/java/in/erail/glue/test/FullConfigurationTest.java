@@ -22,77 +22,77 @@ public class FullConfigurationTest {
 
   @Test
   public void loadGlobalComonentSetInPropertyFile() {
-    Object inst = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectSetSpecifically", Object.class);
+    Object inst = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectSetSpecifically");
     assertNotNull("Load global scope component when set in property file", inst);
     assertEquals(inst.getClass(), Object.class);
 
-    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectSetSpecifically", Object.class);
+    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectSetSpecifically");
     assertSame(inst, inst2);
   }
 
   @Test
   public void loadGlobalComonentNotSetInPropertyFile() {
-    Object inst = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault", Object.class);
+    Object inst = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault");
     assertNotNull("Load global scope component when set in property file", inst);
     assertEquals(inst.getClass(), Object.class);
 
-    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault", Object.class);
+    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault");
     assertSame(inst, inst2);
   }
 
   @Test
   public void loadLocalScopeComponent() {
-    Object inst = Glue.instance().<Object>resolve("/in/erail/glue/test/component/LocalObject", Object.class);
+    Object inst = Glue.instance().<Object>resolve("/in/erail/glue/test/component/LocalObject");
     assertNotNull("Load local scope component when set in property file", inst);
     assertEquals(inst.getClass(), Object.class);
 
-    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/LocalObject", Object.class);
+    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/LocalObject");
     assertNotSame(inst, inst2);
   }
 
   @Test
   public void stringProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertEquals("TestString", inst.getPropString());
     inst.setPropString("Wrong String");
     assertEquals("Wrong String", inst.getPropString());
-    inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertEquals("TestString", inst.getPropString());
   }
 
   @Test
   public void booleanProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertTrue(inst.isPropBoolean());
     assertTrue(inst.isPropBoolean2());
   }
 
   @Test
   public void longProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertEquals(inst.getPropLong(), 2l);
     assertTrue(inst.getPropLong2().equals(2l));
   }
 
   @Test
   public void fileProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertEquals(inst.getPropFile().getName(), "testconfig.json");
   }
 
   @Test
   public void stringArrayProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertArrayEquals(new String[]{"a", "b", "c"}, inst.getPropArray());
     inst.setPropArray(new String[]{});
     assertArrayEquals(new String[]{}, inst.getPropArray());
-    inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertArrayEquals(new String[]{"a", "b", "c"}, inst.getPropArray());
   }
 
   @Test
   public void stringListProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     List<String> expected = new ArrayList<>();
     expected.add("a");
     expected.add("b");
@@ -103,7 +103,7 @@ public class FullConfigurationTest {
 
   @Test
   public void stringSetProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     Set<String> expected = new HashSet<>();
     expected.add("a");
     expected.add("b");
@@ -114,7 +114,7 @@ public class FullConfigurationTest {
 
   @Test
   public void mapProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     Map<String, String> result = inst.getPropMap();
     assertEquals("b", result.remove("a"));
     assertEquals("d", result.remove("c"));
@@ -123,59 +123,59 @@ public class FullConfigurationTest {
 
   @Test
   public void integerProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertEquals(inst.getPropInt(), 2);
     assertTrue(inst.getPropInteger().equals(2));
   }
 
   @Test
   public void loggerAsProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     Logger logger = inst.getPropLogger();
     assertEquals(logger.getName(), "in.erail.glue.test.component.PropertiesComponent");
   }
 
   @Test
   public void anotherComponentProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertSame(Object.class, inst.getPropComponent().getClass());
   }
 
   @Test
   public void mergeProperties() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/MergedComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/MergedComponent");
     assertEquals("TestString2", inst.getPropString());
     assertArrayEquals(new String[]{"a"}, inst.getPropArray());
     assertEquals(5, inst.getPropList().size());
     assertEquals(3, inst.getPropMap().size());
     assertEquals(3, inst.getPropSet().size());
 
-    PropertiesComponent refInst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent2", PropertiesComponent.class);
+    PropertiesComponent refInst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent2");
     assertEquals(refInst.getPropString(), "TestString3");
   }
 
   @Test
   public void componentStartUp() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertTrue(inst.isStartup());
   }
 
   @Test
   public void jsonProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/MergedComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/MergedComponent");
     assertEquals(new JsonObject(TestConstant.TEST_JSON).toString(), inst.getPropJson().toString());
   }
 
   @Test
   public void enumProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertEquals(EnumTestValues.TWO, inst.getPropEnum());
   }
 
   @Test
   public void serviceMapProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
-    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault", Object.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
+    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault");
     assertEquals(3, inst.getPropServiceMap().getServices().size());
     assertSame(inst2, inst.getPropServiceMap().get("a"));
     assertSame(inst2, inst.getPropServiceMap().get("b"));
@@ -184,8 +184,8 @@ public class FullConfigurationTest {
 
   @Test
   public void serviceArrayProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
-    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault", Object.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
+    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault");
     assertEquals(3, inst.getPropServiceArray().getServices().size());
     assertSame(inst2, inst.getPropServiceArray().get(0));
     assertSame(inst2, inst.getPropServiceArray().get(1));
@@ -194,7 +194,7 @@ public class FullConfigurationTest {
 
   @Test
   public void componentInitial() {
-    Initial inst = Glue.instance().<Initial>resolve("/in/erail/glue/test/component/Initial", Initial.class);
+    Initial inst = Glue.instance().<Initial>resolve("/in/erail/glue/test/component/Initial");
     List<Object> comps = inst.getComponents();
     assertEquals(comps.size(), 4);
     comps.forEach((comp) -> {
@@ -204,10 +204,10 @@ public class FullConfigurationTest {
 
   @Test
   public void refComponentTest() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
-    PropertiesComponent inst2 = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/RefPropertiesComponent", PropertiesComponent.class);
-    PropertiesComponent inst3 = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/MergedComponent", PropertiesComponent.class);
-    Object inst4 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault", Object.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
+    PropertiesComponent inst2 = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/RefPropertiesComponent");
+    PropertiesComponent inst3 = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/MergedComponent");
+    Object inst4 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault");
     assertEquals(inst.getPropString(), inst2.getPropString());
     assertArrayEquals(inst.getPropArray(), inst2.getPropArray());
     assertTrue(inst.getPropList().equals(inst2.getPropList()));
@@ -225,13 +225,13 @@ public class FullConfigurationTest {
   
   @Test
   public void basedOnComponentTest() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/BasedOnPropertiesComponent", PropertiesComponent.class);
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/BasedOnPropertiesComponent");
     assertEquals("TestString2",inst.getPropString());
   }
   
    @Test
    public void nullProperty(){
-     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent", PropertiesComponent.class);
+     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
      assertNull(inst.getPropNullString());
      assertTrue(inst.getPropNullServiceMap().getServices().isEmpty());
      assertNull(inst.getPropNullComponent());
@@ -239,7 +239,7 @@ public class FullConfigurationTest {
    
    @Test
    public void componetFromZipFile(){
-     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent3", PropertiesComponent.class);
+     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent3");
      assertEquals("ZipString", inst.getPropString());
    }
 }
