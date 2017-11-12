@@ -169,13 +169,8 @@ public class ComponentRepository implements Glue {
   }
 
   @Override
-  public Object resolve(String pPath) {
-    return resolve(pPath, getPropertiesCache().get(pPath));
-  }
-
-  @Override
-  public <T> T resolve(String pPath, Class<T> pClass) {
-    return pClass.cast(resolve(pPath));
+  public <T> T resolve(String pPath) {
+    return (T) resolve(pPath, getPropertiesCache().get(pPath));
   }
 
   public static ComponentRepository instance() {
