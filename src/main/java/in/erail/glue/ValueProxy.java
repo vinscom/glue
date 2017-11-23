@@ -1,5 +1,7 @@
 package in.erail.glue;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import io.vertx.core.json.JsonObject;
 import java.io.File;
@@ -385,7 +387,15 @@ public class ValueProxy {
 
   @Override
   public String toString() {
-    return getComponentPath() + ":" + getClass().getCanonicalName() + ":" + getPropertyValue();
+
+    return MoreObjects
+            .toStringHelper(this)
+            .omitNullValues()
+            .add("TargetClass", getTargetClass().getCanonicalName())
+            .add("ComponentPath", getComponentPath())
+            .add("PropertyValue", Joiner.on(",").join(getPropertyValue()))
+            .toString();
+
   }
 
   public boolean isProcessed() {

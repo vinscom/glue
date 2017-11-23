@@ -1,5 +1,6 @@
 package in.erail.glue.common;
 
+import com.google.common.base.MoreObjects;
 import java.lang.reflect.Method;
 import in.erail.glue.ValueProxy;
 
@@ -40,6 +41,18 @@ public class PropertyContext {
 
   public void setComponentPath(String pComponentPath) {
     this.componentPath = pComponentPath;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects
+            .toStringHelper(this)
+            .omitNullValues()
+            .add("Instance", getInstance()!=null?getInstance().getClass().getCanonicalName():null)
+            .add("Method", getMethod()!=null?getMethod().getName():null)
+            .add("Value", getValue()!=null?getValue().toString():null)
+            .add("ComponentPath", getComponentPath()!=null?getComponentPath():null)
+            .toString();
   }
   
 }
