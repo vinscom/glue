@@ -1,5 +1,5 @@
 # Glue
-Proven and opinionated programming, and configuration model for java based applications. Similer to Spring Framework, but, it goes one step ahead and uses a configuration system whichis easy to manage complex configuration.
+Proven and opinionated programming, and configuration model for java based applications. Similar to Spring Framework, but, it goes one step ahead and uses a configuration system which is easy to manage complex configuration.
 
 ## What is Glue ?
 You will use Glue for same reason you will use Spring (dependency injection) in your application. But, in case of Glue, few concepts are implemented to make your life much easier from DevOps point of view.
@@ -12,14 +12,14 @@ You will use Glue for same reason you will use Spring (dependency injection) in 
 
 
 ## Configuration Layer
-Configuration layer is root directoy under which all configurations exists. For example, you want to create instance of ```HelloWorld``` class. Then, you will have to do below steps.
+Configuration layer is root directory under which all configurations exists. For example, you want to create instance of ```HelloWorld``` class. Then, you will have to do below steps.
 
 1. Create configuration layer on your file system. For example ```/home/glue/layer1```. This folder will become root folder for all configurations.
 2. Then create ```HelloWorldComponent.properties``` file at ```/home/glue/layer1/in/erail/example/HelloWorldComponent.properties```.
-3. When you run your code, you will pass configuration layer to glue as java parameters. ```java -Dglue.layers=/home/glue/layer1```. Now whenever want to get instance of ```HelloWorld```,```HelloWorld inst = Glue.instance().<HelloWorld>resolve("/in/erail/example/HelloWorldComponent")```. ```HelloWorld``` instance will be configurated based on ```/home/glue/layer1/in/erail/example/HelloWorldComponent.properties``` file.
+3. When you run your code, you will pass configuration layer to glue as java parameters. ```java -Dglue.layers=/home/glue/layer1```. Now whenever want to get instance of ```HelloWorld```,```HelloWorld inst = Glue.instance().<HelloWorld>resolve("/in/erail/example/HelloWorldComponent")```. ```HelloWorld``` instance will be configured based on ```/home/glue/layer1/in/erail/example/HelloWorldComponent.properties``` file.
 
 ### Multiple Configuration Layers
-You can define multipe configuration layers. Properties file defined at same location inside all layers are merged. And last overriden value is taken as value of property.
+You can define multiple configuration layers. Properties file defined at same location inside all layers are merged. And last overridden value is taken as value of property.
 
 For example:
 
@@ -46,7 +46,7 @@ Final merged component configuration:
 propString=TestString2
 ```
 
-As can be seen above, second layers has overriden propString property.
+As can be seen above, second layers has overridden propString property.
 
 
 ## Supported Property Type
@@ -122,10 +122,10 @@ $basedOn=/in/erail/glue/test/component/PropertiesComponent
 propString=TestString2
 ```
 
-In above example, all properties of this component will have value as set in **/in/erail/glue/test/component/PropertiesComponent** component. Specific to this component **propString** will be overriden with value **TestString2**
+In above example, all properties of this component will have value as set in **/in/erail/glue/test/component/PropertiesComponent** component. Specific to this component **propString** will be overridden with value **TestString2**
 
 ## Configuration layer in detail
-Layers are passed to Glue using JVM paramters
+Layers are passed to Glue using JVM parameter
 ```
 java -Dglue.layers=/testdata/layer1,/testdata/layer2
 ```
@@ -182,7 +182,7 @@ propComponent=/in/erail/glue/test/component/GlobalObjectByDefault
 ```
 ```PropertiesComponent.getPropComponent()``` will return instance of **GlobalObjectByDefault** component.
 
-### Component property refering to another component property
+### Component property referring to another component property
 
 ```
 #/in/erail/glue/test/component/RefPropertiesComponent
