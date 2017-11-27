@@ -11,27 +11,41 @@ import in.erail.glue.annotation.StartService;
 public class PropertiesComponent {
 
   public String propString;
+  public String propNullString;
   public String[] propArray;
+  public String[] propNullArray;
   public List<String> propList;
+  public List<String> propNullList;
   public Map<String, String> propMap;
+  public Map<String, String> propNullMap;
   public Object propComponent;
+  public Object propNullComponent;
   public boolean propBoolean = false;
+  public boolean propNullBoolean = false;
   public Boolean propBoolean2 = false;
+  public Boolean propNullBoolean2 = false;
   public boolean startup = false;
   public JsonObject propJson;
+  public JsonObject propNullJson;
   public EnumTestValues propEnum;
+  public EnumTestValues propNullEnum;
   public Set<String> propSet;
+  public Set<String> propNullSet;
   public ServiceMap propServiceMap;
+  public ServiceMap propNullServiceMap;
   public int propInt;
+  public int propNullInt;
   public Integer propInteger; 
+  public Integer propNullInteger; 
   public File propFile;
+  public File propNullFile;
   public long propLong;
+  public long propNullLong;
   public Long propLong2;
+  public Long propNullLong2;
   public Logger propLogger;
   public ServiceArray propServiceArray;
-  public String propNullString;
-  public ServiceMap propNullServiceMap;
-  public Object propNullComponent;
+  public ServiceArray propNullServiceArray;
 
   @StartService
   public void startup() {
@@ -213,6 +227,117 @@ public class PropertiesComponent {
   public void setPropNullComponent(Object pPropNullComponent) {
     this.propNullComponent = pPropNullComponent;
   }
-  
+
+  public String[] getPropNullArray() {
+    return propNullArray;
+  }
+
+  public void setPropNullArray(String[] pPropNullArray) {
+    this.propNullArray = pPropNullArray;
+  }
+
+  public List<String> getPropNullList() {
+    return propNullList;
+  }
+
+  public void setPropNullList(List<String> pPropNullList) {
+    this.propNullList = pPropNullList;
+  }
+
+  public Map<String, String> getPropNullMap() {
+    return propNullMap;
+  }
+
+  public void setPropNullMap(Map<String, String> pPropNullMap) {
+    this.propNullMap = pPropNullMap;
+  }
+
+  public boolean isPropNullBoolean() {
+    return propNullBoolean;
+  }
+
+  public void setPropNullBoolean(boolean pPropNullBoolean) {
+    this.propNullBoolean = pPropNullBoolean;
+  }
+
+  public Boolean getPropNullBoolean2() {
+    return propNullBoolean2;
+  }
+
+  public void setPropNullBoolean2(Boolean pPropNullBoolean2) {
+    this.propNullBoolean2 = pPropNullBoolean2;
+  }
+
+  public JsonObject getPropNullJson() {
+    return propNullJson;
+  }
+
+  public void setPropNullJson(JsonObject pPropNullJson) {
+    this.propNullJson = pPropNullJson;
+  }
+
+  public EnumTestValues getPropNullEnum() {
+    return propNullEnum;
+  }
+
+  public void setPropNullEnum(EnumTestValues pPropNullEnum) {
+    this.propNullEnum = pPropNullEnum;
+  }
+
+  public Set<String> getPropNullSet() {
+    return propNullSet;
+  }
+
+  public void setPropNullSet(Set<String> pPropNullSet) {
+    this.propNullSet = pPropNullSet;
+  }
+
+  public int getPropNullInt() {
+    return propNullInt;
+  }
+
+  public void setPropNullInt(int pPropNullInt) {
+    this.propNullInt = pPropNullInt;
+  }
+
+  public Integer getPropNullInteger() {
+    return propNullInteger;
+  }
+
+  public void setPropNullInteger(Integer pPropNullInteger) {
+    this.propNullInteger = pPropNullInteger;
+  }
+
+  public File getPropNullFile() {
+    return propNullFile;
+  }
+
+  public void setPropNullFile(File pPropNullFile) {
+    this.propNullFile = pPropNullFile;
+  }
+
+  public long getPropNullLong() {
+    return propNullLong;
+  }
+
+  public void setPropNullLong(long pPropNullLong) {
+    this.propNullLong = pPropNullLong;
+  }
+
+  public Long getPropNullLong2() {
+    return propNullLong2;
+  }
+
+  public void setPropNullLong2(Long pPropNullLong2) {
+    this.propNullLong2 = pPropNullLong2;
+  }
+
+  public ServiceArray getPropNullServiceArray() {
+    return propNullServiceArray;
+  }
+
+  public void setPropNullServiceArray(ServiceArray pPropNullServiceArray) {
+    this.propNullServiceArray = pPropNullServiceArray;
+  }
   
 }

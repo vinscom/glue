@@ -222,24 +222,36 @@ public class FullConfigurationTest {
     assertSame(inst4, inst2.getPropServiceMap().get("b"));
     assertSame(inst4, inst2.getPropServiceMap().get("c"));
   }
-  
+
   @Test
   public void basedOnComponentTest() {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/BasedOnPropertiesComponent");
-    assertEquals("TestString2",inst.getPropString());
+    assertEquals("TestString2", inst.getPropString());
   }
-  
-   @Test
-   public void nullProperty(){
-     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
-     assertNull(inst.getPropNullString());
-     assertTrue(inst.getPropNullServiceMap().getServices().isEmpty());
-     assertNull(inst.getPropNullComponent());
-   }
-   
-   @Test
-   public void componetFromZipFile(){
-     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent3");
-     assertEquals("ZipString", inst.getPropString());
-   }
+
+  @Test
+  public void nullProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
+    assertEquals(0,inst.getPropNullArray().length);
+    assertEquals(0,inst.getPropNullList().size());
+    assertEquals(0,inst.getPropNullMap().size());
+    assertNull(inst.getPropNullComponent());
+    assertFalse(inst.isPropNullBoolean());
+    assertNull(inst.getPropNullEnum());
+    assertEquals(0,inst.getPropNullSet().size());
+    assertNull(inst.getPropNullBoolean2());
+    assertEquals(0,inst.getPropNullServiceMap().getServices().size());
+    assertEquals(0,inst.getPropNullInt());
+    assertNull(inst.getPropNullInteger());
+    assertNull(inst.getPropNullFile());
+    assertEquals(0l,inst.getPropNullLong());
+    assertNull(inst.getPropNullLong2());
+    assertEquals(0,inst.getPropNullServiceArray().getServices().size());
+  }
+
+  @Test
+  public void componetFromZipFile() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent3");
+    assertEquals("ZipString", inst.getPropString());
+  }
 }
