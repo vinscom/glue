@@ -67,6 +67,7 @@ As can be seen above, second layers has overridden propString property.
 - Logging : Logging component
 - Component : Reference to another component
 - Null : Null value
+- Pattern: String will be compiled into Pattern
 
 ## Properties based configuration in detail
 
