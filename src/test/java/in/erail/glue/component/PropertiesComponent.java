@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.Logger;
 import in.erail.glue.annotation.StartService;
+import java.util.regex.Pattern;
 
 public class PropertiesComponent {
 
@@ -46,6 +47,8 @@ public class PropertiesComponent {
   public Logger propLogger;
   public ServiceArray propServiceArray;
   public ServiceArray propNullServiceArray;
+  public Pattern propPattern;
+  public Pattern propNullPattern;
 
   @StartService
   public void startup() {
@@ -338,6 +341,22 @@ public class PropertiesComponent {
 
   public void setPropNullServiceArray(ServiceArray pPropNullServiceArray) {
     this.propNullServiceArray = pPropNullServiceArray;
+  }
+
+  public Pattern getPropPattern() {
+    return propPattern;
+  }
+
+  public void setPropPattern(Pattern pPropPattern) {
+    this.propPattern = pPropPattern;
+  }
+
+  public Pattern getPropNullPattern() {
+    return propNullPattern;
+  }
+
+  public void setPropNullPattern(Pattern pPropNullPattern) {
+    this.propNullPattern = pPropNullPattern;
   }
   
 }

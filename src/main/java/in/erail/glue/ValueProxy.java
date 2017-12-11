@@ -73,6 +73,7 @@ public class ValueProxy {
             || File.class.isAssignableFrom(targetClass)
             || Logger.class.isAssignableFrom(targetClass)
             || ServiceArray.class.isAssignableFrom(targetClass)
+            || Pattern.class.isAssignableFrom(targetClass)
             || Strings.isNullOrEmpty(propValue.getValue()))) {
       deferredValue = true;
     }
@@ -128,12 +129,22 @@ public class ValueProxy {
       setValue(getValueAsLogger());
     } else if (ServiceArray.class.isAssignableFrom(getTargetClass())) {
       setValue(new ServiceArray(getValueAsList()));
+    } else if (Pattern.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsPattern());
     } else if (Strings.isNullOrEmpty(getValueAsString())) {
       setValue(null);
     }
 
   }
 
+  private Pattern getValueAsPattern() {
+    String v = getValueAsString();
+    if (Strings.isNullOrEmpty(v)) {
+      return null;
+    }
+    return Pattern.compile(v);
+  }
+  
   private Logger getValueAsLogger() {
     String loggerName = getComponentPath();
     if (loggerName.startsWith("/") && loggerName.length() >= 2) {

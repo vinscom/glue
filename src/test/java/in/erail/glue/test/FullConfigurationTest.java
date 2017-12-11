@@ -68,6 +68,13 @@ public class FullConfigurationTest {
   }
 
   @Test
+  public void booleanPattern() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
+    assertTrue(inst.getPropPattern().matcher("test").find());
+  }
+
+  
+  @Test
   public void longProperty() {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertEquals(inst.getPropLong(), 2l);
@@ -247,6 +254,7 @@ public class FullConfigurationTest {
     assertEquals(0l,inst.getPropNullLong());
     assertNull(inst.getPropNullLong2());
     assertEquals(0,inst.getPropNullServiceArray().getServices().size());
+    assertNull(inst.getPropNullPattern());
   }
 
   @Test
