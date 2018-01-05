@@ -152,7 +152,7 @@ public class FullConfigurationTest {
   public void mergeProperties() {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/MergedComponent");
     assertEquals("TestString2", inst.getPropString());
-    assertArrayEquals(new String[]{"a"}, inst.getPropArray());
+    assertArrayEquals(new String[]{"a","b","c","x"}, inst.getPropArray());
     assertEquals(5, inst.getPropList().size());
     assertEquals(3, inst.getPropMap().size());
     assertEquals(3, inst.getPropSet().size());

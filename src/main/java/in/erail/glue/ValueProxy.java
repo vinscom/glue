@@ -188,11 +188,30 @@ public class ValueProxy {
   }
 
   private String[] getValueAsArray() {
-    String v = getValueAsString();
-    if (Strings.isNullOrEmpty(v)) {
-      return new String[0];
-    }
-    return v.split(",");
+    
+    final List<String> result = new ArrayList<>();
+
+    List<ValueWithModifier> v = (List) getPropertyValue();
+    v.stream().forEach((vwm) -> {
+      if (Strings.isNullOrEmpty(vwm.getValue())) {
+        return;
+      }
+      List<String> l = Arrays.asList(vwm.getValue().split(","));
+      switch (vwm.getPropertyValueModifier()) {
+        case PLUS:
+          result.addAll(l);
+          break;
+        case MINUS:
+          result.removeAll(l);
+          break;
+        default:
+          result.clear();
+          result.addAll(l);
+      }
+    });
+
+    return result.toArray(new String[result.size()]);
+
   }
 
   private String getValueAsString() {
