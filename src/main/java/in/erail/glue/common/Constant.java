@@ -24,6 +24,7 @@ public class Constant {
   public static class SystemProperties {
 
     public static final String LAYERS = "glue.layers";
+    public static final String LAYERS2 = "GLUE_LAYERS";
     public static final String SEPERATOR = ",";
   }
 

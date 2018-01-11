@@ -114,15 +114,19 @@ public class Util {
 
     return result;
   }
-
+  
   public static List<String> getSystemLayers() {
 
     String layer = System.getProperty(Constant.SystemProperties.LAYERS);
 
+    if(Strings.isNullOrEmpty(layer)){
+      layer = System.getenv(Constant.SystemProperties.LAYERS2);
+    }
+    
     if (layer == null) {
       return Collections.emptyList();
     }
-
+    
     return Arrays.asList(layer.split(Constant.SystemProperties.SEPERATOR));
   }
 
@@ -148,9 +152,13 @@ public class Util {
     return result;
   }
 
-  public static String unzip(String zipFilePath) {
+  public static String unzip(String pZipFilePath) {
+    return unzip(pZipFilePath, null);
+  }
 
-    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath))) {
+  public static String unzip(String pZipFilePath, String pOnlyExtractPath) {
+
+    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath))) {
       //Create Temp Folder
       Path configLayer = Files.createTempDirectory("layer");
 
@@ -177,5 +185,4 @@ public class Util {
 
     return null;
   }
-
 }
