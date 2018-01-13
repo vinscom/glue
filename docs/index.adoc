@@ -1,6 +1,8 @@
-ifndef::toc[:toc: left]
-ifndef::source-highlighter[:source-highlighter: pygments]
-ifndef::pygments-linenums-mode[:pygments-linenums-mode: inline]
+:toc: left
+:toclevels: 2
+:source-highlighter: pygments
+:pygments-linenums-mode: inline
+:imagesdir: ./images
 
 = Glue
 Vinay Kumar
@@ -16,7 +18,7 @@ You will use Glue for same reason you will use Spring (dependency injection) in 
 application. But, in case of Glue, few concepts are implemented to make your life much
 easier from DevOps point of view.
 
-image::./images/diag1.png[Simple Hello World]
+image::diag1.png[Simple Hello World]
 
 . *HelloWorld class* :
   We want to set `mHelloWorld` field to *This is hello world example*.
@@ -51,7 +53,7 @@ all layers are merged. And last overridden value is taken as value of property.
 for example:
 
 .Layer 1 (/testdata/layer1/)
-[source,conf]
+[source,ini,linenums]
 ----
 #/in/erail/glue/test/component/MergedComponent
 $class=in.erail.glue.component.PropertiesComponent
@@ -60,14 +62,14 @@ propString=TestString
 ----
 
 .Layer 2 (/testdata/layer2/)
-[source,conf]
+[source,ini,linenums]
 ----
 #/in/erail/glue/test/component/MergedComponent
 propString=TestString2
 ----
 
 .Final merged component configuration:
-[source,conf]
+[source,ini,linenums]
 ----
 #/in/erail/glue/test/component/MergedComponent
 propString=TestString2
@@ -102,7 +104,7 @@ As can be seen above, second layers has overridden propString property.
 == Properties based configuration in detail
 
 .Example Property File
-[source,conf]
+[source,ini,linenums]
 ----
 #/in/erail/glue/test/component/PropertiesComponent
 $class=in.erail.glue.component.PropertiesComponent
@@ -173,7 +175,7 @@ required properties
 |====================================
 
 .$basedOn Example
-[source, conf]
+[source,ini,linenums]
 ----
 #/in/erail/glue/test/component/BasedOnPropertiesComponent
 $basedOn=/in/erail/glue/test/component/PropertiesComponent
@@ -188,7 +190,7 @@ In above example, all properties of this component will have value as set in
 
 Layers are passed to Glue using JVM parameter
 
-[source,conf]
+[source,ini,linenums]
 ----
 java -Dglue.layers=/testdata/layer1,/testdata/layer2
 ----
@@ -199,7 +201,7 @@ override or merge property file in same order as configuration layers are define
 For example:
 
 .Layer 1 (/testdata/layer1/)
-[source,conf]
+[source,ini,linenums]
 ----
 #/in/erail/glue/test/component/MergedComponent
 $class=in.erail.glue.component.PropertiesComponent
@@ -217,7 +219,7 @@ propSet=a,b,b,c
 ----
 
 .Layer 2 (/testdata/layer2/)
-[source,conf]
+[source,ini,linenums]
 ----
 #/in/erail/glue/test/component/MergedComponent
 propString=TestString2
@@ -246,7 +248,7 @@ add *b,c,d* elements to list. Same can be done in case of Map and Set.
 A component property can refer to another component property.As can be seen in
 `/in/erail/glue/test/component/PropertiesComponent`,
 
-[source,conf]
+[source,ini,linenums]
 ----
 propComponent=/in/erail/glue/test/component/GlobalObjectByDefault
 ----
@@ -256,7 +258,7 @@ component.
 
 ==== Component property referring to another component property
 
-[source,conf]
+[source,ini,linenums]
 ----
 #/in/erail/glue/test/component/RefPropertiesComponent
 $class=in.erail.glue.component.PropertiesComponent
