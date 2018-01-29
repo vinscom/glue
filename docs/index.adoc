@@ -99,6 +99,10 @@ As can be seen above, second layers has overridden propString property.
 | Component                 | Reference to another component
 | Null                              | Null value
 | Pattern                        | String will be compiled into Pattern
+| Timer (Dropwizard Metric)     | a timer will be created based on name given
+| Counter (Dropwizard Metric)   | a counter will be created based on name given
+| Meter (Dropwizard Metric)     | a meter will be created based on name given
+| Histogram (Dropwizard Metric) | a hitogram will be created based on name given
 |==================================
 
 == Properties based configuration in detail
