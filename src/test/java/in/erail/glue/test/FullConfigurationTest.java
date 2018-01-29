@@ -262,4 +262,14 @@ public class FullConfigurationTest {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent3");
     assertEquals("ZipString", inst.getPropString());
   }
+  
+  
+  @Test
+  public void metricProperty(){
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
+    assertNotNull(inst.getPropTimer());
+    assertNotNull(inst.getPropCounter());
+    assertNotNull(inst.getPropHistogram());
+    assertNotNull(inst.getPropMeter());
+  }
 }

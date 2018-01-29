@@ -1,5 +1,9 @@
 package in.erail.glue;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Timer;
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
@@ -74,6 +78,10 @@ public class ValueProxy {
             || Logger.class.isAssignableFrom(targetClass)
             || ServiceArray.class.isAssignableFrom(targetClass)
             || Pattern.class.isAssignableFrom(targetClass)
+            || Meter.class.isAssignableFrom(targetClass)
+            || Timer.class.isAssignableFrom(targetClass)
+            || Counter.class.isAssignableFrom(targetClass)
+            || Histogram.class.isAssignableFrom(targetClass)
             || Strings.isNullOrEmpty(propValue.getValue()))) {
       deferredValue = true;
     }
@@ -131,10 +139,34 @@ public class ValueProxy {
       setValue(new ServiceArray(getValueAsList()));
     } else if (Pattern.class.isAssignableFrom(getTargetClass())) {
       setValue(getValueAsPattern());
+    } else if (Meter.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsMeter());
+    } else if (Timer.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsTimer());
+    } else if (Counter.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsCounter());
+    } else if (Histogram.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsHistogram());
     } else if (Strings.isNullOrEmpty(getValueAsString())) {
       setValue(null);
     }
 
+  }
+
+  private Meter getValueAsMeter() {
+    return Util.getMetricRegistry().meter(getValueAsString());
+  }
+
+  private Timer getValueAsTimer() {
+    return Util.getMetricRegistry().timer(getValueAsString());
+  }
+
+  private Counter getValueAsCounter() {
+    return Util.getMetricRegistry().counter(getValueAsString());
+  }
+
+  private Histogram getValueAsHistogram() {
+    return Util.getMetricRegistry().histogram(getValueAsString());
   }
 
   private Pattern getValueAsPattern() {
@@ -144,7 +176,7 @@ public class ValueProxy {
     }
     return Pattern.compile(v);
   }
-  
+
   private Logger getValueAsLogger() {
     String loggerName = getComponentPath();
     if (loggerName.startsWith("/") && loggerName.length() >= 2) {
@@ -188,7 +220,7 @@ public class ValueProxy {
   }
 
   private String[] getValueAsArray() {
-    
+
     final List<String> result = new ArrayList<>();
 
     List<ValueWithModifier> v = (List) getPropertyValue();
