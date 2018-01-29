@@ -215,12 +215,12 @@ public class PropertiesRepository {
     this.initialized = initialized;
   }
 
-  public List<String> getLayers() {
+  public static List<String> getLayers() {
     return layers;
   }
 
-  public void setLayers(List<String> layers) {
-    this.layers = layers
+  public static void setLayers(List<String> pLayer) {
+    layers = pLayer
             .stream()
             .map((path) -> {
               if (path.endsWith(".jar") || path.endsWith(".zip")) {

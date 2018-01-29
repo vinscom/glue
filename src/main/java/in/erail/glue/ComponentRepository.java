@@ -26,9 +26,9 @@ public class ComponentRepository implements Glue {
   private static final Map<String, Object> mSingletonRepository;
 
   static {
+    PropertiesRepository.setLayers(Util.getSystemLayers());
     mSingletonRepository = new ConcurrentHashMap<>();
     mPropertiesRepository = new PropertiesRepository();
-    mPropertiesRepository.setLayers(Util.getSystemLayers());
     mPropertiesRepository.init();
   }
 
@@ -168,6 +168,7 @@ public class ComponentRepository implements Glue {
     return result;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T> T resolve(String pPath) {
     return (T) resolve(pPath, getPropertiesCache().get(pPath));

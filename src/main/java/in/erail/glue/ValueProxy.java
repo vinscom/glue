@@ -35,6 +35,7 @@ public class ValueProxy {
 
   protected Logger logger = LogManager.getLogger(ValueProxy.class.getCanonicalName());
   private static final Pattern DEFERRED_PROPERTY_VALUE_PATTER = Pattern.compile("(?<component>^[^.]+)($|(\\.(?<property>.*)$))");
+  @SuppressWarnings("rawtypes")
   private Class targetClass;
   private Collection<ValueWithModifier> propertyValue;
   private String componentPath;
@@ -49,7 +50,7 @@ public class ValueProxy {
   public ValueProxy() {
   }
 
-  public ValueProxy(Class pTargetClass, Collection<ValueWithModifier> pPropertyValue, String pComponentPath) {
+  public ValueProxy(@SuppressWarnings("rawtypes") Class pTargetClass, Collection<ValueWithModifier> pPropertyValue, String pComponentPath) {
     this.targetClass = pTargetClass;
     this.propertyValue = pPropertyValue;
     this.componentPath = pComponentPath;
@@ -223,7 +224,7 @@ public class ValueProxy {
 
     final List<String> result = new ArrayList<>();
 
-    List<ValueWithModifier> v = (List) getPropertyValue();
+    List<ValueWithModifier> v = (List<ValueWithModifier>) getPropertyValue();
     v.stream().forEach((vwm) -> {
       if (Strings.isNullOrEmpty(vwm.getValue())) {
         return;
@@ -258,7 +259,7 @@ public class ValueProxy {
 
     final Set<String> result = new HashSet<>();
 
-    List<ValueWithModifier> v = (List) getPropertyValue();
+    List<ValueWithModifier> v = (List<ValueWithModifier>) getPropertyValue();
     v.stream().forEach((vwm) -> {
       if (Strings.isNullOrEmpty(vwm.getValue())) {
         return;
@@ -285,7 +286,7 @@ public class ValueProxy {
 
     final List<String> result = new ArrayList<>();
 
-    List<ValueWithModifier> v = (List) getPropertyValue();
+    List<ValueWithModifier> v = (List<ValueWithModifier>) getPropertyValue();
     v.stream().forEach((vwm) -> {
       if (Strings.isNullOrEmpty(vwm.getValue())) {
         return;
@@ -312,12 +313,12 @@ public class ValueProxy {
 
     final HashMap<String, String> result = new HashMap<>();
 
-    List<ValueWithModifier> v = (List) getPropertyValue();
+    List<ValueWithModifier> v = (List<ValueWithModifier>) getPropertyValue();
     v.stream().forEach((vwm) -> {
       if (Strings.isNullOrEmpty(vwm.getValue())) {
         return;
       }
-      Map m = Util.getMapFromValue(vwm.getValue());
+      Map<String, String> m = Util.getMapFromValue(vwm.getValue());
       switch (vwm.getPropertyValueModifier()) {
         case PLUS:
           result.putAll(m);
@@ -334,6 +335,7 @@ public class ValueProxy {
     return result;
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   private Enum getValueAsEnum() {
     if (Strings.isNullOrEmpty(getValueAsString())) {
       logger.error(componentPath + ":: Enum of type:" + getTargetClass().getCanonicalName() + " not set");
@@ -391,10 +393,12 @@ public class ValueProxy {
     this.value = pValue;
   }
 
+  @SuppressWarnings("rawtypes")
   public Class getTargetClass() {
     return targetClass;
   }
 
+  @SuppressWarnings("rawtypes")
   public void setTargetClass(Class pTargetClass) {
     this.targetClass = pTargetClass;
   }

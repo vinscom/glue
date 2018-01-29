@@ -15,7 +15,7 @@ public class PropertiesHolderTest {
   public void testInit() {
     System.out.println("init");
     PropertiesRepository instance = new PropertiesRepository();
-    instance.setLayers(Arrays.asList(System.getProperty(Constant.EnvVar.Java.LAYERS).split(Constant.EnvVar.SEPERATOR)));
+    PropertiesRepository.setLayers(Arrays.asList(System.getProperty(Constant.EnvVar.Java.LAYERS).split(Constant.EnvVar.SEPERATOR)));
     
     instance.init();
     

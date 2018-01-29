@@ -90,6 +90,7 @@ public class Util {
     return null;
   }
 
+  @SuppressWarnings("rawtypes")
   public static Class getMethodFirstArgumentClass(Method pMethod) {
     Parameter[] param = pMethod.getParameters();
     if (param.length == 0) {
@@ -154,7 +155,7 @@ public class Util {
       return new ValueWithModifier(null, PropertyValueModifier.NONE);
     }
 
-    List<ValueWithModifier> v = (List) pList;
+    List<ValueWithModifier> v = (List<ValueWithModifier>) pList;
     return v.get(v.size() - 1);
   }
 
