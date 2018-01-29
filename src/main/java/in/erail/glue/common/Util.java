@@ -1,5 +1,7 @@
 package in.erail.glue.common;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.google.common.base.Strings;
 import com.google.common.collect.ListMultimap;
 import java.lang.annotation.Annotation;
@@ -18,19 +20,31 @@ import java.util.Collection;
 import in.erail.glue.enumeration.PropertyValueModifier;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class Util {
 
-  private static Logger logger = LogManager.getLogger(Util.class.getCanonicalName());
+  private static final Logger logger = LogManager.getLogger(Util.class.getCanonicalName());
+  private static final MetricRegistry metricRegistry;
+
+  static {
+    String metricRegistryName = System.getenv(Constant.EnvVar.METRIC_REGISTRY_NAME);
+
+    if (Strings.isNullOrEmpty(metricRegistryName)) {
+      metricRegistryName = System.getProperty(Constant.EnvVar.Java.METRIC_REGISTRY_NAME);
+    }
+
+    if (metricRegistryName == null) {
+      metricRegistryName = "vertx-registry";
+    }
+
+    metricRegistry = SharedMetricRegistries.getOrCreate(metricRegistryName);
+  }
 
   public static String buildSetPropertyName(String pProperty) {
     return "set" + pProperty.substring(0, 1).toUpperCase() + pProperty.substring(1, pProperty.length());
@@ -114,20 +128,24 @@ public class Util {
 
     return result;
   }
-  
+
+  public static MetricRegistry getMetricRegistry() {
+    return metricRegistry;
+  }
+
   public static List<String> getSystemLayers() {
 
-    String layer = System.getProperty(Constant.SystemProperties.LAYERS);
+    String layer = System.getenv(Constant.EnvVar.LAYERS);
 
-    if(Strings.isNullOrEmpty(layer)){
-      layer = System.getenv(Constant.SystemProperties.LAYERS2);
+    if (Strings.isNullOrEmpty(layer)) {
+      layer = System.getProperty(Constant.EnvVar.Java.LAYERS);
     }
-    
+
     if (layer == null) {
       return Collections.emptyList();
     }
-    
-    return Arrays.asList(layer.split(Constant.SystemProperties.SEPERATOR));
+
+    return Arrays.asList(layer.split(Constant.EnvVar.SEPERATOR));
   }
 
   public static ValueWithModifier getLastValueWithModifier(Collection<ValueWithModifier> pList) {

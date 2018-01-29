@@ -1,5 +1,9 @@
 package in.erail.glue.component;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Timer;
 import io.vertx.core.json.JsonObject;
 import java.io.File;
 import java.util.List;
@@ -49,7 +53,11 @@ public class PropertiesComponent {
   public ServiceArray propNullServiceArray;
   public Pattern propPattern;
   public Pattern propNullPattern;
-
+  public Meter propMeter;
+  public Histogram propHistogram;
+  public Counter propCounter;
+  public Timer propTimer;
+  
   @StartService
   public void startup() {
     setStartup(true);
@@ -357,6 +365,38 @@ public class PropertiesComponent {
 
   public void setPropNullPattern(Pattern pPropNullPattern) {
     this.propNullPattern = pPropNullPattern;
+  }
+
+  public Meter getPropMeter() {
+    return propMeter;
+  }
+
+  public void setPropMeter(Meter pPropMeter) {
+    this.propMeter = pPropMeter;
+  }
+
+  public Histogram getPropHistogram() {
+    return propHistogram;
+  }
+
+  public void setPropHistogram(Histogram pPropHistogram) {
+    this.propHistogram = pPropHistogram;
+  }
+
+  public Counter getPropCounter() {
+    return propCounter;
+  }
+
+  public void setPropCounter(Counter pPropCounter) {
+    this.propCounter = pPropCounter;
+  }
+
+  public Timer getPropTimer() {
+    return propTimer;
+  }
+
+  public void setPropTimer(Timer pPropTimer) {
+    this.propTimer = pPropTimer;
   }
   
 }
