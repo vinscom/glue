@@ -70,8 +70,13 @@ public class PropertiesRepository {
               if (Strings.isNullOrEmpty(factoryPath)) {
                 return;
               }
-              instanceOfFactoryProperties.onNext(createInstanceFactoryProperties(factoryPath, t.getKey(), mInstanceFactoryCounter));
-              t.getValue().remove(Constant.Component.INSTANCE_FACTORY, factoryPath);
+              Map.Entry<String, ListMultimap<String, ValueWithModifier>> newFactoryProperties
+                      = createInstanceFactoryProperties(factoryPath, t.getKey(), mInstanceFactoryCounter);
+              instanceOfFactoryProperties.onNext(newFactoryProperties);
+              //Add new factory componet path.
+              t.getValue()
+                      .put(Constant.Component.INSTANCE_FACTORY,
+                              new ValueWithModifier(newFactoryProperties.getKey(), PropertyValueModifier.NONE));
             })
             .doOnComplete(() -> instanceOfFactoryProperties.onComplete())
             .concatWith(instanceOfFactoryProperties.doOnNext((p) -> mPropertiesRepository.put(p.getKey(), p.getValue())))
