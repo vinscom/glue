@@ -24,56 +24,144 @@ import in.erail.glue.common.Constant;
 import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
 import in.erail.glue.enumeration.PropertyValueModifier;
+import io.reactivex.Completable;
+import io.reactivex.subjects.UnicastSubject;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class PropertiesRepository {
 
   protected Logger logger = LogManager.getLogger(PropertiesRepository.class.getCanonicalName());
+
+  public static List<String> layers;
   private static final String PROPERTY_EXTENSION = ".properties";
   private static final int PROPERTY_EXTENSION_LENGTH = PROPERTY_EXTENSION.length();
 
-  private final Map<String, ListMultimap<String, ValueWithModifier>> propertiesRepository;
+  private final Map<String, ListMultimap<String, ValueWithModifier>> mPropertiesRepository;
+  private final AtomicLong mInstanceFactoryCounter;
 
-  private boolean initialized = false;
-  public static List<String> layers;
+  private boolean mInitialized = false;
 
   public PropertiesRepository() {
-    this.propertiesRepository = new HashMap<>();
+    this.mInstanceFactoryCounter = new AtomicLong();
+    this.mPropertiesRepository = new HashMap<>();
   }
 
   protected void init() {
+
+    UnicastSubject<Map.Entry<String, ListMultimap<String, ValueWithModifier>>> instanceOfFactoryProperties
+            = UnicastSubject.<Map.Entry<String, ListMultimap<String, ValueWithModifier>>>create();
 
     Observable<Tuple<Path, Path>> paths = Observable
             .fromIterable(getLayers())
             .map(path -> Paths.get(path))
             .flatMap(this::findAllPropertiesFile);
 
-    Observable<ListMultimap<String, ValueWithModifier>> cachedProperties = loadCachedProperties(paths);
+    Observable<ListMultimap<String, ValueWithModifier>> cachedProperties = loadCachedProperties(paths, mPropertiesRepository);
     Observable<Properties> newProperties = loadUncachedProperties(paths);
 
     cachedProperties
             .zipWith(newProperties, this::mergeUncachedIntoCachedProperties)
-            .flatMap((t) -> t)
+            .flatMapCompletable((t) -> t)
+            .andThen(Observable.fromIterable(mPropertiesRepository.entrySet()))
+            .doOnNext((t) -> {
+              String factoryPath = Util.getLastValue(t.getValue(), Constant.Component.INSTANCE_FACTORY);
+              if (Strings.isNullOrEmpty(factoryPath)) {
+                return;
+              }
+              instanceOfFactoryProperties.onNext(createInstanceFactoryProperties(factoryPath, t.getKey(), mInstanceFactoryCounter));
+              t.getValue().remove(Constant.Component.INSTANCE_FACTORY, factoryPath);
+            })
+            .doOnComplete(() -> instanceOfFactoryProperties.onComplete())
+            .concatWith(instanceOfFactoryProperties.doOnNext((p) -> mPropertiesRepository.put(p.getKey(), p.getValue())))
+            .doOnNext((t) -> updateBasedOnProperties(t.getKey(), t.getValue(), mPropertiesRepository))
+            .doOnNext((t) -> updateBasedOnSpecialProperties(t.getKey(), t.getValue(), mPropertiesRepository))
             .doOnComplete(() -> setInitialized(true))
             .blockingSubscribe();
-
-    propertiesRepository
-            .entrySet()
-            .stream()
-            .filter((t) -> Util.getLastValue(t.getValue(), Constant.Component.BASED_ON) != null)
-            .forEachOrdered((t) -> updateBasedOnProperties(t.getKey(), t.getValue()));
-
   }
 
-  private void updateBasedOnProperties(String componentPath, ListMultimap<String, ValueWithModifier> properties) {
+  private Map.Entry<String, ListMultimap<String, ValueWithModifier>> createInstanceFactoryProperties(
+          String pInstFactoryComponentPath,
+          String pSourceComponentPath,
+          AtomicLong pCounter) {
 
-    String baseOnComponentPath = Util.getLastValue(properties, Constant.Component.BASED_ON);
+    String componentPath = pInstFactoryComponentPath + ":" + pCounter.incrementAndGet();
+    ListMultimap<String, ValueWithModifier> properties = ArrayListMultimap.create();
 
-    ListMultimap<String, ValueWithModifier> baseOnProperties = propertiesRepository.get(baseOnComponentPath);
+    ValueWithModifier basedOn = new ValueWithModifier(pInstFactoryComponentPath, PropertyValueModifier.NONE);
+    ValueWithModifier basedOnSpecialProperties = new ValueWithModifier(pSourceComponentPath, PropertyValueModifier.NONE);
+
+    properties.put(Constant.Component.BASED_ON, basedOn);
+    properties.put(Constant.Component.BASED_ON_SPECIAL_PROPERTIES, basedOnSpecialProperties);
+
+    return new AbstractMap.SimpleEntry<>(componentPath, properties);
+  }
+
+  /**
+   *
+   * @param pComponentPath
+   * @param pProperties
+   */
+  private void updateBasedOnSpecialProperties(
+          String pComponentPath,
+          ListMultimap<String, ValueWithModifier> pProperties,
+          Map<String, ListMultimap<String, ValueWithModifier>> pPropertiesRepository) {
+
+    String baseOnSpecialComponentPath = Util.getLastValue(pProperties, Constant.Component.BASED_ON_SPECIAL_PROPERTIES);
+
+    if (Strings.isNullOrEmpty(baseOnSpecialComponentPath)) {
+      return;
+    }
+
+    ListMultimap<String, ValueWithModifier> baseOnSpecialProperties = pPropertiesRepository.get(baseOnSpecialComponentPath);
+
+    ListMultimap<String, ValueWithModifier> newProperties = ArrayListMultimap.create();
+
+    baseOnSpecialProperties
+            .entries()
+            .stream()
+            .filter((t) -> t.getKey().startsWith(Constant.Component.SPECIAL_PROPERTY))
+            .filter((t) -> !Constant.Component.CLASS.equals(t.getKey()))
+            .filter((t) -> !Constant.Component.BASED_ON.equals(t.getKey()))
+            .filter((t) -> !Constant.Component.SCOPE.equals(t.getKey()))
+            .filter((t) -> !Constant.Component.BASED_ON_SPECIAL_PROPERTIES.equals(t.getKey()))
+            .forEachOrdered((e) -> {
+              String k = Util.convertDotToCamelCase(e.getKey().substring(1));
+              newProperties.put(k, e.getValue());
+            });
+
+    pProperties
+            .entries()
+            .stream()
+            .filter((p) -> !Constant.Component.BASED_ON_SPECIAL_PROPERTIES.equals(p.getKey()))
+            .forEachOrdered((e) -> {
+              newProperties.put(e.getKey(), e.getValue());
+            });
+
+    pPropertiesRepository.put(pComponentPath, newProperties);
+  }
+
+  /**
+   *
+   * @param pComponentPath
+   * @param pProperties
+   */
+  private void updateBasedOnProperties(
+          String pComponentPath,
+          ListMultimap<String, ValueWithModifier> pProperties,
+          Map<String, ListMultimap<String, ValueWithModifier>> pPropertiesRepository) {
+
+    String baseOnComponentPath = Util.getLastValue(pProperties, Constant.Component.BASED_ON);
+
+    if (Strings.isNullOrEmpty(baseOnComponentPath)) {
+      return;
+    }
+
+    ListMultimap<String, ValueWithModifier> baseOnProperties = pPropertiesRepository.get(baseOnComponentPath);
 
     if (Util.getLastValue(baseOnProperties, Constant.Component.BASED_ON) != null) {
-      updateBasedOnProperties(baseOnComponentPath, baseOnProperties);
+      updateBasedOnProperties(baseOnComponentPath, baseOnProperties, pPropertiesRepository);
     }
 
     ListMultimap<String, ValueWithModifier> newProperties = ArrayListMultimap.create();
@@ -85,7 +173,7 @@ public class PropertiesRepository {
               newProperties.put(e.getKey(), e.getValue());
             });
 
-    properties
+    pProperties
             .entries()
             .stream()
             .filter((p) -> !Constant.Component.BASED_ON.equals(p.getKey()))
@@ -93,10 +181,17 @@ public class PropertiesRepository {
               newProperties.put(e.getKey(), e.getValue());
             });
 
-    propertiesRepository.put(componentPath, newProperties);
+    pPropertiesRepository.put(pComponentPath, newProperties);
   }
 
-  private Observable<Boolean> mergeUncachedIntoCachedProperties(ListMultimap<String, ValueWithModifier> pCached, Properties pUncached) {
+  /**
+   * Merge properties file loaded from system into one previously loaded.
+   *
+   * @param pCached Already loaded properties map
+   * @param pUncached Newly loaded properties file
+   * @return
+   */
+  private Completable mergeUncachedIntoCachedProperties(ListMultimap<String, ValueWithModifier> pCached, Properties pUncached) {
 
     Observable<Map.Entry<String, String>> property = Observable
             .fromIterable(pUncached.entrySet())
@@ -113,10 +208,17 @@ public class PropertiesRepository {
     return key
             .zipWith(value, (k, v) -> {
               return pCached.put(k, v);
-            });
+            })
+            .ignoreElements();
 
   }
 
+  /**
+   * Remove modifier from value
+   *
+   * @param pEntry Value with modifier
+   * @return Value without modifier
+   */
   private String extractKey(String pEntry) {
 
     String modifier = pEntry.substring(pEntry.length() - 1);
@@ -132,6 +234,12 @@ public class PropertiesRepository {
 
   }
 
+  /**
+   * Return value modifier
+   *
+   * @param pEntry Value with modifier
+   * @return Modifier of value
+   */
   private PropertyValueModifier extractPropertyValueModifier(String pEntry) {
 
     String modifier = pEntry.substring(pEntry.length() - 1);
@@ -149,6 +257,12 @@ public class PropertiesRepository {
 
   }
 
+  /**
+   * Load properties file from system.
+   *
+   * @param pPath Search path and full path of properties file
+   * @return Loaded Properties object
+   */
   private Observable<Properties> loadUncachedProperties(Observable<Tuple<Path, Path>> pPath) {
 
     return pPath
@@ -165,7 +279,15 @@ public class PropertiesRepository {
 
   }
 
-  private Observable<ListMultimap<String, ValueWithModifier>> loadCachedProperties(Observable<Tuple<Path, Path>> pPath) {
+  /**
+   * Return already loaded properties file map. If file is not loaded then empty map is returned
+   *
+   * @param pPath Search path and full path of properties file
+   * @return Properties map
+   */
+  private Observable<ListMultimap<String, ValueWithModifier>> loadCachedProperties(
+          Observable<Tuple<Path, Path>> pPath,
+          Map<String, ListMultimap<String, ValueWithModifier>> pPropertiesRepository) {
 
     return pPath
             .map((path) -> {
@@ -176,17 +298,23 @@ public class PropertiesRepository {
               String key = fullPath.substring(dir.length());
               key = key.substring(0, key.length() - PROPERTY_EXTENSION_LENGTH);
 
-              if (propertiesRepository.containsKey(key)) {
-                return propertiesRepository.get(key);
+              if (pPropertiesRepository.containsKey(key)) {
+                return pPropertiesRepository.get(key);
               }
 
               ListMultimap<String, ValueWithModifier> properties = ArrayListMultimap.create();
-              propertiesRepository.put(key, properties);
+              pPropertiesRepository.put(key, properties);
               return properties;
             });
 
   }
 
+  /**
+   * Find all properties file under given path
+   *
+   * @param pPath Search path
+   * @return Search Path and Full File Path
+   */
   private Observable<Tuple<Path, Path>> findAllPropertiesFile(Path pPath) {
 
     return Observable
@@ -204,15 +332,15 @@ public class PropertiesRepository {
   }
 
   protected Map<String, ListMultimap<String, ValueWithModifier>> getPropertiesCache() {
-    return propertiesRepository;
+    return mPropertiesRepository;
   }
 
   public boolean isInitialized() {
-    return initialized;
+    return mInitialized;
   }
 
   public void setInitialized(boolean initialized) {
-    this.initialized = initialized;
+    this.mInitialized = initialized;
   }
 
   public static List<String> getLayers() {
