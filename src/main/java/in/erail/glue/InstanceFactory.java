@@ -1,10 +1,12 @@
 package in.erail.glue;
 
+import java.util.Optional;
+
 /**
  *
  * @author vinay
  */
 public interface InstanceFactory {
 
-  Object createInstance();
+  Optional<Object> createInstance();
 }
