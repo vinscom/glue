@@ -9,27 +9,33 @@ import java.util.List;
  *
  * @author vinay
  */
-public class TestInstanceFactory {
+public class TestFactory {
 
-  public List<String> create(String pFirst,int pSecond){
+  public TestComponent create(String pFirst, int pSecond) {
     List<String> result = new ArrayList<>();
     result.add(pFirst);
     result.add(Integer.toString(pSecond));
-    return result;
+    TestComponent inst = new TestComponent();
+    inst.setResult(result);
+    return inst;
   }
-  
-  public List<String> createWithParamType(String pFirst,int pSecond){
+
+  public TestComponent createWithParamType(String pFirst, int pSecond) {
     List<String> result = new ArrayList<>();
     result.add(pFirst);
     result.add(Integer.toString(pSecond));
-    return result;
+    TestComponent inst = new TestComponent();
+    inst.setResult(result);
+    return inst;
   }
-  
-  public List<String> createWithComponentParamType(String pFirst,int pSecond, PropertiesComponent pComponent){
+
+  public TestComponent createWithComponentParamType(String pFirst, int pSecond, PropertiesComponent pComponent) {
     List<String> result = new ArrayList<>();
     result.add(pFirst);
     result.add(Integer.toString(pSecond));
     result.add(Boolean.toString(!Strings.isNullOrEmpty(pComponent.getPropString())));
-    return result;
+    TestComponent inst = new TestComponent();
+    inst.setResult(result);
+    return inst;
   }
 }
