@@ -118,6 +118,7 @@ public class ComponentRepository implements Glue {
             .entrySet()
             .stream()
             .filter((t) -> !t.getKey().startsWith(Constant.Component.SPECIAL_PROPERTY))
+            .filter((t) -> Util.getMethod(pInstance.getClass(), Util.buildSetPropertyName((String) t.getKey())) != null)
             .map((entry) -> {
               PropertyContext propCtx = new PropertyContext();
               propCtx.setInstance(pInstance);
@@ -161,7 +162,7 @@ public class ComponentRepository implements Glue {
           logger.debug(() -> "Component[" + pPath + "]: Creating instance using factory=" + factoryPath);
           InstanceFactory factoryInst = Glue.instance().resolve(factoryPath);
           Optional<Object> inst = factoryInst.createInstance();
-          if(inst.isPresent()){
+          if (inst.isPresent()) {
             instance = inst.get();
           } else {
             logger.error(() -> "Component[" + pPath + "]: Not able to create instance from factory:" + factoryPath);
@@ -171,7 +172,7 @@ public class ComponentRepository implements Glue {
           logger.debug(() -> "Component[" + pPath + "]: Creating instance of Class=" + clazz);
           instance = Util.createInstance(clazz);
         }
-        
+
         result = new Tuple<>(true, instance);
       }
 

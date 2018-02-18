@@ -13,7 +13,7 @@ public class ParameterConstructorInstanceFactoryTest {
 
   @Test
   public void testCreateInstance() {
-    TestInstanceConstructor inst = Glue.instance().resolve("/in/erail/glue/test/factory/TestInstanceConstructor");
+    TestComponent2 inst = Glue.instance().resolve("/in/erail/glue/test/factory/TestComponentPC1");
     String[] expected = new String[]{"ninja","5","true"};
     assertArrayEquals(expected,inst.getResult().toArray());
   }

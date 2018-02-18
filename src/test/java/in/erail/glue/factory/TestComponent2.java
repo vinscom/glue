@@ -9,11 +9,11 @@ import java.util.List;
  *
  * @author vinay
  */
-public class TestInstanceConstructor {
+public class TestComponent2 {
 
   private List<String> result = new ArrayList<>();
-  
-  public TestInstanceConstructor(String pFirst,int pSecond,PropertiesComponent pComponent) {
+
+  public TestComponent2(String pFirst, int pSecond, PropertiesComponent pComponent) {
     result.add(pFirst);
     result.add(Integer.toString(pSecond));
     result.add(Boolean.toString(!Strings.isNullOrEmpty(pComponent.getPropString())));
