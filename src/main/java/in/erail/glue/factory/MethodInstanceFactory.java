@@ -27,10 +27,10 @@ public class MethodInstanceFactory implements InstanceFactory {
   private String mFactoryMethodName;
   private String[] mFactoryParamValues;
   private String[] mFactoryParamType;
-  private final Map<String, Class> mPrimitiveType = new HashMap<>();
   private Logger mLog;
-
   private Class[] mParamType;
+  
+  private final Map<String, Class> mPrimitiveType = new HashMap<>();
 
   public MethodInstanceFactory() {
     mPrimitiveType.put("byte.class", byte.class);

@@ -10,8 +10,8 @@ import static org.junit.Assert.*;
 public class UtilTest {
   @Test
   public void testConvertDotToCamelCase() {
-    String source = "abc.def";
-    String result = "abcDef";
+    String source = "abc.def.abc";
+    String result = "abcDefAbc";
     assertEquals(result, Util.convertDotToCamelCase(source));
   }
   

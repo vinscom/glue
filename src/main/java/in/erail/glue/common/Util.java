@@ -206,14 +206,17 @@ public class Util {
   }
 
   public static String convertDotToCamelCase(String pValue) {
-    StringBuilder sb = new StringBuilder(pValue.length());
-    int dotIndx = pValue.indexOf('.');
-    if (dotIndx == -1) {
-      return pValue;
+    StringBuilder sb = new StringBuilder(pValue);
+    int dotIndx = 0;
+    while (dotIndx != -1) {
+      dotIndx = sb.indexOf(".");
+      if (dotIndx == -1) {
+        break;
+      }
+      sb.deleteCharAt(dotIndx);
+      sb.setCharAt(dotIndx, Character.toUpperCase(sb.charAt(dotIndx)));
     }
-    sb.append(pValue.substring(0, dotIndx));
-    sb.append(pValue.substring(dotIndx + 1));
-    sb.setCharAt(dotIndx, Character.toUpperCase(sb.charAt(dotIndx)));
     return sb.toString();
   }
+
 }

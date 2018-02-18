@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import in.erail.glue.annotation.StartService;
 import in.erail.glue.common.ValueWithModifier;
+import java.util.Optional;
 
 public class ComponentRepository implements Glue {
 
@@ -116,7 +117,7 @@ public class ComponentRepository implements Glue {
             .asMap()
             .entrySet()
             .stream()
-            .filter((t) -> !(Constant.Component.CLASS.equals(t.getKey()) || Constant.Component.SCOPE.equals(t.getKey())))
+            .filter((t) -> !t.getKey().startsWith(Constant.Component.SPECIAL_PROPERTY))
             .map((entry) -> {
               PropertyContext propCtx = new PropertyContext();
               propCtx.setInstance(pInstance);
@@ -154,12 +155,17 @@ public class ComponentRepository implements Glue {
       } else {
         logger.debug(() -> "Component[" + pPath + "]:Creating instance");
 
-        Object instance;
+        Object instance = null;
         String factoryPath = Util.getLastValue(pProperties, Constant.Component.INSTANCE_FACTORY);
         if (!Strings.isNullOrEmpty(factoryPath)) {
-          InstanceFactory factoryInst = Glue.instance().resolve(factoryPath);
-          instance = factoryInst.createInstance();
           logger.debug(() -> "Component[" + pPath + "]: Creating instance using factory=" + factoryPath);
+          InstanceFactory factoryInst = Glue.instance().resolve(factoryPath);
+          Optional<Object> inst = factoryInst.createInstance();
+          if(inst.isPresent()){
+            instance = inst.get();
+          } else {
+            logger.error(() -> "Component[" + pPath + "]: Not able to create instance from factory:" + factoryPath);
+          }
         } else {
           String clazz = Util.getLastValue(pProperties, Constant.Component.CLASS);
           logger.debug(() -> "Component[" + pPath + "]: Creating instance of Class=" + clazz);

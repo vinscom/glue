@@ -127,12 +127,18 @@ public class PropertiesRepository {
             .entries()
             .stream()
             .filter((t) -> t.getKey().startsWith(Constant.Component.SPECIAL_PROPERTY))
-            .filter((t) -> !Constant.Component.CLASS.equals(t.getKey()))
             .filter((t) -> !Constant.Component.BASED_ON.equals(t.getKey()))
             .filter((t) -> !Constant.Component.SCOPE.equals(t.getKey()))
+            .filter((t) -> !Constant.Component.INSTANCE_FACTORY.equals(t.getKey()))
             .filter((t) -> !Constant.Component.BASED_ON_SPECIAL_PROPERTIES.equals(t.getKey()))
             .forEachOrdered((e) -> {
-              String k = Util.convertDotToCamelCase(e.getKey().substring(1));
+              String key = e.getKey();
+              if (Constant.Component.CLASS.equals(key)) {
+                key = "baseClass";
+              } else {
+                key = key.substring(1);
+              }
+              String k = Util.convertDotToCamelCase(key);
               newProperties.put(k, e.getValue());
             });
 
@@ -144,7 +150,8 @@ public class PropertiesRepository {
               newProperties.put(e.getKey(), e.getValue());
             });
 
-    pPropertiesRepository.put(pComponentPath, newProperties);
+    pProperties.clear();
+    pProperties.putAll(newProperties);
   }
 
   /**
@@ -185,8 +192,9 @@ public class PropertiesRepository {
             .forEachOrdered((e) -> {
               newProperties.put(e.getKey(), e.getValue());
             });
-
-    pPropertiesRepository.put(pComponentPath, newProperties);
+    
+    pProperties.clear();
+    pProperties.putAll(newProperties);
   }
 
   /**
