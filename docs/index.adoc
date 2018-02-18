@@ -280,3 +280,49 @@ propServiceMap^=/in/erail/glue/test/component/PropertiesComponent.propServiceMap
 
 As can be seen above. *^* is used for connecting  component property to another
 component property.
+
+== Factory based creation of Component
+Glue supports two factory classes with you can use to create methods requiring factory
+for creation of instance. For example, refer to test cases.
+
+=== MethodInstanceFactory
+
+[source,ini,linenums]
+----
+include::./../testdata/layer1/in/erail/glue/test/factory/TestComponentPC2.properties[]
+----
+
+[%header]
+|===
+| Field Name                     | Description
+| instanceFactory
+| Reference to component: in.erail.glue.factory.MethodInstanceFactory
+| factory.class
+| Class responsible for creating instance
+| factory.instance
+| Path of component responsible for creation of instance
+| factory.method.name
+| Method name
+| factory.param.values
+| Method parameters (Support component path also)
+| factory.param.type
+| Optional method parameter type
+|===
+
+=== ParameterConstructorInstanceFactory
+
+[source,ini,linenums]
+----
+include::./../testdata/layer1/in/erail/glue/test/factory/TestComponentPC1.properties[]
+----
+
+[%header]
+|===
+| Field Name                     | Description
+| instanceFactory
+| Reference to component: in.erail.glue.factory.MethodInstanceFactory
+| constructor.param.values
+| Constructor parameters (Support component path also)
+| constructor.param.type
+| Optional constructor parameter type
+|===
