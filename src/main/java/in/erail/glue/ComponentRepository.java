@@ -1,5 +1,6 @@
 package in.erail.glue;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ListMultimap;
 import in.erail.glue.common.PropertyContext;
 import in.erail.glue.common.Tuple;
@@ -19,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import in.erail.glue.annotation.StartService;
 import in.erail.glue.common.ValueWithModifier;
+import java.util.Optional;
 
 public class ComponentRepository implements Glue {
 
@@ -115,7 +117,7 @@ public class ComponentRepository implements Glue {
             .asMap()
             .entrySet()
             .stream()
-            .filter((t) -> !(Constant.Component.CLASS.equals(t.getKey()) || Constant.Component.SCOPE.equals(t.getKey())))
+            .filter((t) -> !t.getKey().startsWith(Constant.Component.SPECIAL_PROPERTY))
             .map((entry) -> {
               PropertyContext propCtx = new PropertyContext();
               propCtx.setInstance(pInstance);
@@ -140,10 +142,7 @@ public class ComponentRepository implements Glue {
    */
   protected Tuple<Boolean, Object> getInstance(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
 
-    String clazz = Util.getLastValue(pProperties, Constant.Component.CLASS);
     ComponentScopeType scope = ComponentScopeType.valueOf(Util.getLastValue(pProperties, Constant.Component.SCOPE, ComponentScopeType.GLOBAL.toString()));
-
-    logger.debug(() -> "Component[" + pPath + "]:Class=" + clazz);
     logger.debug(() -> "Component[" + pPath + "]:Scope=" + scope);
 
     Tuple<Boolean, Object> result;
@@ -155,7 +154,24 @@ public class ComponentRepository implements Glue {
         result = new Tuple<>(false, mSingletonRepository.get(pPath));
       } else {
         logger.debug(() -> "Component[" + pPath + "]:Creating instance");
-        Object instance = Util.createInstance(clazz);
+
+        Object instance = null;
+        String factoryPath = Util.getLastValue(pProperties, Constant.Component.INSTANCE_FACTORY);
+        if (!Strings.isNullOrEmpty(factoryPath)) {
+          logger.debug(() -> "Component[" + pPath + "]: Creating instance using factory=" + factoryPath);
+          InstanceFactory factoryInst = Glue.instance().resolve(factoryPath);
+          Optional<Object> inst = factoryInst.createInstance();
+          if(inst.isPresent()){
+            instance = inst.get();
+          } else {
+            logger.error(() -> "Component[" + pPath + "]: Not able to create instance from factory:" + factoryPath);
+          }
+        } else {
+          String clazz = Util.getLastValue(pProperties, Constant.Component.CLASS);
+          logger.debug(() -> "Component[" + pPath + "]: Creating instance of Class=" + clazz);
+          instance = Util.createInstance(clazz);
+        }
+        
         result = new Tuple<>(true, instance);
       }
 

@@ -4,9 +4,12 @@ public class Constant {
 
   public static class Component {
 
-    public static final String CLASS = "$class";
-    public static final String SCOPE = "$scope";
-    public static final String BASED_ON = "$basedOn";
+    public static final String SPECIAL_PROPERTY = "$";
+    public static final String CLASS = SPECIAL_PROPERTY + "class";
+    public static final String SCOPE = SPECIAL_PROPERTY + "scope";
+    public static final String BASED_ON = SPECIAL_PROPERTY + "basedOn";
+    public static final String INSTANCE_FACTORY = SPECIAL_PROPERTY + "instanceFactory";
+    public static final String BASED_ON_SPECIAL_PROPERTIES = SPECIAL_PROPERTY + "_basedOn";
 
     public static class Path {
 
@@ -28,6 +31,7 @@ public class Constant {
     public static final String LAYERS = "GLUE_LAYERS";
 
     public static class Java {
+
       public static final String METRIC_REGISTRY_NAME = "metric.registry.name";
       public static final String LAYERS = "glue.layers";
     }

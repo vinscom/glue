@@ -204,4 +204,19 @@ public class Util {
 
     return null;
   }
+
+  public static String convertDotToCamelCase(String pValue) {
+    StringBuilder sb = new StringBuilder(pValue);
+    int dotIndx = 0;
+    while (dotIndx != -1) {
+      dotIndx = sb.indexOf(".");
+      if (dotIndx == -1) {
+        break;
+      }
+      sb.deleteCharAt(dotIndx);
+      sb.setCharAt(dotIndx, Character.toUpperCase(sb.charAt(dotIndx)));
+    }
+    return sb.toString();
+  }
+
 }
