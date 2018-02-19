@@ -99,7 +99,6 @@ public class PropertiesRepository {
 
     properties.put(Constant.Component.BASED_ON, basedOn);
     properties.put(Constant.Component.BASED_ON_SPECIAL_PROPERTIES, basedOnSpecialProperties);
-
     return new AbstractMap.SimpleEntry<>(componentPath, properties);
   }
 
@@ -316,6 +315,7 @@ public class PropertiesRepository {
               }
 
               ListMultimap<String, ValueWithModifier> properties = ArrayListMultimap.create();
+              properties.put(Constant.Component.COMPONENT_PATH_SPECIAL_PROPERTIES, new ValueWithModifier(key, PropertyValueModifier.NONE));
               pPropertiesRepository.put(key, properties);
               return properties;
             });

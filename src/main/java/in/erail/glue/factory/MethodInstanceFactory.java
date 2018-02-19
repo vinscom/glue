@@ -29,6 +29,7 @@ public class MethodInstanceFactory implements InstanceFactory {
   private String[] mFactoryParamType;
   private Logger mLog;
   private Class[] mParamType;
+  private String mComponentPath;
 
   private final Map<String, Class> mPrimitiveType = new HashMap<>();
 
@@ -150,7 +151,7 @@ public class MethodInstanceFactory implements InstanceFactory {
       ValueWithModifier vm = new ValueWithModifier(pParams[i], PropertyValueModifier.NONE);
       List<ValueWithModifier> vmc = new ArrayList<>(1);
       vmc.add(vm);
-      ValueProxy vp = new ValueProxy(paramsType[i], vmc, pParams[i]);
+      ValueProxy vp = new ValueProxy(paramsType[i], vmc, getComponentPath());
       vp.process();
       if (vp.isDeferredValue()) {
         params[i] = Glue.instance().resolve(vp.getDeferredComponentPath());
@@ -216,6 +217,14 @@ public class MethodInstanceFactory implements InstanceFactory {
       mParamType = new Class[]{};
     }
     return mParamType;
+  }
+
+  public String getComponentPath() {
+    return mComponentPath;
+  }
+
+  public void setComponentPath(String pComponentPath) {
+    this.mComponentPath = pComponentPath;
   }
 
 }

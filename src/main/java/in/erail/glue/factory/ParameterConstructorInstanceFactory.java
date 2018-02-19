@@ -26,6 +26,7 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
   private Class[] mParamType;
   private Logger mLog;
   private final Map<String, Class> mPrimitiveType = new HashMap<>();
+  private String mComponentPath;
 
   public ParameterConstructorInstanceFactory() {
     mPrimitiveType.put("byte.class", byte.class);
@@ -82,7 +83,7 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
       ValueWithModifier vm = new ValueWithModifier(pParams[i], PropertyValueModifier.NONE);
       List<ValueWithModifier> vmc = new ArrayList<>(1);
       vmc.add(vm);
-      ValueProxy vp = new ValueProxy(paramsType[i], vmc, pParams[i]);
+      ValueProxy vp = new ValueProxy(paramsType[i], vmc, getComponentPath());
       vp.process();
       if (vp.isDeferredValue()) {
         params[i] = Glue.instance().resolve(vp.getDeferredComponentPath());
@@ -159,6 +160,14 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
 
   public void setParamType(Class[] pParamType) {
     this.mParamType = pParamType;
+  }
+
+  public String getComponentPath() {
+    return mComponentPath;
+  }
+
+  public void setComponentPath(String pComponentPath) {
+    this.mComponentPath = pComponentPath;
   }
 
 }
