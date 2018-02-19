@@ -1,7 +1,5 @@
 package in.erail.glue.factory;
 
-import com.google.common.base.Strings;
-import in.erail.glue.component.PropertiesComponent;
 import java.util.ArrayList;
 import java.util.List;
 

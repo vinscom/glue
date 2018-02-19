@@ -1,20 +1,20 @@
 package in.erail.glue.factory;
 
+import com.google.common.base.Strings;
 import in.erail.glue.Glue;
 import in.erail.glue.InstanceFactory;
 import in.erail.glue.ValueProxy;
-import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
 import in.erail.glue.enumeration.PropertyValueModifier;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.util.Strings;
 
 /**
  *
@@ -29,7 +29,7 @@ public class MethodInstanceFactory implements InstanceFactory {
   private String[] mFactoryParamType;
   private Logger mLog;
   private Class[] mParamType;
-  
+
   private final Map<String, Class> mPrimitiveType = new HashMap<>();
 
   public MethodInstanceFactory() {
@@ -46,37 +46,48 @@ public class MethodInstanceFactory implements InstanceFactory {
   @Override
   public Optional createInstance() {
 
-    Optional factoryInstance = createFactoryInstance(getFactoryClass(), getFactoryInstance());
     Object instance = null;
+    Class clazz;
+    Method method = null;
+    Object clzzInstance = null;
 
-    if (factoryInstance.isPresent()) {
-      Optional<Method> method = findFactoryMethod(factoryInstance.get().getClass(), getFactoryMethodName(), getParamType());
-      if (method.isPresent()) {
-        try {
-          Object[] params = getFactoryMethodParams(getFactoryParamValues(), method.get());
-          instance = method.get().invoke(factoryInstance.get(), params);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-          getLog().error(ex);
+    try {
+      if (!Strings.isNullOrEmpty(getFactoryClass())) {
+        clazz = Class.forName(getFactoryClass());
+      } else if (!Strings.isNullOrEmpty(getFactoryInstance())) {
+        clzzInstance = Glue.instance().resolve(getFactoryInstance());
+        clazz = clzzInstance.getClass();
+      } else {
+        getLog().error("Not able to create instance");
+        return Optional.empty();
+      }
+
+      if (getParamType().length == 0) {
+        for (Method m : clazz.getMethods()) {
+          if (m.getName().equals(getFactoryMethodName())) {
+            method = m;
+            break;
+          }
         }
       } else {
-        getLog().error("Not able to find method:[%s]");
+        method = clazz.getMethod(getFactoryMethodName(), getParamType());
       }
-    } else {
-      getLog().error("Not able to create instance");
-    }
+      
+      if (clzzInstance == null && method != null && !Modifier.isStatic(method.getModifiers())) {
+        clzzInstance = clazz.newInstance();
+      }
 
-    return Optional.ofNullable(instance);
-  }
+      Object[] params = getFactoryMethodParams(getFactoryParamValues(), method);
+      instance = method.invoke(clzzInstance, params);
 
-  protected Optional createFactoryInstance(String pFactoryClass, String pFactoryInstance) {
-    Object instance = null;
-
-    if (Strings.isNotBlank(pFactoryClass)) {
-      instance = Util.createInstance(pFactoryClass);
-    } else if (Strings.isNotBlank(pFactoryInstance)) {
-      instance = Glue.instance().resolve(pFactoryInstance);
-    } else {
-      getLog().error("Factory class or instance not defined.");
+    } catch (IllegalAccessException
+            | IllegalArgumentException
+            | ClassNotFoundException
+            | InstantiationException
+            | NoSuchMethodException
+            | InvocationTargetException
+            | SecurityException ex) {
+      getLog().error(ex);
     }
 
     return Optional.ofNullable(instance);
