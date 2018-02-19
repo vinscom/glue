@@ -44,6 +44,7 @@ public class ValueProxy {
   private String deferredComponentPath;
   private String deferredComponentProperty;
   private Object deferredComponent;
+  private boolean deferredComponentProcessed = false;
   private boolean deferredValue = false;
   private boolean processed = false;
 
@@ -470,6 +471,14 @@ public class ValueProxy {
 
   public void setProcessed(boolean pProcessed) {
     this.processed = pProcessed;
+  }
+
+  public boolean isDeferredComponentProcessed() {
+    return deferredComponentProcessed;
+  }
+
+  public void setDeferredComponentProcessed(boolean pDeferredComponentProcessed) {
+    this.deferredComponentProcessed = pDeferredComponentProcessed;
   }
 
 }

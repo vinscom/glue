@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import in.erail.glue.annotation.StartService;
 import in.erail.glue.common.ValueWithModifier;
+import java.util.HashMap;
 import java.util.Optional;
 
 public class ComponentRepository implements Glue {
@@ -29,7 +29,7 @@ public class ComponentRepository implements Glue {
 
   static {
     PropertiesRepository.setLayers(Util.getSystemLayers());
-    mSingletonRepository = new ConcurrentHashMap<>();
+    mSingletonRepository = new HashMap<>();
     mPropertiesRepository = new PropertiesRepository();
     mPropertiesRepository.init();
   }
@@ -47,7 +47,7 @@ public class ComponentRepository implements Glue {
 
     logger.debug(() -> "Component[" + pPath + "]:Got instance isNewInstance[" + isNewInstance + "]");
 
-    if (!isNewInstance) {
+    if (!isNewInstance || objInstance == null) {
       return objInstance;
     }
 
@@ -77,14 +77,21 @@ public class ComponentRepository implements Glue {
 
     if (v != null) {
 
-      if (v.isDeferredValue() && v.getDeferredComponent() == null) {
+      if (v.isDeferredValue() && !v.isDeferredComponentProcessed()) {
         logger.debug(() -> "Component[" + pPropCtx.getComponentPath() + "]: Property referes to another component. Processing " + v.getDeferredComponentPath());
         Tuple<Boolean, Object> instance = getInstance(v.getDeferredComponentPath(), getPropertiesCache().get(v.getDeferredComponentPath()));
-        v.setDeferredComponent(instance.value2);
+
+        boolean isNewInstance = instance.value1;
+        Object objInstance = instance.value2;
+
+        v.setDeferredComponent(objInstance);
+        v.setDeferredComponentProcessed(true);
         pPropertyStack.push(pPropCtx);
-        if (instance.value1) {
-          loadPropertiesInStack(instance.value2, getPropertiesCache().get(v.getDeferredComponentPath()), v.getDeferredComponentPath(), pPropertyStack);
+
+        if (isNewInstance && objInstance != null) {
+          loadPropertiesInStack(objInstance, getPropertiesCache().get(v.getDeferredComponentPath()), v.getDeferredComponentPath(), pPropertyStack);
         }
+
         return;
       }
 
@@ -174,12 +181,13 @@ public class ComponentRepository implements Glue {
         }
 
         result = new Tuple<>(true, instance);
+
+        if (ComponentScopeType.GLOBAL == scope) {
+          logger.debug(() -> "Component[" + pPath + "]:Adding instance to singleton repository");
+          mSingletonRepository.put(pPath, result.value2);
+        }
       }
 
-      if (ComponentScopeType.GLOBAL == scope) {
-        logger.debug(() -> "Component[" + pPath + "]:Adding instance to singleton repository");
-        mSingletonRepository.put(pPath, result.value2);
-      }
     }
 
     return result;
