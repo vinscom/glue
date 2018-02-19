@@ -282,8 +282,8 @@ As can be seen above. *^* is used for connecting  component property to another
 component property.
 
 == Factory based creation of Component
-Glue supports two factory classes with you can use to create methods requiring factory
-for creation of instance. For example, refer to test cases.
+Glue supports two factory classes which you can use to create instance of classes requiring
+factory for creation. For more example, refer to test cases.
 
 === MethodInstanceFactory
 
