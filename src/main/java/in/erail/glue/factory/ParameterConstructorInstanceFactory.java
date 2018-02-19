@@ -27,6 +27,7 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
   private Logger mLog;
   private final Map<String, Class> mPrimitiveType = new HashMap<>();
   private String mComponentPath;
+  private boolean mConstructorEnable = true;
 
   public ParameterConstructorInstanceFactory() {
     mPrimitiveType.put("byte.class", byte.class);
@@ -42,6 +43,10 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
   @Override
   public Optional<Object> createInstance() {
 
+    if(!isConstructorEnable()){
+      return Optional.empty();
+    }
+    
     Object instance = null;
 
     try {
@@ -168,6 +173,14 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
 
   public void setComponentPath(String pComponentPath) {
     this.mComponentPath = pComponentPath;
+  }
+
+  public boolean isConstructorEnable() {
+    return mConstructorEnable;
+  }
+
+  public void setConstructorEnable(boolean pConstructorEnable) {
+    this.mConstructorEnable = pConstructorEnable;
   }
 
 }

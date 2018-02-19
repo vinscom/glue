@@ -165,7 +165,7 @@ public class ComponentRepository implements Glue {
           if (inst.isPresent()) {
             instance = inst.get();
           } else {
-            logger.error(() -> "Component[" + pPath + "]: Not able to create instance from factory:" + factoryPath);
+            logger.debug(() -> "Component[" + pPath + "]: No instance create by factory of " + pPath);
           }
         } else {
           String clazz = Util.getLastValue(pProperties, Constant.Component.CLASS);

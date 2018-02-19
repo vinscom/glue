@@ -30,6 +30,7 @@ public class MethodInstanceFactory implements InstanceFactory {
   private Logger mLog;
   private Class[] mParamType;
   private String mComponentPath;
+  private boolean mFactoryEnable = true;
 
   private final Map<String, Class> mPrimitiveType = new HashMap<>();
 
@@ -47,6 +48,10 @@ public class MethodInstanceFactory implements InstanceFactory {
   @Override
   public Optional createInstance() {
 
+    if(!isFactoryEnable()){
+      return Optional.empty();
+    }
+    
     Object instance = null;
     Class clazz;
     Method method = null;
@@ -225,6 +230,14 @@ public class MethodInstanceFactory implements InstanceFactory {
 
   public void setComponentPath(String pComponentPath) {
     this.mComponentPath = pComponentPath;
+  }
+
+  public boolean isFactoryEnable() {
+    return mFactoryEnable;
+  }
+
+  public void setFactoryEnable(boolean pFactoryEnable) {
+    this.mFactoryEnable = pFactoryEnable;
   }
 
 }
