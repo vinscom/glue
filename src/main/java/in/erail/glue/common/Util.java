@@ -24,8 +24,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 public class Util {
 
@@ -122,7 +126,7 @@ public class Util {
 
     Map<String, String> result = new HashMap<>();
 
-    for (String s : pValue.split(",")) {
+    for (String s : convertCSVIntoArray(pValue)) {
       String[] keyvalue = s.split("=");
       result.put(keyvalue[0], keyvalue[1]);
     }
@@ -217,6 +221,24 @@ public class Util {
       sb.setCharAt(dotIndx, Character.toUpperCase(sb.charAt(dotIndx)));
     }
     return sb.toString();
+  }
+
+  public static String[] convertCSVIntoArray(String pValue) {
+    try {
+      CSVParser parser = CSVParser.parse(pValue, CSVFormat.DEFAULT);
+      Iterator<CSVRecord> itrRecord = parser.iterator();
+      if (itrRecord.hasNext()) {  //Only one record is expected
+        CSVRecord record = itrRecord.next();
+        String[] result = new String[record.size()];
+        for (int i = 0; i < result.length; i++) {
+          result[i] = record.get(i);
+        }
+        return result;
+      }
+    } catch (IOException ex) {
+      logger.error(ex);
+    }
+    return new String[0];
   }
 
 }

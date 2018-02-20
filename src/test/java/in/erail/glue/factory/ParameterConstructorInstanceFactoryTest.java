@@ -14,7 +14,7 @@ public class ParameterConstructorInstanceFactoryTest {
   @Test
   public void testCreateInstance() {
     TestComponent2 inst = Glue.instance().resolve("/in/erail/glue/test/factory/TestComponentPC1");
-    String[] expected = new String[]{"ninja","5","true"};
+    String[] expected = new String[]{"ninja","5","true","a","b"};
     assertArrayEquals(expected,inst.getResult().toArray());
   }
 

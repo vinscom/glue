@@ -230,7 +230,9 @@ public class ValueProxy {
       if (Strings.isNullOrEmpty(vwm.getValue())) {
         return;
       }
-      List<String> l = Arrays.asList(vwm.getValue().split(","));
+      
+      List<String> l = Arrays.asList(Util.convertCSVIntoArray(vwm.getValue()));
+      
       switch (vwm.getPropertyValueModifier()) {
         case PLUS:
           result.addAll(l);
@@ -265,7 +267,7 @@ public class ValueProxy {
       if (Strings.isNullOrEmpty(vwm.getValue())) {
         return;
       }
-      List<String> l = Arrays.asList(vwm.getValue().split(","));
+      List<String> l = Arrays.asList(Util.convertCSVIntoArray(vwm.getValue()));
       switch (vwm.getPropertyValueModifier()) {
         case PLUS:
           result.addAll(l);
@@ -292,7 +294,7 @@ public class ValueProxy {
       if (Strings.isNullOrEmpty(vwm.getValue())) {
         return;
       }
-      List<String> l = Arrays.asList(vwm.getValue().split(","));
+      List<String> l = Arrays.asList(Util.convertCSVIntoArray(vwm.getValue()));
       switch (vwm.getPropertyValueModifier()) {
         case PLUS:
           result.addAll(l);
