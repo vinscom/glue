@@ -191,8 +191,7 @@ public class Util {
         String filePath = configLayer + File.separator + entry.getName();
         if (entry.isDirectory()) {
           // if the entry is a directory, make the directory
-          File dir = new File(filePath);
-          dir.mkdir();
+          Files.createDirectory(Paths.get(filePath));
         } else {
           // if the entry is a file, extracts it
           Files.copy(zipIn, Paths.get(filePath));
