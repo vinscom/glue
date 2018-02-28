@@ -377,7 +377,7 @@ public class PropertiesRepository {
                   }
                   return null;
                 } catch (IOException ex) {
-                  java.util.logging.Logger.getLogger(PropertiesRepository.class.getName()).log(Level.SEVERE, null, ex);
+                  LogManager.getLogger(PropertiesRepository.class.getCanonicalName()).error(path);
                 }
 
               }

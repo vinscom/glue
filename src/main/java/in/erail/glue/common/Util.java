@@ -176,10 +176,6 @@ public class Util {
   }
 
   public static String unzip(String pZipFilePath) {
-    return unzip(pZipFilePath, null);
-  }
-
-  public static String unzip(String pZipFilePath, String pOnlyExtractPath) {
 
     try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath))) {
       //Create Temp Folder
@@ -188,13 +184,23 @@ public class Util {
       ZipEntry entry = zipIn.getNextEntry();
       // iterates over entries in the zip file
       while (entry != null) {
-        String filePath = configLayer + File.separator + entry.getName();
+        String uri = configLayer + File.separator + entry.getName();
+        Path path = Paths.get(uri);
         if (entry.isDirectory()) {
           // if the entry is a directory, make the directory
-          Files.createDirectory(Paths.get(filePath));
+          if (!Files.exists(path)) {
+            Files.createDirectories(path);
+          }
         } else {
+
+          Path parentPath = path.getParent();
+
+          if (!Files.exists(parentPath)) {
+            Files.createDirectories(parentPath);
+          }
+
           // if the entry is a file, extracts it
-          Files.copy(zipIn, Paths.get(filePath));
+          Files.copy(zipIn, path);
         }
         zipIn.closeEntry();
         entry = zipIn.getNextEntry();
