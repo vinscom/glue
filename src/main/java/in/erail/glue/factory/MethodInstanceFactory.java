@@ -93,7 +93,7 @@ public class MethodInstanceFactory implements InstanceFactory {
             | NoSuchMethodException
             | InvocationTargetException
             | SecurityException ex) {
-      getLog().error(ex);
+      throw new RuntimeException(ex);
     }
 
     return Optional.ofNullable(instance);
