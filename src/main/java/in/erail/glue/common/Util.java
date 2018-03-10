@@ -175,8 +175,7 @@ public class Util {
     return result;
   }
 
-  public static String unzip(String pZipFilePath) {
-
+  public static String unzip(String pZipFilePath) throws IOException {
     try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath))) {
       //Create Temp Folder
       Path configLayer = Files.createTempDirectory("layer");
@@ -207,11 +206,7 @@ public class Util {
       }
 
       return configLayer.toString();
-    } catch (IOException ex) {
-      logger.error(ex);
     }
-
-    return null;
   }
 
   public static String convertDotToCamelCase(String pValue) {

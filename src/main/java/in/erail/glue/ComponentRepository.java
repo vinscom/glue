@@ -1,5 +1,6 @@
 package in.erail.glue;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ListMultimap;
 import in.erail.glue.common.PropertyContext;
@@ -149,6 +150,8 @@ public class ComponentRepository implements Glue {
    * @return Returns Tuple where value1 = true if new Object is created. Or else false
    */
   protected Tuple<Boolean, Object> getInstance(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
+
+    Preconditions.checkNotNull(pProperties, "pProperties of %s is null", pPath);
 
     ComponentScopeType scope = ComponentScopeType.valueOf(Util.getLastValue(pProperties, Constant.Component.SCOPE, ComponentScopeType.GLOBAL.toString()));
     logger.debug(() -> "Component[" + pPath + "]:Scope=" + scope);
