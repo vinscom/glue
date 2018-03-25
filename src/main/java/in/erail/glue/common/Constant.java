@@ -30,13 +30,8 @@ public class Constant {
     public static final String SEPERATOR = ",";
     public static final String METRIC_REGISTRY_NAME = "METRIC_REGISTRY_NAME";
     public static final String LAYERS = "GLUE_LAYERS";
-
-    public static class Java {
-
-      public static final String METRIC_REGISTRY_NAME = "metric.registry.name";
-      public static final String LAYERS = "glue.layers";
-    }
+    public static final String GLUE_SERIALIZATION_FACTORY = "GLUE_SERIALIZATION_FACTORY";
 
   }
-
+  
 }
