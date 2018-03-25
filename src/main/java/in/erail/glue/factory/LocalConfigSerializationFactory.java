@@ -1,7 +1,6 @@
 package in.erail.glue.factory;
 
 import com.google.common.collect.ListMultimap;
-import com.google.common.primitives.Booleans;
 import in.erail.glue.ConfigSerializationFactory;
 import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
@@ -28,7 +27,7 @@ public class LocalConfigSerializationFactory implements ConfigSerializationFacto
 
   private static final String DEFAULT_FILE_LOCATION = ".";
   private static final String DEFAULT_FILE_NAME = "glue.ser";
-  private static final String DEFAULT_SAVE_ENABLE = "true";
+  private static final String DEFAULT_DISABLE_SAVE = "false";
   private static final String ENV_FILE_LOCATION = "LOCAL_CONFIG_FACTORY_FILE_LOCATION";
   private static final String ENV_FILE_NAME = "LOCAL_CONFIG_FACTORY_FILE_NAME";
   private static final String ENV_IDENTIFIER = "LOCAL_CONFIG_FACTORY_IDENTIFIER";
@@ -44,7 +43,7 @@ public class LocalConfigSerializationFactory implements ConfigSerializationFacto
     mFileLocation = Util.getEnvironmentValue(ENV_FILE_LOCATION, DEFAULT_FILE_LOCATION);
     mFileName = Util.getEnvironmentValue(ENV_FILE_NAME, DEFAULT_FILE_NAME);
     mIdentifier = Util.getEnvironmentValue(ENV_IDENTIFIER, DEFAULT_IDENTIFIER);
-    mSaveDisabled = Boolean.parseBoolean(Util.getEnvironmentValue(ENV_DISABLE_SAVE, DEFAULT_SAVE_ENABLE));
+    mSaveDisabled = Boolean.parseBoolean(Util.getEnvironmentValue(ENV_DISABLE_SAVE, DEFAULT_DISABLE_SAVE));
   }
 
   @Override
@@ -93,9 +92,9 @@ public class LocalConfigSerializationFactory implements ConfigSerializationFacto
                 result = (Map<String, ListMultimap<String, ValueWithModifier>>) input.readObject();
               } catch (IOException | ClassNotFoundException ex) {
                 log.info(() -> "Not able to load config from : " + fileLocation.toString());
-                log.debug(() -> ex);
                 return Maybe.empty();
               }
+              log.info(() -> "Config loaded from : " + fileLocation.toString());
               return Maybe.just(result);
             });
   }
