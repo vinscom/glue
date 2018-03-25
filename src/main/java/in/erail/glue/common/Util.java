@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.google.common.base.Strings;
 import com.google.common.collect.ListMultimap;
+import in.erail.glue.ConfigSerializationFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Parameter;
 import java.util.Collection;
 import in.erail.glue.enumeration.PropertyValueModifier;
+import in.erail.glue.factory.DefaultConfigSerializationFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -138,6 +140,10 @@ public class Util {
     return metricRegistry;
   }
 
+  public static ConfigSerializationFactory getConfigSerializationFactory(){
+    return new DefaultConfigSerializationFactory();
+  }
+  
   public static List<String> getSystemLayers() {
 
     String layer = System.getenv(Constant.EnvVar.LAYERS);

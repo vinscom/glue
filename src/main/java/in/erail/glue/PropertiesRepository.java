@@ -25,6 +25,7 @@ import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
 import in.erail.glue.enumeration.PropertyValueModifier;
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.subjects.UnicastSubject;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -37,17 +38,30 @@ public class PropertiesRepository {
   private static final String PROPERTY_EXTENSION = ".properties";
   private static final int PROPERTY_EXTENSION_LENGTH = PROPERTY_EXTENSION.length();
 
-  private final Map<String, ListMultimap<String, ValueWithModifier>> mPropertiesRepository;
+  private Map<String, ListMultimap<String, ValueWithModifier>> mPropertiesRepository;
   private final AtomicLong mInstanceFactoryCounter;
 
   private boolean mInitialized = false;
 
   public PropertiesRepository() {
     this.mInstanceFactoryCounter = new AtomicLong();
-    this.mPropertiesRepository = new HashMap<>();
+    this.mPropertiesRepository = Collections.EMPTY_MAP;
   }
 
   protected void init() {
+
+    mPropertiesRepository = Util
+            .getConfigSerializationFactory()
+            .load()
+            .switchIfEmpty(loadConfig())
+            .doOnSuccess((r) -> setInitialized(true))
+            .blockingGet();
+
+  }
+
+  private Single<Map<String, ListMultimap<String, ValueWithModifier>>> loadConfig() {
+
+    Map<String, ListMultimap<String, ValueWithModifier>> propertiesRepository = new HashMap<>();
 
     UnicastSubject<Map.Entry<String, ListMultimap<String, ValueWithModifier>>> instanceOfFactoryProperties
             = UnicastSubject.<Map.Entry<String, ListMultimap<String, ValueWithModifier>>>create();
@@ -57,13 +71,13 @@ public class PropertiesRepository {
             .map(path -> Paths.get(path))
             .flatMap(this::findAllPropertiesFile);
 
-    Observable<ListMultimap<String, ValueWithModifier>> cachedProperties = loadCachedProperties(paths, mPropertiesRepository);
+    Observable<ListMultimap<String, ValueWithModifier>> cachedProperties = loadCachedProperties(paths, propertiesRepository);
     Observable<Properties> newProperties = loadUncachedProperties(paths);
 
-    cachedProperties
+    return cachedProperties
             .zipWith(newProperties, this::mergeUncachedIntoCachedProperties)
             .flatMapCompletable((t) -> t)
-            .andThen(Observable.fromIterable(mPropertiesRepository.entrySet()))
+            .andThen(Observable.fromIterable(propertiesRepository.entrySet()))
             .doOnNext((t) -> {
               String factoryPath = Util.getLastValue(t.getValue(), Constant.Component.INSTANCE_FACTORY);
               if (Strings.isNullOrEmpty(factoryPath)) {
@@ -78,11 +92,11 @@ public class PropertiesRepository {
                               new ValueWithModifier(newFactoryProperties.getKey(), PropertyValueModifier.NONE));
             })
             .doOnComplete(() -> instanceOfFactoryProperties.onComplete())
-            .concatWith(instanceOfFactoryProperties.doOnNext((p) -> mPropertiesRepository.put(p.getKey(), p.getValue())))
-            .doOnNext((t) -> updateBasedOnProperties(t.getKey(), t.getValue(), mPropertiesRepository))
-            .doOnNext((t) -> updateBasedOnSpecialProperties(t.getKey(), t.getValue(), mPropertiesRepository))
-            .doOnComplete(() -> setInitialized(true))
-            .blockingSubscribe();
+            .concatWith(instanceOfFactoryProperties.doOnNext((p) -> propertiesRepository.put(p.getKey(), p.getValue())))
+            .doOnNext((t) -> updateBasedOnProperties(t.getKey(), t.getValue(), propertiesRepository))
+            .doOnNext((t) -> updateBasedOnSpecialProperties(t.getKey(), t.getValue(), propertiesRepository))
+            .ignoreElements()
+            .toSingleDefault(propertiesRepository);
   }
 
   private Map.Entry<String, ListMultimap<String, ValueWithModifier>> createInstanceFactoryProperties(
@@ -190,7 +204,7 @@ public class PropertiesRepository {
             .forEachOrdered((e) -> {
               newProperties.put(e.getKey(), e.getValue());
             });
-    
+
     pProperties.clear();
     pProperties.putAll(newProperties);
   }

@@ -1,8 +1,9 @@
 package in.erail.glue.common;
 
 import com.google.common.base.MoreObjects;
+import java.io.Serializable;
 
-public class Tuple<K, V> {
+public class Tuple<K, V> implements Serializable{
 
   public K value1;
   public V value2;
