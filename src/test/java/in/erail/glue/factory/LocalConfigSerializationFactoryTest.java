@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  *
  * @author vinay
  */
-public class FileConfigSerializationFactoryTest {
+public class LocalConfigSerializationFactoryTest {
 
   Map<String, ListMultimap<String, ValueWithModifier>> pConfig = new HashMap<>();
   ConfigSerializationFactory factory;
@@ -29,7 +29,7 @@ public class FileConfigSerializationFactoryTest {
     multiMap.put("p3", new ValueWithModifier("test4", PropertyValueModifier.MINUS));
     pConfig.put("a/b/c", multiMap);
     
-    factory = new FileConfigSerializationFactory();
+    factory = new LocalConfigSerializationFactory();
   }
 
   @Test

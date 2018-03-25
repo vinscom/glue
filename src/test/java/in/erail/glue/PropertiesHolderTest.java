@@ -4,6 +4,7 @@ import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import in.erail.glue.common.Constant;
+import in.erail.glue.common.Util;
 
 /**
  *
@@ -15,7 +16,7 @@ public class PropertiesHolderTest {
   public void testInit() {
     System.out.println("init");
     PropertiesRepository instance = new PropertiesRepository();
-    PropertiesRepository.setLayers(Arrays.asList(System.getProperty(Constant.EnvVar.Java.LAYERS).split(Constant.EnvVar.SEPERATOR)));
+    PropertiesRepository.setLayers(Arrays.asList(Util.getEnvironmentValue(Constant.EnvVar.LAYERS).split(Constant.EnvVar.SEPERATOR)));
     
     instance.init();
     

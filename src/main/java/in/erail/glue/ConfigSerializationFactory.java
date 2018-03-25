@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public interface ConfigSerializationFactory {
 
-  public static final String DEFAULT_IDENTIFIER = "default";
+  public static final String DEFAULT_IDENTIFIER = ".default";
 
   /**
    * Save configuration. Each call to this function will override 

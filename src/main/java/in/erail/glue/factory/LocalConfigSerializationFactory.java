@@ -1,7 +1,9 @@
 package in.erail.glue.factory;
 
 import com.google.common.collect.ListMultimap;
+import com.google.common.primitives.Booleans;
 import in.erail.glue.ConfigSerializationFactory;
+import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
@@ -22,21 +24,42 @@ import org.apache.logging.log4j.Logger;
  *
  * @author vinay
  */
-public class FileConfigSerializationFactory implements ConfigSerializationFactory {
+public class LocalConfigSerializationFactory implements ConfigSerializationFactory {
 
-  private static final String FILE_LOCATION = ".";
-  private static final String FILE_NAME = "glue.ser";
-  private final Logger log = LogManager.getLogger(FileConfigSerializationFactory.class.getCanonicalName());
+  private static final String DEFAULT_FILE_LOCATION = ".";
+  private static final String DEFAULT_FILE_NAME = "glue.ser";
+  private static final String DEFAULT_SAVE_ENABLE = "true";
+  private static final String ENV_FILE_LOCATION = "LOCAL_CONFIG_FACTORY_FILE_LOCATION";
+  private static final String ENV_FILE_NAME = "LOCAL_CONFIG_FACTORY_FILE_NAME";
+  private static final String ENV_IDENTIFIER = "LOCAL_CONFIG_FACTORY_IDENTIFIER";
+  private static final String ENV_DISABLE_SAVE = "LOCAL_CONFIG_FACTORY_DISABLE_SAVE";
+  private final Logger log = LogManager.getLogger(LocalConfigSerializationFactory.class.getCanonicalName());
+
+  private final String mFileLocation;
+  private final String mFileName;
+  private final String mIdentifier;
+  private final boolean mSaveDisabled;
+
+  public LocalConfigSerializationFactory() {
+    mFileLocation = Util.getEnvironmentValue(ENV_FILE_LOCATION, DEFAULT_FILE_LOCATION);
+    mFileName = Util.getEnvironmentValue(ENV_FILE_NAME, DEFAULT_FILE_NAME);
+    mIdentifier = Util.getEnvironmentValue(ENV_IDENTIFIER, DEFAULT_IDENTIFIER);
+    mSaveDisabled = Boolean.parseBoolean(Util.getEnvironmentValue(ENV_DISABLE_SAVE, DEFAULT_SAVE_ENABLE));
+  }
 
   @Override
   public Completable save(Map<String, ListMultimap<String, ValueWithModifier>> pConfig) {
-    return save(pConfig, DEFAULT_IDENTIFIER);
+    return save(pConfig, mIdentifier);
   }
 
   @Override
   public Completable save(Map<String, ListMultimap<String, ValueWithModifier>> pConfig, String pIdentifier) {
 
-    Path fileLocation = Paths.get(FILE_LOCATION, pIdentifier + FILE_NAME);
+    if(mSaveDisabled){
+      return Completable.complete();
+    }
+    
+    Path fileLocation = Paths.get(mFileLocation, mFileName + pIdentifier);
 
     return Single
             .just(fileLocation)
@@ -54,12 +77,12 @@ public class FileConfigSerializationFactory implements ConfigSerializationFactor
 
   @Override
   public Maybe<Map<String, ListMultimap<String, ValueWithModifier>>> load() {
-    return load(DEFAULT_IDENTIFIER);
+    return load(mIdentifier);
   }
 
   @Override
   public Maybe<Map<String, ListMultimap<String, ValueWithModifier>>> load(String pIdentifier) {
-    Path fileLocation = Paths.get(FILE_LOCATION, pIdentifier + FILE_NAME);
+    Path fileLocation = Paths.get(mFileLocation, mFileName + pIdentifier);
     return Maybe
             .just(fileLocation)
             .subscribeOn(Schedulers.io())

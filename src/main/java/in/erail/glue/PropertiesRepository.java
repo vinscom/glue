@@ -50,13 +50,14 @@ public class PropertiesRepository {
 
   protected void init() {
 
-    mPropertiesRepository = Util
-            .getConfigSerializationFactory()
+    ConfigSerializationFactory factory = Util.getConfigSerializationFactory();
+
+    mPropertiesRepository = factory
             .load()
             .switchIfEmpty(loadConfig())
-            .doOnSuccess((r) -> setInitialized(true))
+            .doOnSuccess((t) -> factory.save(t).subscribe())
+            .doOnSuccess((t) -> setInitialized(true))
             .blockingGet();
-
   }
 
   private Single<Map<String, ListMultimap<String, ValueWithModifier>>> loadConfig() {

@@ -39,11 +39,7 @@ public class Util {
   private static final MetricRegistry metricRegistry;
 
   static {
-    String metricRegistryName = System.getenv(Constant.EnvVar.METRIC_REGISTRY_NAME);
-
-    if (Strings.isNullOrEmpty(metricRegistryName)) {
-      metricRegistryName = System.getProperty(Constant.EnvVar.Java.METRIC_REGISTRY_NAME);
-    }
+    String metricRegistryName = getEnvironmentValue(Constant.EnvVar.METRIC_REGISTRY_NAME);
 
     if (metricRegistryName == null) {
       metricRegistryName = "vertx-registry";
@@ -140,17 +136,38 @@ public class Util {
     return metricRegistry;
   }
 
-  public static ConfigSerializationFactory getConfigSerializationFactory(){
-    return new DefaultConfigSerializationFactory();
+  public static String getEnvironmentValue(String pName, String pDefault) {
+    String value = System.getenv(pName);
+
+    if (Strings.isNullOrEmpty(value)) {
+      value = System.getProperty(pName.toLowerCase().replace("_", "."));
+    }
+
+    if (Strings.isNullOrEmpty(value)) {
+      return pDefault;
+    }
+
+    return value;
   }
-  
+
+  public static String getEnvironmentValue(String pName) {
+    return getEnvironmentValue(pName, null);
+  }
+
+  public static ConfigSerializationFactory getConfigSerializationFactory() {
+
+    String factory = getEnvironmentValue(Constant.EnvVar.GLUE_SERIALIZATION_FACTORY);
+
+    if (Strings.isNullOrEmpty(factory)) {
+      return new DefaultConfigSerializationFactory();
+    }
+
+    return (ConfigSerializationFactory) createInstance(factory);
+  }
+
   public static List<String> getSystemLayers() {
 
-    String layer = System.getenv(Constant.EnvVar.LAYERS);
-
-    if (Strings.isNullOrEmpty(layer)) {
-      layer = System.getProperty(Constant.EnvVar.Java.LAYERS);
-    }
+    String layer = getEnvironmentValue(Constant.EnvVar.LAYERS);
 
     if (layer == null) {
       return Collections.emptyList();
