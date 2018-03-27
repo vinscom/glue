@@ -39,7 +39,7 @@ public class Util {
   private static final MetricRegistry metricRegistry;
 
   static {
-    String metricRegistryName = getEnvironmentValue(Constant.EnvVar.METRIC_REGISTRY_NAME);
+    String metricRegistryName = getEnvironmentValue(Constant.SystemProperties.METRIC_REGISTRY_NAME);
 
     if (metricRegistryName == null) {
       metricRegistryName = "vertx-registry";
@@ -136,11 +136,18 @@ public class Util {
     return metricRegistry;
   }
 
+  /**
+   * Get property value from Java System Properties, if not found
+   * then get it form environment variable.
+   * @param pName Name of system property
+   * @param pDefault  Default value
+   * @return 
+   */
   public static String getEnvironmentValue(String pName, String pDefault) {
-    String value = System.getenv(pName);
+    String value = System.getProperty(pName);
 
     if (Strings.isNullOrEmpty(value)) {
-      value = System.getProperty(pName.toLowerCase().replace("_", "."));
+      value = System.getenv(pName.toUpperCase().replace(".", "_"));
     }
 
     if (Strings.isNullOrEmpty(value)) {
@@ -156,7 +163,7 @@ public class Util {
 
   public static ConfigSerializationFactory getConfigSerializationFactory() {
 
-    String factory = getEnvironmentValue(Constant.EnvVar.GLUE_SERIALIZATION_FACTORY);
+    String factory = getEnvironmentValue(Constant.SystemProperties.GLUE_SERIALIZATION_FACTORY);
 
     if (Strings.isNullOrEmpty(factory)) {
       return new DefaultConfigSerializationFactory();
@@ -167,13 +174,13 @@ public class Util {
 
   public static List<String> getSystemLayers() {
 
-    String layer = getEnvironmentValue(Constant.EnvVar.LAYERS);
+    String layer = getEnvironmentValue(Constant.SystemProperties.LAYERS);
 
     if (layer == null) {
       return Collections.emptyList();
     }
 
-    return Arrays.asList(layer.split(Constant.EnvVar.SEPERATOR));
+    return Arrays.asList(layer.split(Constant.SystemProperties.SEPERATOR));
   }
 
   public static ValueWithModifier getLastValueWithModifier(Collection<ValueWithModifier> pList) {
