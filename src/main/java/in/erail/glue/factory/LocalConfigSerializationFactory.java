@@ -2,6 +2,7 @@ package in.erail.glue.factory;
 
 import com.google.common.collect.ListMultimap;
 import in.erail.glue.ConfigSerializationFactory;
+import in.erail.glue.PropertiesRepository;
 import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
 import io.reactivex.Completable;
@@ -25,13 +26,14 @@ import org.apache.logging.log4j.Logger;
  */
 public class LocalConfigSerializationFactory implements ConfigSerializationFactory {
 
-  private static final String DEFAULT_FILE_LOCATION = ".";
+  public static final String ENV_FILE_LOCATION = "local.config.factory.file.location";
+  public static final String ENV_FILE_NAME = "local.config.factory.file.name";
+  public static final String ENV_IDENTIFIER = "local.config.factory.identifier";
+  public static final String ENV_DISABLE_SAVE = "local.config.factory.disable.save";
+
+  private static final String DEFAULT_FILE_LOCATION = "";
   private static final String DEFAULT_FILE_NAME = "glue.ser";
   private static final String DEFAULT_DISABLE_SAVE = "false";
-  private static final String ENV_FILE_LOCATION = "LOCAL_CONFIG_FACTORY_FILE_LOCATION";
-  private static final String ENV_FILE_NAME = "LOCAL_CONFIG_FACTORY_FILE_NAME";
-  private static final String ENV_IDENTIFIER = "LOCAL_CONFIG_FACTORY_IDENTIFIER";
-  private static final String ENV_DISABLE_SAVE = "LOCAL_CONFIG_FACTORY_DISABLE_SAVE";
   private final Logger log = LogManager.getLogger(LocalConfigSerializationFactory.class.getCanonicalName());
 
   private final String mFileLocation;
@@ -54,10 +56,10 @@ public class LocalConfigSerializationFactory implements ConfigSerializationFacto
   @Override
   public Completable save(Map<String, ListMultimap<String, ValueWithModifier>> pConfig, String pIdentifier) {
 
-    if(mSaveDisabled){
+    if (mSaveDisabled) {
       return Completable.complete();
     }
-    
+
     Path fileLocation = Paths.get(mFileLocation, mFileName + pIdentifier);
 
     return Single
@@ -67,6 +69,7 @@ public class LocalConfigSerializationFactory implements ConfigSerializationFacto
               try (FileOutputStream file = new FileOutputStream(location.toFile());
                       ObjectOutputStream output = new ObjectOutputStream(file)) {
                 output.writeObject(pConfig);
+                log.debug("Done writing");
               } catch (IOException err) {
                 return Completable.error(err);
               }
@@ -86,17 +89,23 @@ public class LocalConfigSerializationFactory implements ConfigSerializationFacto
             .just(fileLocation)
             .subscribeOn(Schedulers.io())
             .flatMap((location) -> {
+              log.debug("Reading....");
               Map<String, ListMultimap<String, ValueWithModifier>> result;
               try (FileInputStream file = new FileInputStream(location.toFile());
                       ObjectInputStream input = new ObjectInputStream(file)) {
                 result = (Map<String, ListMultimap<String, ValueWithModifier>>) input.readObject();
+                log.info(() -> "Config loaded from : " + location.toString());
+                return Maybe.just(result);
               } catch (IOException | ClassNotFoundException ex) {
-                log.info(() -> "Not able to load config from : " + fileLocation.toString());
-                return Maybe.empty();
+                log.info(() -> "Not able to load config from : " + location.toString());
+                log.debug(ex);
               }
-              log.info(() -> "Config loaded from : " + fileLocation.toString());
-              return Maybe.just(result);
+              return Maybe.empty();
             });
   }
 
+  public static void main(String[] pArgs) {
+    PropertiesRepository.setLayers(Util.getSystemLayers());
+    new PropertiesRepository().init();
+  }
 }

@@ -48,15 +48,19 @@ public class PropertiesRepository {
     this.mPropertiesRepository = Collections.EMPTY_MAP;
   }
 
-  protected void init() {
+  public void init() {
 
     ConfigSerializationFactory factory = Util.getConfigSerializationFactory();
 
     mPropertiesRepository = factory
             .load()
             .switchIfEmpty(loadConfig())
-            .doOnSuccess((t) -> factory.save(t).subscribe())
-            .doOnSuccess((t) -> setInitialized(true))
+            .flatMap((t) -> {
+              setInitialized(true);
+              return factory
+                      .save(t)
+                      .andThen(Single.just(t));
+            })
             .blockingGet();
   }
 
