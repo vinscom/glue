@@ -41,14 +41,11 @@ public class LocalConfigSerializationFactoryTest {
 
   @Test
   public void testConfigGeneration() throws IOException {
-    //assertTrue("File already exists glue.ser.auto.generated",Files.exists(Paths.get("glue.ser.auto.generated")));
-
-    System.setProperty(Constant.SystemProperties.GLUE_SERIALIZATION_FACTORY, "in.erail.glue.factory.LocalConfigSerializationFactory");
+    
     System.setProperty(LocalConfigSerializationFactory.ENV_IDENTIFIER, ".auto.generated.test");
-
+    
     LocalConfigSerializationFactory.main(new String[]{});
 
-    System.clearProperty(Constant.SystemProperties.GLUE_SERIALIZATION_FACTORY);
     System.clearProperty(LocalConfigSerializationFactory.ENV_IDENTIFIER);
 
     ConfigSerializationFactory factory = new LocalConfigSerializationFactory();

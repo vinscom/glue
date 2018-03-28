@@ -1,8 +1,10 @@
 package in.erail.glue.factory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ListMultimap;
 import in.erail.glue.ConfigSerializationFactory;
 import in.erail.glue.PropertiesRepository;
+import in.erail.glue.common.Constant;
 import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
 import io.reactivex.Completable;
@@ -105,7 +107,24 @@ public class LocalConfigSerializationFactory implements ConfigSerializationFacto
   }
 
   public static void main(String[] pArgs) {
+    
+    String factory = System.getProperty(Constant.SystemProperties.GLUE_SERIALIZATION_FACTORY);
+    boolean removeFactoryProperty = false;
+    if(Strings.isNullOrEmpty(factory)){
+      System.setProperty(Constant.SystemProperties.GLUE_SERIALIZATION_FACTORY, LocalConfigSerializationFactory.class.getCanonicalName());
+      removeFactoryProperty = true;
+    } else {
+      if(!LocalConfigSerializationFactory.class.getCanonicalName().equals(factory)){
+        throw new RuntimeException("Incorrect Serialization Factory Set:" + factory);
+      }
+    }
+    
     PropertiesRepository.setLayers(Util.getSystemLayers());
     new PropertiesRepository().init();
+    
+    if(removeFactoryProperty){
+      System.clearProperty(Constant.SystemProperties.GLUE_SERIALIZATION_FACTORY);
+    }
+    
   }
 }
