@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import in.erail.glue.Glue;
 import in.erail.glue.InstanceFactory;
 import in.erail.glue.ValueProxy;
+import in.erail.glue.annotation.StartService;
 import in.erail.glue.common.ValueWithModifier;
 import in.erail.glue.enumeration.PropertyValueModifier;
 import java.lang.reflect.InvocationTargetException;
@@ -31,6 +32,10 @@ public class MethodInstanceFactory implements InstanceFactory {
   private Class[] mParamType;
   private String mComponentPath;
   private boolean mFactoryEnable = true;
+  private Method mMethod;
+  private Object[] mMethodParam;
+  private Class mMethodClass;
+  private Object mMethodClassInstance;
 
   private final Map<String, Class> mPrimitiveType = new HashMap<>();
 
@@ -45,52 +50,86 @@ public class MethodInstanceFactory implements InstanceFactory {
     mPrimitiveType.put("char.class", char.class);
   }
 
-  @Override
-  public Optional createInstance() {
+  @StartService
+  public void start() {
 
-    if(!isFactoryEnable()){
-      return Optional.empty();
+    if (!isFactoryEnable()) {
+      return;
     }
-    
-    Object instance = null;
-    Class clazz;
-    Method method = null;
-    Object clzzInstance = null;
 
     try {
       if (!Strings.isNullOrEmpty(getFactoryClass())) {
-        clazz = Class.forName(getFactoryClass());
+        mMethodClass = Class.forName(getFactoryClass());
       } else if (!Strings.isNullOrEmpty(getFactoryInstance())) {
-        clzzInstance = Glue.instance().resolve(getFactoryInstance());
-        clazz = clzzInstance.getClass();
+        mMethodClassInstance = Glue.instance().resolve(getFactoryInstance());
+        mMethodClass = mMethodClassInstance.getClass();
       } else {
         getLog().error("Not able to create instance");
-        return Optional.empty();
+        return;
       }
 
-      if (getParamType().length == 0) {
-        for (Method m : clazz.getMethods()) {
-          if (m.getName().equals(getFactoryMethodName())) {
-            method = m;
-            break;
-          }
+      Method defaultMethod = null;
+      
+      all_methods:
+      for (Method m : mMethodClass.getMethods()) {
+        
+        if(!m.getName().equals(getFactoryMethodName())){
+          continue;
         }
-      } else {
-        method = clazz.getMethod(getFactoryMethodName(), getParamType());
+        
+        if(defaultMethod == null){
+          defaultMethod = m;
+        }
+        
+        Class[] pType = m.getParameterTypes();
+        
+        if (getParamType().length == pType.length) {
+          for (int i = 0; i < pType.length; i++) {
+            if (!pType[i].equals(getParamType()[i])) {
+              continue all_methods;
+            }
+          }
+          mMethod = m;
+          break;
+        }
+      }
+
+      if(mMethod == null){
+        mMethod = defaultMethod;
       }
       
-      if (clzzInstance == null && method != null && !Modifier.isStatic(method.getModifiers())) {
-        clzzInstance = clazz.newInstance();
+      if (mMethodClassInstance == null && mMethod != null && !Modifier.isStatic(mMethod.getModifiers())) {
+        mMethodClassInstance = mMethodClass.newInstance();
       }
 
-      Object[] params = getFactoryMethodParams(getFactoryParamValues(), method);
-      instance = method.invoke(clzzInstance, params);
+      if (mMethod == null) {
+        mMethodParam = new Object[0];
+      } else {
+        mMethodParam = getFactoryMethodParams(getFactoryParamValues(), mMethod);
+      }
+    } catch (IllegalArgumentException
+            | ClassNotFoundException
+            | SecurityException
+            | InstantiationException
+            | IllegalAccessException ex) {
+      throw new RuntimeException(ex);
+    }
 
+  }
+
+  @Override
+  public Optional createInstance() {
+
+    if (!isFactoryEnable() || mMethod == null) {
+      return Optional.empty();
+    }
+
+    Object instance = null;
+
+    try {
+      instance = mMethod.invoke(mMethodClassInstance, mMethodParam);
     } catch (IllegalAccessException
             | IllegalArgumentException
-            | ClassNotFoundException
-            | InstantiationException
-            | NoSuchMethodException
             | InvocationTargetException
             | SecurityException ex) {
       throw new RuntimeException(ex);

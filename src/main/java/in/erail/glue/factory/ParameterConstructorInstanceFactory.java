@@ -3,6 +3,7 @@ package in.erail.glue.factory;
 import in.erail.glue.Glue;
 import in.erail.glue.InstanceFactory;
 import in.erail.glue.ValueProxy;
+import in.erail.glue.annotation.StartService;
 import in.erail.glue.common.ValueWithModifier;
 import in.erail.glue.enumeration.PropertyValueModifier;
 import java.lang.reflect.Constructor;
@@ -28,6 +29,8 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
   private final Map<String, Class> mPrimitiveType = new HashMap<>();
   private String mComponentPath;
   private boolean mConstructorEnable = true;
+  private Constructor mConstructor = null;
+  private Object[] mConstructorParam;
 
   public ParameterConstructorInstanceFactory() {
     mPrimitiveType.put("byte.class", byte.class);
@@ -40,39 +43,66 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
     mPrimitiveType.put("char.class", char.class);
   }
 
-  @Override
-  public Optional<Object> createInstance() {
+  @StartService
+  public void start() {
 
-    if(!isConstructorEnable()){
-      return Optional.empty();
+    if (!isConstructorEnable()) {
+      return;
     }
-    
-    Object instance = null;
 
     try {
       Class clazz = Class.forName(getBaseClass());
-      Constructor constructor = null;
-      if (getParamType()!=null && getParamType().length == 0) {
-        for (Constructor c : clazz.getConstructors()) {
-          constructor = c;
-          break;
+
+      Constructor defaultConstructor = null;
+
+      all_constructors:
+      for (Constructor c : clazz.getConstructors()) {
+
+        if (defaultConstructor == null) {
+          defaultConstructor = c;
         }
-      } else {
-        if(clazz.getConstructors().length > 0){
-          constructor = clazz.getConstructors()[0];
+
+        Class[] pType = c.getParameterTypes();
+
+        if (getParamType().length == pType.length) {
+          for (int i = 0; i < pType.length; i++) {
+            if (!pType[i].equals(getParamType()[i])) {
+              continue all_constructors;
+            }
+          }
+          mConstructor = c;
+          break;
         }
       }
 
-      if(Optional.ofNullable(constructor).isPresent()){
-        instance = constructor.newInstance(getConstructorMethodParams(getConstructorParamValues(), constructor));
-      }      
-      
-    } catch (ClassNotFoundException
-            | SecurityException
-            | InstantiationException
-            | IllegalAccessException
-            | IllegalArgumentException
-            | InvocationTargetException ex) {
+      if (mConstructor == null) {
+        mConstructor = defaultConstructor;
+      }
+
+      if (mConstructor == null) {
+        mConstructorParam = new Object[0];
+      } else {
+        mConstructorParam = getConstructorMethodParams(getConstructorParamValues(), mConstructor);
+      }
+
+    } catch (ClassNotFoundException | SecurityException ex) {
+      getLog().error(ex);
+    }
+
+  }
+
+  @Override
+  public Optional<Object> createInstance() {
+
+    if (!isConstructorEnable() || mConstructor == null) {
+      return Optional.empty();
+    }
+
+    Object instance = null;
+
+    try {
+      instance = mConstructor.newInstance(mConstructorParam);
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
       getLog().error(ex);
     }
 
@@ -160,6 +190,9 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
   }
 
   public Class[] getParamType() {
+    if (mParamType == null) {
+      mParamType = new Class[0];
+    }
     return mParamType;
   }
 
