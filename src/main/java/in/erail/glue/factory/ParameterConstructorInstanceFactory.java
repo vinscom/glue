@@ -52,12 +52,19 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
 
     try {
       Class clazz = Class.forName(getBaseClass());
-      int paramCount = getParamType().length;
+
+      Constructor defaultConstructor = null;
 
       all_constructors:
       for (Constructor c : clazz.getConstructors()) {
+
+        if (defaultConstructor == null) {
+          defaultConstructor = c;
+        }
+
         Class[] pType = c.getParameterTypes();
-        if (paramCount == pType.length) {
+
+        if (getParamType().length == pType.length) {
           for (int i = 0; i < pType.length; i++) {
             if (!pType[i].equals(getParamType()[i])) {
               continue all_constructors;
@@ -68,8 +75,8 @@ public class ParameterConstructorInstanceFactory implements InstanceFactory {
         }
       }
 
-      if (clazz.getConstructors().length == 1) {
-        mConstructor = clazz.getConstructors()[0];
+      if (mConstructor == null) {
+        mConstructor = defaultConstructor;
       }
 
       if (mConstructor == null) {
