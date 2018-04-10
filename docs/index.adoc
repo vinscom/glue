@@ -8,15 +8,14 @@
 Vinay Kumar
 v0.1
 
-Proven and opinionated programming, and configuration model for java based
-applications. Similar to Spring Framework, but, it goes one step ahead and uses a
-configuration system which is easy to manage complex configuration for any complex
-program.
+Proven and opinionated programming, and configuration model for Java 
+and Vertx based applications. Inspired from ATG Nucleus, provides 
+powerful layer base configuration management using simple properties file.
 
-== What is Glue ?
-You will use Glue for same reason you will use Spring (dependency injection) in your
-application. But, in case of Glue, few concepts are implemented to make your life much
-easier from DevOps point of view.
+== What is Glue?
+You will use Glue for same reason you will use Spring (dependency injection) 
+in your application. But, in case of Glue, we have implemented few concepts 
+to make your life much easier from DevOps point of view.
 
 image::diag1.png[Simple Hello World]
 

@@ -141,7 +141,7 @@ public class Util {
    * then get it form environment variable.
    * @param pName Name of system property
    * @param pDefault  Default value
-   * @return 
+   * @return Return environment value
    */
   public static String getEnvironmentValue(String pName, String pDefault) {
     String value = System.getProperty(pName);

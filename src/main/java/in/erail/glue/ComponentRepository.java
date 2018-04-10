@@ -145,8 +145,8 @@ public class ComponentRepository implements Glue {
 
   /**
    *
-   * @param pPath
-   * @param pProperties
+   * @param pPath Component Path
+   * @param pProperties Properties loaded from properties file
    * @return Returns Tuple where value1 = true if new Object is created. Or else false
    */
   protected Tuple<Boolean, Object> getInstance(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
