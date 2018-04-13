@@ -205,15 +205,13 @@ public class Util {
     return result;
   }
 
-  public static String unzip(String pZipFilePath) throws IOException {
+  public static String unzip(String pZipFilePath, Path pDestinationPath) throws IOException {
     try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath))) {
-      //Create Temp Folder
-      Path configLayer = Files.createTempDirectory("layer");
 
       ZipEntry entry = zipIn.getNextEntry();
       // iterates over entries in the zip file
       while (entry != null) {
-        String uri = configLayer + File.separator + entry.getName();
+        String uri = pDestinationPath + File.separator + entry.getName();
         Path path = Paths.get(uri);
         if (entry.isDirectory()) {
           // if the entry is a directory, make the directory
@@ -235,7 +233,7 @@ public class Util {
         entry = zipIn.getNextEntry();
       }
 
-      return configLayer.toString();
+      return pDestinationPath.toString();
     }
   }
 
