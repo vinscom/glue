@@ -384,7 +384,7 @@ public class PropertiesRepository {
             .map((path) -> {
               if (path.endsWith(".jar") || path.endsWith(".zip")) {
                 try {
-                  String dir = Util.unzip(path, Files.createTempDirectory("layer"));
+                  String dir = Util.unzip(Paths.get(path), Files.createTempDirectory("layer"));
                   Object[] configFolder = Files
                           .walk(Paths.get(dir))
                           .filter((p) -> p.endsWith("config"))

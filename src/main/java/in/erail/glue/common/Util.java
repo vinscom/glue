@@ -205,8 +205,8 @@ public class Util {
     return result;
   }
 
-  public static String unzip(String pZipFilePath, Path pDestinationPath) throws IOException {
-    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath))) {
+  public static String unzip(Path pZipFilePath, Path pDestinationPath) throws IOException {
+    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
 
       ZipEntry entry = zipIn.getNextEntry();
       // iterates over entries in the zip file
@@ -236,7 +236,7 @@ public class Util {
       return pDestinationPath.toString();
     }
   }
-
+  
   public static String convertDotToCamelCase(String pValue) {
     StringBuilder sb = new StringBuilder(pValue);
     int dotIndx = 0;
