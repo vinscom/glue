@@ -27,9 +27,9 @@ import in.erail.glue.common.FileLoader;
 import in.erail.glue.common.JsonLoader;
 import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
-import in.erail.glue.component.ServiceArray;
 import in.erail.glue.component.ServiceMap;
 import in.erail.glue.enumeration.PropertyValueModifier;
+import java.util.stream.Collectors;
 
 public class ValueProxy {
 
@@ -78,12 +78,12 @@ public class ValueProxy {
             || Long.class.isAssignableFrom(targetClass)
             || File.class.isAssignableFrom(targetClass)
             || Logger.class.isAssignableFrom(targetClass)
-            || ServiceArray.class.isAssignableFrom(targetClass)
             || Pattern.class.isAssignableFrom(targetClass)
             || Meter.class.isAssignableFrom(targetClass)
             || Timer.class.isAssignableFrom(targetClass)
             || Counter.class.isAssignableFrom(targetClass)
             || Histogram.class.isAssignableFrom(targetClass)
+            || Collection.class.isAssignableFrom(targetClass)
             || Strings.isNullOrEmpty(propValue.getValue()))) {
       deferredValue = true;
     }
@@ -137,8 +137,6 @@ public class ValueProxy {
       setValue(getValueAsFile());
     } else if (Logger.class.isAssignableFrom(getTargetClass())) {
       setValue(getValueAsLogger());
-    } else if (ServiceArray.class.isAssignableFrom(getTargetClass())) {
-      setValue(new ServiceArray(getValueAsList()));
     } else if (Pattern.class.isAssignableFrom(getTargetClass())) {
       setValue(getValueAsPattern());
     } else if (Meter.class.isAssignableFrom(getTargetClass())) {
@@ -149,6 +147,8 @@ public class ValueProxy {
       setValue(getValueAsCounter());
     } else if (Histogram.class.isAssignableFrom(getTargetClass())) {
       setValue(getValueAsHistogram());
+    } else if (Collection.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsList());
     } else if (Strings.isNullOrEmpty(getValueAsString())) {
       setValue(null);
     }
@@ -221,7 +221,7 @@ public class ValueProxy {
     return getValueAslong();
   }
 
-  private String[] getValueAsArray() {
+  private Object[] getValueAsArray() {
 
     final List<String> result = new ArrayList<>();
 
@@ -230,9 +230,9 @@ public class ValueProxy {
       if (Strings.isNullOrEmpty(vwm.getValue())) {
         return;
       }
-      
+
       List<String> l = Arrays.asList(Util.convertCSVIntoArray(vwm.getValue()));
-      
+
       switch (vwm.getPropertyValueModifier()) {
         case PLUS:
           result.addAll(l);
@@ -246,8 +246,16 @@ public class ValueProxy {
       }
     });
 
-    return result.toArray(new String[result.size()]);
-
+    //TODO: Add detection of other types also
+    if (getTargetClass().isAssignableFrom(String[].class)) {
+      return result.toArray(new String[result.size()]);
+    }
+    
+    return result
+            .stream()
+            .map(c -> Glue.instance().resolve(c))
+            .collect(Collectors.toList())
+            .toArray();
   }
 
   private String getValueAsString() {

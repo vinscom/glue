@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import in.erail.glue.annotation.StartService;
 import in.erail.glue.common.ValueWithModifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -98,7 +99,15 @@ public class ComponentRepository implements Glue {
 
       v.process();
       logger.debug(() -> "Component[" + pPropCtx.getComponentPath() + "]: Property :" + pPropCtx.getMethod().getName() + ", Value derived :" + v.getValue());
-      pPropCtx.getMethod().invoke(pPropCtx.getInstance(), v.getValue());
+      if (v.getValue() != null && pPropCtx.getMethod().isVarArgs() && v.getValue().getClass().isArray()) {
+        Object[] varParam = (Object[]) v.getValue();
+        pPropCtx.getMethod().invoke(pPropCtx.getInstance(), (Object) Arrays.copyOf(varParam, varParam.length, v.getTargetClass()));
+      } else if (v.getValue() != null && v.getValue().getClass().isArray()) {
+        Object[] varParam = (Object[]) v.getValue();
+        pPropCtx.getMethod().invoke(pPropCtx.getInstance(), new Object[]{Arrays.copyOf(varParam, varParam.length, v.getTargetClass())});
+      } else {
+        pPropCtx.getMethod().invoke(pPropCtx.getInstance(), v.getValue());
+      }
 
     } else {
       logger.debug(() -> "Component[" + pPropCtx.getComponentPath() + "]: Invoking Property without arguments :" + pPropCtx.getMethod().getName());
