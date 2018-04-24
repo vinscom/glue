@@ -19,6 +19,8 @@ public class PropertiesComponent {
   public String propNullString;
   public String[] propArray;
   public String[] propNullArray;
+  private PropertiesComponent[] propComponentArray;
+  private PropertiesComponent[] propVarArgComponentArray;
   public List<String> propList;
   public List<String> propNullList;
   public Map<String, String> propMap;
@@ -49,8 +51,6 @@ public class PropertiesComponent {
   public Long propLong2;
   public Long propNullLong2;
   public Logger propLogger;
-  public ServiceArray propServiceArray;
-  public ServiceArray propNullServiceArray;
   public Pattern propPattern;
   public Pattern propNullPattern;
   public Meter propMeter;
@@ -207,14 +207,6 @@ public class PropertiesComponent {
     this.propLogger = pPropLogger;
   }
 
-  public ServiceArray getPropServiceArray() {
-    return propServiceArray;
-  }
-
-  public void setPropServiceArray(ServiceArray pPropServiceArray) {
-    this.propServiceArray = pPropServiceArray;
-  }
-
   public String getPropNullString() {
     return propNullString;
   }
@@ -343,14 +335,6 @@ public class PropertiesComponent {
     this.propNullLong2 = pPropNullLong2;
   }
 
-  public ServiceArray getPropNullServiceArray() {
-    return propNullServiceArray;
-  }
-
-  public void setPropNullServiceArray(ServiceArray pPropNullServiceArray) {
-    this.propNullServiceArray = pPropNullServiceArray;
-  }
-
   public Pattern getPropPattern() {
     return propPattern;
   }
@@ -397,6 +381,22 @@ public class PropertiesComponent {
 
   public void setPropTimer(Timer pPropTimer) {
     this.propTimer = pPropTimer;
+  }
+
+  public PropertiesComponent[] getPropComponentArray() {
+    return propComponentArray;
+  }
+
+  public void setPropComponentArray(PropertiesComponent[] pPropComponentArray) {
+    this.propComponentArray = pPropComponentArray;
+  }
+
+  public PropertiesComponent[] getPropVarArgComponentArray() {
+    return propVarArgComponentArray;
+  }
+
+  public void setPropVarArgComponentArray(PropertiesComponent... pPropVarArgComponentArray) {
+    this.propVarArgComponentArray = pPropVarArgComponentArray;
   }
   
 }

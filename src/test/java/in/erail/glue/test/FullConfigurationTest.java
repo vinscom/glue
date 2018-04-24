@@ -192,16 +192,6 @@ public class FullConfigurationTest {
   }
 
   @Test
-  public void serviceArrayProperty() {
-    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
-    Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault");
-    assertEquals(3, inst.getPropServiceArray().getServices().size());
-    assertSame(inst2, inst.getPropServiceArray().get(0));
-    assertSame(inst2, inst.getPropServiceArray().get(1));
-    assertSame(inst2, inst.getPropServiceArray().get(2));
-  }
-
-  @Test
   public void componentInitial() {
     Initial inst = Glue.instance().<Initial>resolve("/in/erail/glue/test/component/Initial");
     List<Object> comps = inst.getComponents();
@@ -255,7 +245,6 @@ public class FullConfigurationTest {
     assertNull(inst.getPropNullFile());
     assertEquals(0l, inst.getPropNullLong());
     assertNull(inst.getPropNullLong2());
-    assertEquals(0, inst.getPropNullServiceArray().getServices().size());
     assertNull(inst.getPropNullPattern());
   }
 
@@ -272,5 +261,17 @@ public class FullConfigurationTest {
     assertNotNull(inst.getPropCounter());
     assertNotNull(inst.getPropHistogram());
     assertNotNull(inst.getPropMeter());
+  }
+  
+  @Test
+  public void componentArrayProperty() {
+    PropertiesComponent inst2 = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/RefPropertiesComponent");
+    assertEquals(3,inst2.getPropComponentArray().length);
+  }
+  
+  @Test
+  public void varArgComponentArrayProperty() {
+    PropertiesComponent inst2 = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/RefPropertiesComponent");
+    assertEquals(3,inst2.getPropVarArgComponentArray().length);
   }
 }
