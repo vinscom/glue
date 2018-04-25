@@ -1,5 +1,6 @@
 package in.erail.glue;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -403,5 +404,17 @@ public class PropertiesRepository {
             })
             .filter((path) -> !Strings.isNullOrEmpty(path))
             .collect(Collectors.toList());
+  }
+
+  @Override
+  public String toString() {    
+    MoreObjects.ToStringHelper obj = MoreObjects.toStringHelper(this);
+    
+    mPropertiesRepository
+            .entrySet()
+            .stream()
+            .forEach((t) -> obj.add(t.getKey(),t.getValue().toString()));
+
+    return obj.toString();
   }
 }

@@ -160,7 +160,7 @@ public class ComponentRepository implements Glue {
    */
   protected Tuple<Boolean, Object> getInstance(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
 
-    Preconditions.checkNotNull(pProperties, "pProperties of %s is null", pPath);
+    Preconditions.checkNotNull(pProperties, "Property can't be null");
 
     ComponentScopeType scope = ComponentScopeType.valueOf(Util.getLastValue(pProperties, Constant.Component.SCOPE, ComponentScopeType.GLOBAL.toString()));
     logger.debug(() -> "Component[" + pPath + "]:Scope=" + scope);
