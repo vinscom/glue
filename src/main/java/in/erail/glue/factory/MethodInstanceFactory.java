@@ -1,5 +1,7 @@
 package in.erail.glue.factory;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import in.erail.glue.Glue;
 import in.erail.glue.InstanceFactory;
@@ -57,6 +59,8 @@ public class MethodInstanceFactory implements InstanceFactory {
       return;
     }
 
+    getLog().debug(() -> this);
+
     try {
       if (!Strings.isNullOrEmpty(getFactoryClass())) {
         mMethodClass = Class.forName(getFactoryClass());
@@ -64,25 +68,25 @@ public class MethodInstanceFactory implements InstanceFactory {
         mMethodClassInstance = Glue.instance().resolve(getFactoryInstance());
         mMethodClass = mMethodClassInstance.getClass();
       } else {
-        getLog().error("Not able to create instance");
+        getLog().error("Not able to create instance" + this);
         return;
       }
 
       Method defaultMethod = null;
-      
+
       all_methods:
       for (Method m : mMethodClass.getMethods()) {
-        
-        if(!m.getName().equals(getFactoryMethodName())){
+
+        if (!m.getName().equals(getFactoryMethodName())) {
           continue;
         }
-        
-        if(defaultMethod == null){
+
+        if (defaultMethod == null) {
           defaultMethod = m;
         }
-        
+
         Class[] pType = m.getParameterTypes();
-        
+
         if (getParamType().length == pType.length) {
           for (int i = 0; i < pType.length; i++) {
             if (!pType[i].equals(getParamType()[i])) {
@@ -94,10 +98,10 @@ public class MethodInstanceFactory implements InstanceFactory {
         }
       }
 
-      if(mMethod == null){
+      if (mMethod == null) {
         mMethod = defaultMethod;
       }
-      
+
       if (mMethodClassInstance == null && mMethod != null && !Modifier.isStatic(mMethod.getModifiers())) {
         mMethodClassInstance = mMethodClass.newInstance();
       }
@@ -277,6 +281,25 @@ public class MethodInstanceFactory implements InstanceFactory {
 
   public void setFactoryEnable(boolean pFactoryEnable) {
     this.mFactoryEnable = pFactoryEnable;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects
+            .toStringHelper(this)
+            .add("mFactoryClass", mFactoryClass)
+            .add("mFactoryInstance", mFactoryInstance)
+            .add("mFactoryMethodName", mFactoryMethodName)
+            .add("mFactoryParamValues", mFactoryParamValues != null ? Joiner.on(",").join(mFactoryParamValues) : null)
+            .add("mFactoryParamType", mFactoryParamType != null ? Joiner.on(",").join(mFactoryParamType) : null)
+            .add("mParamType", mParamType != null ? Joiner.on(",").join(mParamType) : null)
+            .add("mComponentPath", mComponentPath)
+            .add("mFactoryEnable", mFactoryEnable)
+            .add("mMethod", mMethod != null ? mMethod.getName() : null)
+            .add("mMethodParam", mMethodParam != null ? Joiner.on(",").join(mMethodParam) : null)
+            .add("mMethodClass", mMethodClass != null ? mMethodClass.getCanonicalName() : null)
+            .add("mMethodClassInstance", mMethodClassInstance != null ? mMethodClassInstance.getClass().toGenericString() : null)
+            .toString();
   }
 
 }
