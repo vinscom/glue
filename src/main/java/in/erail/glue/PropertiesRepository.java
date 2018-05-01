@@ -67,39 +67,56 @@ public class PropertiesRepository {
 
   private Single<Map<String, ListMultimap<String, ValueWithModifier>>> loadConfig() {
 
+    //Main Repository holding all component configuraiton
     Map<String, ListMultimap<String, ValueWithModifier>> propertiesRepository = new HashMap<>();
 
+    //Instance factory configurations
     UnicastSubject<Map.Entry<String, ListMultimap<String, ValueWithModifier>>> instanceOfFactoryProperties
             = UnicastSubject.<Map.Entry<String, ListMultimap<String, ValueWithModifier>>>create();
 
+    //All properties file
     Observable<Tuple<Path, Path>> paths = Observable
             .fromIterable(getLayers())
             .map(path -> Paths.get(path))
             .flatMap(this::findAllPropertiesFile);
 
+    //Already loaded property files
     Observable<ListMultimap<String, ValueWithModifier>> cachedProperties = loadCachedProperties(paths, propertiesRepository);
+    
+    //Load files from disk
     Observable<Properties> newProperties = loadUncachedProperties(paths);
 
     return cachedProperties
+            //Merge already loaded and disk properties
             .zipWith(newProperties, this::mergeUncachedIntoCachedProperties)
             .flatMapCompletable((t) -> t)
+            //Once all property files are loaded from disk. Start processing
             .andThen(Observable.fromIterable(propertiesRepository.entrySet()))
+            //Process all components basedOn properties. Copy all source properties to target component property
+            .doOnNext((t) -> updateBasedOnProperties(t.getKey(), t.getValue(), propertiesRepository))
+            //Process Instance Factories Properties
             .doOnNext((t) -> {
               String factoryPath = Util.getLastValue(t.getValue(), Constant.Component.INSTANCE_FACTORY);
               if (Strings.isNullOrEmpty(factoryPath)) {
                 return;
               }
               Map.Entry<String, ListMultimap<String, ValueWithModifier>> newFactoryProperties
+                      //Create instance factory component specific to this property
                       = createInstanceFactoryProperties(factoryPath, t.getKey(), mInstanceFactoryCounter);
+              //Enqueu instance factory for further processing
               instanceOfFactoryProperties.onNext(newFactoryProperties);
-              //Add new factory componet path.
+              //Add newly created instance factory reference.
               t.getValue()
                       .put(Constant.Component.INSTANCE_FACTORY,
                               new ValueWithModifier(newFactoryProperties.getKey(), PropertyValueModifier.NONE));
             })
+            //Once original properties are processed. Marge instanceOfFactoryProperties complete
             .doOnComplete(() -> instanceOfFactoryProperties.onComplete())
+            //Once original properties are processed. Added all newly crated instance factories to property repository
             .concatWith(instanceOfFactoryProperties.doOnNext((p) -> propertiesRepository.put(p.getKey(), p.getValue())))
+            //Once again process based on property. This time, only newly created instance factories will contain based on
             .doOnNext((t) -> updateBasedOnProperties(t.getKey(), t.getValue(), propertiesRepository))
+            //Process special properties
             .doOnNext((t) -> updateBasedOnSpecialProperties(t.getKey(), t.getValue(), propertiesRepository))
             .ignoreElements()
             .toSingleDefault(propertiesRepository);
