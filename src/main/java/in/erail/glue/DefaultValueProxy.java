@@ -1,0 +1,499 @@
+package in.erail.glue;
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Timer;
+import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
+import io.vertx.core.json.JsonObject;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import in.erail.glue.common.FileLoader;
+import in.erail.glue.common.JsonLoader;
+import in.erail.glue.common.Util;
+import in.erail.glue.common.ValueWithModifier;
+import in.erail.glue.component.ServiceMap;
+import in.erail.glue.enumeration.PropertyValueModifier;
+import java.util.stream.Collectors;
+
+public class DefaultValueProxy implements ValueProxy {
+
+  protected Logger logger = LogManager.getLogger(DefaultValueProxy.class.getCanonicalName());
+  private static final Pattern DEFERRED_PROPERTY_VALUE_PATTER = Pattern.compile("(?<component>^[^.]+)($|(\\.(?<property>.*)$))");
+  @SuppressWarnings("rawtypes")
+  private Class targetClass;
+  private Collection<ValueWithModifier> propertyValue;
+  private String componentPath;
+
+  private Object value;
+  private String deferredComponentPath;
+  private String deferredComponentProperty;
+  private Object deferredComponent;
+  private boolean deferredComponentProcessed = false;
+  private boolean deferredValue = false;
+  private boolean processed = false;
+
+  @Override
+  public void init() {
+    ValueWithModifier propValue = getLastValueWithModifier();
+
+    if (PropertyValueModifier.FROM.equals(propValue.getPropertyValueModifier())) {
+      deferredValue = true;
+    }
+
+    if (!(targetClass.isArray()
+            || String.class.isAssignableFrom(targetClass)
+            || List.class.isAssignableFrom(targetClass)
+            || Map.class.isAssignableFrom(targetClass)
+            || Enum.class.isAssignableFrom(targetClass)
+            || boolean.class.isAssignableFrom(targetClass)
+            || Boolean.class.isAssignableFrom(targetClass)
+            || JsonObject.class.isAssignableFrom(targetClass)
+            || Set.class.isAssignableFrom(targetClass)
+            || ServiceMap.class.isAssignableFrom(targetClass)
+            || int.class.isAssignableFrom(targetClass)
+            || Integer.class.isAssignableFrom(targetClass)
+            || long.class.isAssignableFrom(targetClass)
+            || Long.class.isAssignableFrom(targetClass)
+            || File.class.isAssignableFrom(targetClass)
+            || Logger.class.isAssignableFrom(targetClass)
+            || Pattern.class.isAssignableFrom(targetClass)
+            || Meter.class.isAssignableFrom(targetClass)
+            || Timer.class.isAssignableFrom(targetClass)
+            || Counter.class.isAssignableFrom(targetClass)
+            || Histogram.class.isAssignableFrom(targetClass)
+            || Collection.class.isAssignableFrom(targetClass)
+            || Strings.isNullOrEmpty(propValue.getValue()))) {
+      deferredValue = true;
+    }
+
+    if (deferredValue) {
+      Matcher m = DEFERRED_PROPERTY_VALUE_PATTER.matcher(propValue.getValue());
+      if (m.find()) {
+        deferredComponentPath = m.group("component");
+        deferredComponentProperty = m.group("property");
+      }
+    }
+  }
+
+  @Override
+  public void process() {
+
+    setProcessed(true);
+
+    if (isDeferredValue()) {
+      return;
+    }
+
+    if (getTargetClass().isArray()) {
+      setValue(getValueAsArray());
+    } else if (String.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsString());
+    } else if (List.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsList());
+    } else if (Map.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsMap());
+    } else if (Enum.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsEnum());
+    } else if (boolean.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsboolean());
+    } else if (Boolean.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsBoolean());
+    } else if (JsonObject.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsJson());
+    } else if (Set.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsSet());
+    } else if (ServiceMap.class.isAssignableFrom(getTargetClass())) {
+      setValue(new ServiceMap(getValueAsMap()));
+    } else if (int.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsInt());
+    } else if (Integer.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsInteger());
+    } else if (long.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAslong());
+    } else if (Long.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsLong());
+    } else if (File.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsFile());
+    } else if (Logger.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsLogger());
+    } else if (Pattern.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsPattern());
+    } else if (Meter.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsMeter());
+    } else if (Timer.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsTimer());
+    } else if (Counter.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsCounter());
+    } else if (Histogram.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsHistogram());
+    } else if (Collection.class.isAssignableFrom(getTargetClass())) {
+      setValue(getValueAsList());
+    } else if (Strings.isNullOrEmpty(getValueAsString())) {
+      setValue(null);
+    }
+
+  }
+
+  protected Meter getValueAsMeter() {
+    return Util.getMetricRegistry().meter(getValueAsString());
+  }
+
+  protected Timer getValueAsTimer() {
+    return Util.getMetricRegistry().timer(getValueAsString());
+  }
+
+  protected Counter getValueAsCounter() {
+    return Util.getMetricRegistry().counter(getValueAsString());
+  }
+
+  protected Histogram getValueAsHistogram() {
+    return Util.getMetricRegistry().histogram(getValueAsString());
+  }
+
+  protected Pattern getValueAsPattern() {
+    String v = getValueAsString();
+    if (Strings.isNullOrEmpty(v)) {
+      return null;
+    }
+    return Pattern.compile(v);
+  }
+
+  protected Logger getValueAsLogger() {
+    String loggerName = getComponentPath();
+    if (loggerName.startsWith("/") && loggerName.length() >= 2) {
+      loggerName = loggerName.substring(1);
+    }
+    return LogManager.getLogger(loggerName.replace("/", "."));
+  }
+
+  protected File getValueAsFile() {
+    return FileLoader.load(getComponentPath(), getValueAsString());
+  }
+
+  protected int getValueAsInt() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      logger.error(componentPath + ":: int value can't be empty. Setting it to 0");
+      return 0;
+    }
+    return Integer.parseInt(getValueAsString());
+  }
+
+  protected Integer getValueAsInteger() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      return null;
+    }
+    return getValueAsInt();
+  }
+
+  protected long getValueAslong() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      logger.error(componentPath + ":: long value can't be empty. Setting it to 0");
+      return 0l;
+    }
+    return Long.parseLong(getValueAsString());
+  }
+
+  protected Long getValueAsLong() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      return null;
+    }
+    return getValueAslong();
+  }
+
+  protected Object[] getValueAsArray() {
+
+    final List<String> result = new ArrayList<>();
+
+    List<ValueWithModifier> v = (List<ValueWithModifier>) getPropertyValue();
+    v.stream().forEach((vwm) -> {
+      if (Strings.isNullOrEmpty(vwm.getValue())) {
+        return;
+      }
+
+      List<String> l = Arrays.asList(Util.convertCSVIntoArray(vwm.getValue()));
+
+      switch (vwm.getPropertyValueModifier()) {
+        case PLUS:
+          result.addAll(l);
+          break;
+        case MINUS:
+          result.removeAll(l);
+          break;
+        default:
+          result.clear();
+          result.addAll(l);
+      }
+    });
+
+    //TODO: Add detection of other types also
+    if (getTargetClass().isAssignableFrom(String[].class)) {
+      return result.toArray(new String[result.size()]);
+    }
+
+    return result
+            .stream()
+            .map(c -> Glue.instance().resolve(c))
+            .collect(Collectors.toList())
+            .toArray();
+  }
+
+  protected String getValueAsString() {
+    String v = getLastValueWithModifier().getValue();
+    if (Strings.isNullOrEmpty(v)) {
+      return null;
+    }
+    return v;
+  }
+
+  protected Set<String> getValueAsSet() {
+
+    final Set<String> result = new HashSet<>();
+
+    List<ValueWithModifier> v = (List<ValueWithModifier>) getPropertyValue();
+    v.stream().forEach((vwm) -> {
+      if (Strings.isNullOrEmpty(vwm.getValue())) {
+        return;
+      }
+      List<String> l = Arrays.asList(Util.convertCSVIntoArray(vwm.getValue()));
+      switch (vwm.getPropertyValueModifier()) {
+        case PLUS:
+          result.addAll(l);
+          break;
+        case MINUS:
+          result.removeAll(l);
+          break;
+        default:
+          result.clear();
+          result.addAll(l);
+      }
+    });
+
+    return result;
+
+  }
+
+  protected List<String> getValueAsList() {
+
+    final List<String> result = new ArrayList<>();
+
+    List<ValueWithModifier> v = (List<ValueWithModifier>) getPropertyValue();
+    v.stream().forEach((vwm) -> {
+      if (Strings.isNullOrEmpty(vwm.getValue())) {
+        return;
+      }
+      List<String> l = Arrays.asList(Util.convertCSVIntoArray(vwm.getValue()));
+      switch (vwm.getPropertyValueModifier()) {
+        case PLUS:
+          result.addAll(l);
+          break;
+        case MINUS:
+          result.removeAll(l);
+          break;
+        default:
+          result.clear();
+          result.addAll(l);
+      }
+    });
+
+    return result;
+
+  }
+
+  protected HashMap<String, String> getValueAsMap() {
+
+    final HashMap<String, String> result = new HashMap<>();
+
+    List<ValueWithModifier> v = (List<ValueWithModifier>) getPropertyValue();
+    v.stream().forEach((vwm) -> {
+      if (Strings.isNullOrEmpty(vwm.getValue())) {
+        return;
+      }
+      Map<String, String> m = Util.getMapFromValue(vwm.getValue());
+      switch (vwm.getPropertyValueModifier()) {
+        case PLUS:
+          result.putAll(m);
+          break;
+        case MINUS:
+          result.keySet().removeAll(m.keySet());
+          break;
+        default:
+          result.clear();
+          result.putAll(m);
+      }
+    });
+
+    return result;
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  protected Enum getValueAsEnum() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      logger.error(componentPath + ":: Enum of type:" + getTargetClass().getCanonicalName() + " not set");
+      return null;
+    }
+    return Enum.valueOf(getTargetClass(), getValueAsString());
+  }
+
+  protected Boolean getValueAsBoolean() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      return null;
+    }
+    return Boolean.valueOf(getValueAsString());
+  }
+
+  protected boolean getValueAsboolean() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      logger.error(componentPath + ":: boolean value can't be empty. Setting it to false");
+      return false;
+    }
+    return Boolean.parseBoolean(getValueAsString());
+  }
+
+  protected JsonObject getValueAsJson() {
+    if (Strings.isNullOrEmpty(getValueAsString())) {
+      return new JsonObject();
+    }
+    return JsonLoader.load(getComponentPath(), getValueAsString());
+  }
+
+  protected ValueWithModifier getLastValueWithModifier() {
+    return Util.getLastValueWithModifier(getPropertyValue());
+  }
+
+  @Override
+  public Object getValue() {
+    if (isDeferredValue()) {
+      if (getDeferredComponentProperty() == null) {
+        setValue(getDeferredComponent());
+      } else {
+        String getValueMethodName = Util.buildGetPropertyName(getDeferredComponentProperty(),
+                boolean.class.isAssignableFrom(getTargetClass()) || Boolean.class.isAssignableFrom(getTargetClass()));
+        Method getValueMethod = Util.getMethod(getDeferredComponent().getClass(), getValueMethodName);
+        try {
+          Object getValue = getValueMethod.invoke(getDeferredComponent());
+          setValue(getValue);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+          throw new RuntimeException(ex);
+        }
+      }
+    }
+    return value;
+  }
+
+  protected void setValue(Object pValue) {
+    this.value = pValue;
+  }
+
+  @SuppressWarnings("rawtypes")
+  @Override
+  public Class getTargetClass() {
+    return targetClass;
+  }
+
+  @SuppressWarnings("rawtypes")
+  @Override
+  public void setTargetClass(Class pTargetClass) {
+    this.targetClass = pTargetClass;
+  }
+
+  @Override
+  public String getDeferredComponentPath() {
+    return deferredComponentPath;
+  }
+
+  protected Collection<ValueWithModifier> getPropertyValue() {
+    return propertyValue;
+  }
+
+  @Override
+  public void setPropertyValue(Collection<ValueWithModifier> pPropertyValue) {
+    this.propertyValue = pPropertyValue;
+  }
+
+  protected void setDeferredComponentPath(String pDeferredComponentPath) {
+    this.deferredComponentPath = pDeferredComponentPath;
+  }
+
+  protected String getDeferredComponentProperty() {
+    return deferredComponentProperty;
+  }
+
+  protected void setDeferredComponentProperty(String pDeferredComponentProperty) {
+    this.deferredComponentProperty = pDeferredComponentProperty;
+  }
+
+  protected Object getDeferredComponent() {
+    return deferredComponent;
+  }
+
+  @Override
+  public void setDeferredComponent(Object pDeferredComponent) {
+    this.deferredComponent = pDeferredComponent;
+  }
+
+  protected String getComponentPath() {
+    return componentPath;
+  }
+
+  @Override
+  public void setComponentPath(String pComponentPath) {
+    this.componentPath = pComponentPath;
+  }
+
+  @Override
+  public boolean isDeferredValue() {
+    return deferredValue;
+  }
+
+  protected void setDeferredValue(boolean pDeferredValue) {
+    this.deferredValue = pDeferredValue;
+  }
+
+  @Override
+  public String toString() {
+
+    return MoreObjects
+            .toStringHelper(this)
+            .omitNullValues()
+            .add("TargetClass", getTargetClass().getCanonicalName())
+            .add("ComponentPath", getComponentPath())
+            .add("PropertyValue", Joiner.on(",").join(getPropertyValue()))
+            .toString();
+
+  }
+
+  protected boolean isProcessed() {
+    return processed;
+  }
+
+  protected void setProcessed(boolean pProcessed) {
+    this.processed = pProcessed;
+  }
+
+  @Override
+  public boolean isDeferredComponentProcessed() {
+    return deferredComponentProcessed;
+  }
+
+  @Override
+  public void setDeferredComponentProcessed(boolean pDeferredComponentProcessed) {
+    this.deferredComponentProcessed = pDeferredComponentProcessed;
+  }
+
+}
