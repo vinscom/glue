@@ -6,6 +6,7 @@ import com.google.common.base.Strings;
 import in.erail.glue.Glue;
 import in.erail.glue.InstanceFactory;
 import in.erail.glue.ValueProxy;
+import in.erail.glue.ValueProxyBuilder;
 import in.erail.glue.annotation.StartService;
 import in.erail.glue.common.ValueWithModifier;
 import in.erail.glue.enumeration.PropertyValueModifier;
@@ -199,7 +200,12 @@ public class MethodInstanceFactory implements InstanceFactory {
       ValueWithModifier vm = new ValueWithModifier(pParams[i], PropertyValueModifier.NONE);
       List<ValueWithModifier> vmc = new ArrayList<>(1);
       vmc.add(vm);
-      ValueProxy vp = new ValueProxy(paramsType[i], vmc, getComponentPath());
+      ValueProxy vp = ValueProxyBuilder
+              .newBuilder()
+              .setTargetClass(paramsType[i])
+              .setPropertyValue(vmc)
+              .setComponentPath(getComponentPath())
+              .build();
       vp.process();
       if (vp.isDeferredValue()) {
         params[i] = Glue.instance().resolve(vp.getDeferredComponentPath());

@@ -140,7 +140,12 @@ public class ComponentRepository implements Glue {
               PropertyContext propCtx = new PropertyContext();
               propCtx.setInstance(pInstance);
               propCtx.setMethod(Util.getMethod(pInstance.getClass(), Util.buildSetPropertyName((String) entry.getKey())));
-              ValueProxy v = new ValueProxy(Util.getMethodFirstArgumentClass(propCtx.getMethod()), entry.getValue(), pComponentPath);
+              ValueProxy v = ValueProxyBuilder
+                      .newBuilder()
+                      .setTargetClass(Util.getMethodFirstArgumentClass(propCtx.getMethod()))
+                      .setPropertyValue(entry.getValue())
+                      .setComponentPath(pComponentPath)
+                      .build();
               propCtx.setValue(v);
               propCtx.setComponentPath(pComponentPath);
               return propCtx;
