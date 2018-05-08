@@ -1,5 +1,8 @@
 package in.erail.glue;
 
+import com.google.common.base.Strings;
+import in.erail.glue.common.Constant;
+import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
 import java.util.Collection;
 
@@ -9,10 +12,23 @@ import java.util.Collection;
  */
 public class ValueProxyBuilder {
 
-  private Class mValueProxyClass = ValueProxy.class;
+  private static Class valueProxyClass;
   private Class mTargetClass;
   private Collection<ValueWithModifier> mPropertyValue;
   private String mComponentPath;
+
+  static {
+    String envValueProxyClassName = Util.getEnvironmentValue(Constant.SystemProperties.VALUE_PROXY_CLASS);
+    if (Strings.isNullOrEmpty(envValueProxyClassName)) {
+      valueProxyClass = DefaultValueProxy.class;
+    } else {
+      try {
+        valueProxyClass = Class.forName(envValueProxyClassName);
+      } catch (ClassNotFoundException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
+  }
 
   public Class getTargetClass() {
     return mTargetClass;
@@ -41,26 +57,21 @@ public class ValueProxyBuilder {
     return this;
   }
 
-  public Class getValueProxyClass() {
-    return mValueProxyClass;
-  }
-
-  public ValueProxyBuilder setValueProxyClass(Class pValueProxyClass) {
-    this.mValueProxyClass = pValueProxyClass;
-    return this;
-  }
-
   public static ValueProxyBuilder newBuilder() {
     return new ValueProxyBuilder();
   }
 
   public ValueProxy build() {
-    ValueProxy vp = new DefaultValueProxy();
-    vp.setTargetClass(getTargetClass());
-    vp.setPropertyValue(getPropertyValue());
-    vp.setComponentPath(getComponentPath());
-    vp.init();
-    return vp;
+    try {
+      ValueProxy vp = (ValueProxy) valueProxyClass.newInstance();
+      vp.setTargetClass(getTargetClass());
+      vp.setPropertyValue(getPropertyValue());
+      vp.setComponentPath(getComponentPath());
+      vp.init();
+      return vp;
+    } catch (InstantiationException | IllegalAccessException ex) {
+      throw new RuntimeException(ex);
+    }
   }
 
 }
