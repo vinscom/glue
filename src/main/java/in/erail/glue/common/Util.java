@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
-import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.csv.CSVFormat;
@@ -36,6 +35,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 public class Util {
+
+  private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("windows");
 
   private static final Logger logger = LogManager.getLogger(Util.class.getCanonicalName());
   private static final MetricRegistry metricRegistry;
@@ -50,6 +51,10 @@ public class Util {
     metricRegistry = SharedMetricRegistries.getOrCreate(metricRegistryName);
   }
 
+  public static boolean isOSWindows(){
+    return IS_WINDOWS;
+  }
+  
   public static String buildSetPropertyName(String pProperty) {
     return "set" + pProperty.substring(0, 1).toUpperCase() + pProperty.substring(1, pProperty.length());
   }
