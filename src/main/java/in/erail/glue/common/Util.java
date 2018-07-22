@@ -23,10 +23,12 @@ import in.erail.glue.factory.DefaultConfigSerializationFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.csv.CSVFormat;
@@ -108,11 +110,16 @@ public class Util {
 
     try {
       Class clzz = Class.forName(pClass);
-      inst = clzz.newInstance();
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+      inst = clzz.getDeclaredConstructor().newInstance();
+    } catch (ClassNotFoundException 
+            | InstantiationException 
+            | IllegalAccessException 
+            | NoSuchMethodException 
+            | SecurityException 
+            | IllegalArgumentException 
+            | InvocationTargetException ex) {
       throw new RuntimeException(ex);
-    }
-
+    } 
     return inst;
   }
 
@@ -137,10 +144,10 @@ public class Util {
   }
 
   /**
-   * Get property value from Java System Properties, if not found
-   * then get it form environment variable.
+   * Get property value from Java System Properties, if not found then get it form environment variable.
+   *
    * @param pName Name of system property
-   * @param pDefault  Default value
+   * @param pDefault Default value
    * @return Return environment value
    */
   public static String getEnvironmentValue(String pName, String pDefault) {
