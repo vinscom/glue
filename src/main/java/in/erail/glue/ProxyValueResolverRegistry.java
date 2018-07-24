@@ -14,6 +14,7 @@ import in.erail.glue.enumeration.PropertyValueModifier;
 import io.vertx.core.json.JsonObject;
 import java.io.File;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -198,7 +199,7 @@ public class ProxyValueResolverRegistry {
 
     BiFunction<Collection<ValueWithModifier>, DefaultValueProxy, Object> fnNew = (t, u) -> {
       try {
-        final List<String> result = (List<String>) pClazz.newInstance();
+        final List<String> result = (List<String>) pClazz.getDeclaredConstructor().newInstance();
         List<ValueWithModifier> v = (List<ValueWithModifier>) t;
         v.stream().forEach((vwm) -> {
           if (Strings.isNullOrEmpty(vwm.getValue())) {
@@ -219,7 +220,12 @@ public class ProxyValueResolverRegistry {
         });
 
         return result;
-      } catch (InstantiationException | IllegalAccessException ex) {
+      } catch (InstantiationException
+              | IllegalAccessException
+              | IllegalArgumentException
+              | InvocationTargetException
+              | NoSuchMethodException
+              | SecurityException ex) {
         java.util.logging.Logger.getLogger(ProxyValueResolverRegistry.class.getName()).log(Level.SEVERE, null, ex);
       }
       return null;
@@ -237,7 +243,7 @@ public class ProxyValueResolverRegistry {
 
     BiFunction<Collection<ValueWithModifier>, DefaultValueProxy, Object> fnNew = (t, u) -> {
       try {
-        final Map<String, String> result = (Map<String, String>) pClazz.newInstance();
+        final Map<String, String> result = (Map<String, String>) pClazz.getDeclaredConstructor().newInstance();
 
         List<ValueWithModifier> v = (List<ValueWithModifier>) t;
         v.stream().forEach((vwm) -> {
@@ -259,7 +265,12 @@ public class ProxyValueResolverRegistry {
         });
 
         return result;
-      } catch (InstantiationException | IllegalAccessException ex) {
+      } catch (InstantiationException
+              | IllegalAccessException
+              | NoSuchMethodException
+              | SecurityException
+              | IllegalArgumentException
+              | InvocationTargetException ex) {
         java.util.logging.Logger.getLogger(ProxyValueResolverRegistry.class.getName()).log(Level.SEVERE, null, ex);
       }
       return null;
@@ -277,7 +288,7 @@ public class ProxyValueResolverRegistry {
 
     BiFunction<Collection<ValueWithModifier>, DefaultValueProxy, Object> fnNew = (t, u) -> {
       try {
-        final Set<String> result = (Set<String>) pClazz.newInstance();
+        final Set<String> result = (Set<String>) pClazz.getDeclaredConstructor().newInstance();
         List<ValueWithModifier> v = (List<ValueWithModifier>) t;
         v.stream().forEach((vwm) -> {
           if (Strings.isNullOrEmpty(vwm.getValue())) {
@@ -297,7 +308,12 @@ public class ProxyValueResolverRegistry {
           }
         });
         return result;
-      } catch (InstantiationException | IllegalAccessException ex) {
+      } catch (InstantiationException
+              | IllegalAccessException
+              | NoSuchMethodException
+              | SecurityException
+              | IllegalArgumentException
+              | InvocationTargetException ex) {
         java.util.logging.Logger.getLogger(ProxyValueResolverRegistry.class.getName()).log(Level.SEVERE, null, ex);
       }
       return null;

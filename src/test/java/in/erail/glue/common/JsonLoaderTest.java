@@ -1,6 +1,5 @@
 package in.erail.glue.common;
 
-import in.erail.glue.common.JsonLoader;
 import io.vertx.core.json.JsonObject;
 import org.junit.Test;
 import static org.junit.Assert.*;

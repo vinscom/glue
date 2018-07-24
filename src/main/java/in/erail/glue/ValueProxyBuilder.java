@@ -4,7 +4,10 @@ import com.google.common.base.Strings;
 import in.erail.glue.common.Constant;
 import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -63,13 +66,18 @@ public class ValueProxyBuilder {
 
   public ValueProxy build() {
     try {
-      ValueProxy vp = (ValueProxy) valueProxyClass.newInstance();
+      ValueProxy vp = (ValueProxy) valueProxyClass.getDeclaredConstructor().newInstance();
       vp.setTargetClass(getTargetClass());
       vp.setPropertyValue(getPropertyValue());
       vp.setComponentPath(getComponentPath());
       vp.init();
       return vp;
-    } catch (InstantiationException | IllegalAccessException ex) {
+    } catch (InstantiationException
+            | IllegalAccessException
+            | NoSuchMethodException
+            | SecurityException
+            | IllegalArgumentException
+            | InvocationTargetException ex) {
       throw new RuntimeException(ex);
     }
   }

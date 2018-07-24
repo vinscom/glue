@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -104,7 +105,7 @@ public class MethodInstanceFactory implements InstanceFactory {
       }
 
       if (mMethodClassInstance == null && mMethod != null && !Modifier.isStatic(mMethod.getModifiers())) {
-        mMethodClassInstance = mMethodClass.newInstance();
+        mMethodClassInstance = mMethodClass.getDeclaredConstructor().newInstance();
       }
 
       if (mMethod == null) {
@@ -116,10 +117,11 @@ public class MethodInstanceFactory implements InstanceFactory {
             | ClassNotFoundException
             | SecurityException
             | InstantiationException
-            | IllegalAccessException ex) {
+            | IllegalAccessException 
+            | NoSuchMethodException 
+            | InvocationTargetException ex) {
       throw new RuntimeException(ex);
     }
-
   }
 
   @Override

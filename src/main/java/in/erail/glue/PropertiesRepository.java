@@ -23,12 +23,15 @@ import org.apache.logging.log4j.Logger;
 
 import in.erail.glue.common.Constant;
 import in.erail.glue.common.Util;
+import static in.erail.glue.common.Util.isOSWindows;
 import in.erail.glue.common.ValueWithModifier;
 import in.erail.glue.enumeration.PropertyValueModifier;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.subjects.UnicastSubject;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PropertiesRepository {
@@ -36,8 +39,8 @@ public class PropertiesRepository {
   protected Logger logger = LogManager.getLogger(PropertiesRepository.class.getCanonicalName());
 
   public static List<String> layers;
+  private static final Pattern COMPONENT_PATH_REGEX = Pattern.compile("^(?<path>.*)\\.properties$");
   private static final String PROPERTY_EXTENSION = ".properties";
-  private static final int PROPERTY_EXTENSION_LENGTH = PROPERTY_EXTENSION.length();
 
   private Map<String, ListMultimap<String, ValueWithModifier>> mPropertiesRepository;
   private final AtomicLong mInstanceFactoryCounter;
@@ -82,7 +85,7 @@ public class PropertiesRepository {
 
     //Already loaded property files
     Observable<ListMultimap<String, ValueWithModifier>> cachedProperties = loadCachedProperties(paths, propertiesRepository);
-    
+
     //Load files from disk
     Observable<Properties> newProperties = loadUncachedProperties(paths);
 
@@ -339,23 +342,35 @@ public class PropertiesRepository {
 
     return pPath
             .map((path) -> {
-              String dir = path.value1.toString();
-              String fullPath = path.value2.toString();
+              String rootDirPath = path.value1.toString();
+              String absPropertyPath = path.value2.toString();
 
-              //Key Without Property
-              String key = fullPath.substring(dir.length());
-              key = key.substring(0, key.length() - PROPERTY_EXTENSION_LENGTH);
+              String propertyPath = absPropertyPath.substring(rootDirPath.length());
 
-              if (pPropertiesRepository.containsKey(key)) {
-                return pPropertiesRepository.get(key);
+              Matcher m = COMPONENT_PATH_REGEX.matcher(propertyPath);
+
+              if (m.find()) {
+                String componentPath = m.group("path");
+                String key;
+
+                if (isOSWindows()) {
+                  key = componentPath.replace("\\", "/");
+                } else {
+                  key = componentPath;
+                }
+
+                if (pPropertiesRepository.containsKey(key)) {
+                  return pPropertiesRepository.get(key);
+                }
+
+                ListMultimap<String, ValueWithModifier> properties = ArrayListMultimap.create();
+                properties.put(Constant.Component.COMPONENT_PATH_SPECIAL_PROPERTIES, new ValueWithModifier(key, PropertyValueModifier.NONE));
+                pPropertiesRepository.put(key, properties);
+                return properties;
+              } else {
+                throw new RuntimeException("Component path empty: " + path.toString());
               }
-
-              ListMultimap<String, ValueWithModifier> properties = ArrayListMultimap.create();
-              properties.put(Constant.Component.COMPONENT_PATH_SPECIAL_PROPERTIES, new ValueWithModifier(key, PropertyValueModifier.NONE));
-              pPropertiesRepository.put(key, properties);
-              return properties;
             });
-
   }
 
   /**
@@ -424,13 +439,13 @@ public class PropertiesRepository {
   }
 
   @Override
-  public String toString() {    
+  public String toString() {
     MoreObjects.ToStringHelper obj = MoreObjects.toStringHelper(this);
-    
+
     mPropertiesRepository
             .entrySet()
             .stream()
-            .forEach((t) -> obj.add(t.getKey(),t.getValue().toString()));
+            .forEach((t) -> obj.add(t.getKey(), t.getValue().toString()));
 
     return obj.toString();
   }
