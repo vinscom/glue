@@ -17,6 +17,9 @@ public class FileLoader {
   private static final Pattern COMPONENT_FOLDER_REGEX = Pattern.compile("^(?<folder>.*)/.*$");
 
   static {
+    if (PropertiesRepository.layers == null) {
+      PropertiesRepository.setLayers(Util.getSystemLayers());
+    }
     layers = PropertiesRepository.layers;
   }
 

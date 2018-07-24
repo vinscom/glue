@@ -16,9 +16,12 @@ public class JsonLoader {
   private static final Pattern COMPONENT_FOLDER_REGEX = Pattern.compile("^(?<folder>.*)/.*$");
 
   static {
+    if (PropertiesRepository.layers == null) {
+      PropertiesRepository.setLayers(Util.getSystemLayers());
+    }
     layers = PropertiesRepository.layers;
   }
-  
+
   public static JsonObject load(String pComponentPath, String pFile) {
 
     Matcher m = COMPONENT_FOLDER_REGEX.matcher(pComponentPath);
