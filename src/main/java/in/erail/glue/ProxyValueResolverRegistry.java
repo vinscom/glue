@@ -176,6 +176,20 @@ public class ProxyValueResolverRegistry {
       return Util.getMetricRegistry().histogram((String) classToValue.get(String.class).apply(t, u));
     });
 
+    //Class
+    classToValue.put(Class.class, (t, u) -> {
+      String v = (String) classToValue.get(String.class).apply(t, u);
+      if (Strings.isNullOrEmpty(v)) {
+        return null;
+      }
+      try {
+          return Class.forName(v);
+      } catch (ClassNotFoundException ex) {
+          java.util.logging.Logger.getLogger(ProxyValueResolverRegistry.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      return null;
+    });
+    
     //List
     createList(ArrayList.class);
     classToValue.put(List.class, createList(ArrayList.class));
