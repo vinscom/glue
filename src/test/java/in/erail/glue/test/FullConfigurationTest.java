@@ -13,10 +13,12 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import in.erail.glue.Glue;
+import in.erail.glue.PropertiesRepository;
 import in.erail.glue.component.Initial;
 import in.erail.glue.common.TestConstant;
 import in.erail.glue.component.EnumTestValues;
 import in.erail.glue.component.PropertiesComponent;
+import java.util.Properties;
 
 public class FullConfigurationTest {
 
@@ -273,5 +275,11 @@ public class FullConfigurationTest {
   public void varArgComponentArrayProperty() {
     PropertiesComponent inst2 = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/RefPropertiesComponent");
     assertEquals(3,inst2.getPropVarArgComponentArray().length);
+  }
+  
+  @Test
+  public void classProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
+    assertEquals(inst.getPropClass(),PropertiesRepository.class);
   }
 }
