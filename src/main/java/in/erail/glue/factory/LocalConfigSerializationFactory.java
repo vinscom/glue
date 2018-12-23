@@ -84,7 +84,8 @@ public class LocalConfigSerializationFactory implements ConfigSerializationFacto
     return load(mIdentifier);
   }
 
-  @Override
+  @SuppressWarnings("unchecked")
+	@Override
   public Maybe<Map<String, ListMultimap<String, ValueWithModifier>>> load(String pIdentifier) {
     Path fileLocation = Paths.get(mFileLocation, mFileName + pIdentifier);
     return Maybe

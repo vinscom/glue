@@ -49,7 +49,7 @@ public class PropertiesRepository {
 
   public PropertiesRepository() {
     this.mInstanceFactoryCounter = new AtomicLong();
-    this.mPropertiesRepository = Collections.EMPTY_MAP;
+    this.mPropertiesRepository = Collections.emptyMap();
   }
 
   public void init() {

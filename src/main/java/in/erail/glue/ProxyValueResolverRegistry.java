@@ -34,11 +34,12 @@ import org.apache.logging.log4j.Logger;
  *
  * @author vinay
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ProxyValueResolverRegistry {
 
-  private static final Map<Class, BiFunction<Collection<ValueWithModifier>, DefaultValueProxy, Object>> classToValue = new HashMap<>();
+	private static final Map<Class, BiFunction<Collection<ValueWithModifier>, DefaultValueProxy, Object>> classToValue = new HashMap<>();
 
-  public static Map<Class, BiFunction<Collection<ValueWithModifier>, DefaultValueProxy, Object>> getClassToValue() {
+	public static Map<Class, BiFunction<Collection<ValueWithModifier>, DefaultValueProxy, Object>> getClassToValue() {
     return classToValue;
   }
 

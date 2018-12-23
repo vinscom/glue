@@ -73,7 +73,8 @@ public class ComponentRepository implements Glue {
     }
   }
 
-  protected void processProperty(PropertyContext pPropCtx, Deque<PropertyContext> pPropertyStack) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  @SuppressWarnings("unchecked")
+	protected void processProperty(PropertyContext pPropCtx, Deque<PropertyContext> pPropertyStack) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
     ValueProxy v = pPropCtx.getValue();
 

@@ -19,8 +19,8 @@ public class PropertiesComponent {
   public String propNullString;
   public String[] propArray;
   public String[] propNullArray;
-  private PropertiesComponent[] propComponentArray;
-  private PropertiesComponent[] propVarArgComponentArray;
+  private Object[] propComponentArray;
+  private Object[] propVarArgComponentArray;
   public List<String> propList;
   public List<String> propNullList;
   public Map<String, String> propMap;
@@ -383,20 +383,20 @@ public class PropertiesComponent {
     this.propTimer = pPropTimer;
   }
 
-  public PropertiesComponent[] getPropComponentArray() {
+  public Object[] getPropComponentArray() {
     return propComponentArray;
   }
 
-  public void setPropComponentArray(PropertiesComponent[] pPropComponentArray) {
+  public void setPropComponentArray(Object[] pPropComponentArray) {
     this.propComponentArray = pPropComponentArray;
   }
 
-  public PropertiesComponent[] getPropVarArgComponentArray() {
+  public Object[] getPropVarArgComponentArray() {
     return propVarArgComponentArray;
   }
 
-  public void setPropVarArgComponentArray(PropertiesComponent... pPropVarArgComponentArray) {
+  public void setPropVarArgComponentArray(Object... pPropVarArgComponentArray) {
     this.propVarArgComponentArray = pPropVarArgComponentArray;
   }
-  
+
 }
