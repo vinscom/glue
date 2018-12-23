@@ -57,6 +57,7 @@ public class PropertiesComponent {
   public Histogram propHistogram;
   public Counter propCounter;
   public Timer propTimer;
+  public Class propClass;
   
   @StartService
   public void startup() {
@@ -397,6 +398,14 @@ public class PropertiesComponent {
 
   public void setPropVarArgComponentArray(Object... pPropVarArgComponentArray) {
     this.propVarArgComponentArray = pPropVarArgComponentArray;
+  }
+
+  public Class getPropClass() {
+    return propClass;
+  }
+
+  public void setPropClass(Class pPropClass) {
+    this.propClass = pPropClass;
   }
 
 }

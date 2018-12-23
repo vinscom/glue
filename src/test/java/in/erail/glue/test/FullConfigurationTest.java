@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import in.erail.glue.Glue;
+import in.erail.glue.PropertiesRepository;
 import in.erail.glue.common.TestConstant;
 import in.erail.glue.component.EnumTestValues;
 import in.erail.glue.component.Initial;
@@ -286,5 +287,11 @@ public class FullConfigurationTest {
     assertEquals(objs[0].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent1");
     assertEquals(objs[1].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent2");
     assertEquals(objs[2].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent3");
+  }
+  
+  @Test
+  public void classProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
+    assertEquals(inst.getPropClass(),PropertiesRepository.class);
   }
 }
