@@ -5,7 +5,8 @@ import java.io.Serializable;
 
 public class Tuple<K, V> implements Serializable{
 
-  public K value1;
+	private static final long serialVersionUID = 1L;
+	public K value1;
   public V value2;
 
   public Tuple(K value1, V value2) {

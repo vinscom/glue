@@ -1,15 +1,5 @@
 package in.erail.glue.factory;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Strings;
-import in.erail.glue.Glue;
-import in.erail.glue.InstanceFactory;
-import in.erail.glue.ValueProxy;
-import in.erail.glue.ValueProxyBuilder;
-import in.erail.glue.annotation.StartService;
-import in.erail.glue.common.ValueWithModifier;
-import in.erail.glue.enumeration.PropertyValueModifier;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -18,13 +8,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
+
 import org.apache.logging.log4j.Logger;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
+
+import in.erail.glue.Glue;
+import in.erail.glue.InstanceFactory;
+import in.erail.glue.ValueProxy;
+import in.erail.glue.ValueProxyBuilder;
+import in.erail.glue.annotation.StartService;
+import in.erail.glue.common.ValueWithModifier;
+import in.erail.glue.enumeration.PropertyValueModifier;
 
 /**
  *
  * @author vinay
  */
+@SuppressWarnings("rawtypes")
 public class MethodInstanceFactory implements InstanceFactory {
 
   private String mFactoryClass;
@@ -33,7 +36,7 @@ public class MethodInstanceFactory implements InstanceFactory {
   private String[] mFactoryParamValues;
   private String[] mFactoryParamType;
   private Logger mLog;
-  private Class[] mParamType;
+	private Class[] mParamType;
   private String mComponentPath;
   private boolean mFactoryEnable = true;
   private Method mMethod;
@@ -54,7 +57,8 @@ public class MethodInstanceFactory implements InstanceFactory {
     mPrimitiveType.put("char.class", char.class);
   }
 
-  @StartService
+  @SuppressWarnings("unchecked")
+	@StartService
   public void start() {
 
     if (!isFactoryEnable()) {
@@ -124,7 +128,8 @@ public class MethodInstanceFactory implements InstanceFactory {
     }
   }
 
-  @Override
+  @SuppressWarnings("unchecked")
+	@Override
   public Optional createInstance() {
 
     if (!isFactoryEnable() || mMethod == null) {
@@ -145,7 +150,8 @@ public class MethodInstanceFactory implements InstanceFactory {
     return Optional.ofNullable(instance);
   }
 
-  protected Optional<Method> findFactoryMethod(Class pClazz, String pMethodName, Class[] pParamsType) {
+  @SuppressWarnings("unchecked")
+	protected Optional<Method> findFactoryMethod(Class pClazz, String pMethodName, Class[] pParamsType) {
 
     Method method = null;
 

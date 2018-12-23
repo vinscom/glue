@@ -20,12 +20,13 @@ import org.apache.logging.log4j.Logger;
  *
  * @author vinay
  */
+@SuppressWarnings("rawtypes")
 public class ParameterConstructorInstanceFactory implements InstanceFactory {
 
   private String mBaseClass;
   private String[] mConstructorParamValues;
   private String[] mConstructorParamType;
-  private Class[] mParamType;
+	private Class[] mParamType;
   private Logger mLog;
   private final Map<String, Class> mPrimitiveType = new HashMap<>();
   private String mComponentPath;

@@ -1,24 +1,30 @@
 package in.erail.glue.test;
 
-import io.vertx.core.json.JsonObject;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.logging.log4j.Logger;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import in.erail.glue.Glue;
 import in.erail.glue.PropertiesRepository;
-import in.erail.glue.component.Initial;
 import in.erail.glue.common.TestConstant;
 import in.erail.glue.component.EnumTestValues;
+import in.erail.glue.component.Initial;
 import in.erail.glue.component.PropertiesComponent;
-import java.util.Properties;
+import io.vertx.core.json.JsonObject;
 
 public class FullConfigurationTest {
 
@@ -267,14 +273,20 @@ public class FullConfigurationTest {
   
   @Test
   public void componentArrayProperty() {
-    PropertiesComponent inst2 = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/RefPropertiesComponent");
-    assertEquals(3,inst2.getPropComponentArray().length);
+    PropertiesComponent inst2 = Glue.instance().resolve("/in/erail/glue/test/component/RefPropertiesComponent");
+    Object[] objs = inst2.getPropComponentArray();
+    assertEquals(objs[0].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent1");
+    assertEquals(objs[1].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent2");
+    assertEquals(objs[2].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent3");
   }
   
   @Test
   public void varArgComponentArrayProperty() {
-    PropertiesComponent inst2 = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/RefPropertiesComponent");
-    assertEquals(3,inst2.getPropVarArgComponentArray().length);
+    PropertiesComponent inst2 = Glue.instance().resolve("/in/erail/glue/test/component/RefPropertiesComponent");
+    Object[] objs = inst2.getPropVarArgComponentArray();
+    assertEquals(objs[0].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent1");
+    assertEquals(objs[1].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent2");
+    assertEquals(objs[2].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent3");
   }
   
   @Test
