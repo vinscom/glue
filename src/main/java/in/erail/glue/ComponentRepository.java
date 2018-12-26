@@ -74,7 +74,7 @@ public class ComponentRepository implements Glue {
   }
 
   @SuppressWarnings("unchecked")
-	protected void processProperty(PropertyContext pPropCtx, Deque<PropertyContext> pPropertyStack) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  protected void processProperty(PropertyContext pPropCtx, Deque<PropertyContext> pPropertyStack) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
     ValueProxy v = pPropCtx.getValue();
 
@@ -162,7 +162,8 @@ public class ComponentRepository implements Glue {
    *
    * @param pPath Component Path
    * @param pProperties Properties loaded from properties file
-   * @return Returns Tuple where value1 = true if new Object is created. Or else false
+   * @return Returns Tuple where value1 = true if new Object is created. Or else
+   * false
    */
   protected Tuple<Boolean, Object> getInstance(String pPath, ListMultimap<String, ValueWithModifier> pProperties) {
 
