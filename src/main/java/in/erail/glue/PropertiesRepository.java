@@ -331,7 +331,8 @@ public class PropertiesRepository {
   }
 
   /**
-   * Return already loaded properties file map. If file is not loaded then empty map is returned
+   * Return already loaded properties file map. If file is not loaded then empty
+   * map is returned
    *
    * @param pPath Search path and full path of properties file
    * @return Properties map

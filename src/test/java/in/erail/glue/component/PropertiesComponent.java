@@ -42,8 +42,8 @@ public class PropertiesComponent {
   public ServiceMap propNullServiceMap;
   public int propInt;
   public int propNullInt;
-  public Integer propInteger; 
-  public Integer propNullInteger; 
+  public Integer propInteger;
+  public Integer propNullInteger;
   public File propFile;
   public File propNullFile;
   public long propLong;
@@ -57,8 +57,9 @@ public class PropertiesComponent {
   public Histogram propHistogram;
   public Counter propCounter;
   public Timer propTimer;
+  @SuppressWarnings("rawtypes")
   public Class propClass;
-  
+
   @StartService
   public void startup() {
     setStartup(true);
@@ -400,10 +401,12 @@ public class PropertiesComponent {
     this.propVarArgComponentArray = pPropVarArgComponentArray;
   }
 
+  @SuppressWarnings("rawtypes")
   public Class getPropClass() {
     return propClass;
   }
 
+  @SuppressWarnings("rawtypes")
   public void setPropClass(Class pPropClass) {
     this.propClass = pPropClass;
   }
