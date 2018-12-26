@@ -108,7 +108,7 @@ public class Util {
     return param[0].getType();
   }
 
-  @SuppressWarnings("rawtypes")
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public static Object createInstance(String pClass) {
 
     Object inst = null;

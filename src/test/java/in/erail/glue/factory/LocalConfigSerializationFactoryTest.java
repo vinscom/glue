@@ -1,18 +1,21 @@
 package in.erail.glue.factory;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import in.erail.glue.ConfigSerializationFactory;
-import in.erail.glue.common.Constant;
-import in.erail.glue.common.ValueWithModifier;
-import in.erail.glue.enumeration.PropertyValueModifier;
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+
+import in.erail.glue.ConfigSerializationFactory;
+import in.erail.glue.common.ValueWithModifier;
+import in.erail.glue.enumeration.PropertyValueModifier;
 
 /**
  *

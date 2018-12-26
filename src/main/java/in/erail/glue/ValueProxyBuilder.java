@@ -6,16 +6,15 @@ import in.erail.glue.common.Util;
 import in.erail.glue.common.ValueWithModifier;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author vinay
  */
+@SuppressWarnings("rawtypes")
 public class ValueProxyBuilder {
 
-  private static Class valueProxyClass;
+	private static Class valueProxyClass;
   private Class mTargetClass;
   private Collection<ValueWithModifier> mPropertyValue;
   private String mComponentPath;
@@ -64,7 +63,8 @@ public class ValueProxyBuilder {
     return new ValueProxyBuilder();
   }
 
-  public ValueProxy build() {
+  @SuppressWarnings("unchecked")
+	public ValueProxy build() {
     try {
       ValueProxy vp = (ValueProxy) valueProxyClass.getDeclaredConstructor().newInstance();
       vp.setTargetClass(getTargetClass());

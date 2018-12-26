@@ -10,7 +10,9 @@ import in.erail.glue.enumeration.PropertyValueModifier;
  */
 public class ValueWithModifier extends Tuple<String, PropertyValueModifier> {
 
-  public ValueWithModifier(String pValue, PropertyValueModifier pModifier) {
+	private static final long serialVersionUID = 1L;
+
+	public ValueWithModifier(String pValue, PropertyValueModifier pModifier) {
     super(pValue, pModifier);
   }
 

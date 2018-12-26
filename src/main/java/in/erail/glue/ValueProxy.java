@@ -20,7 +20,8 @@ public interface ValueProxy {
    * Resolved object expected class
    * @return Resolved object expected class
    */
-  Class getTargetClass();
+  @SuppressWarnings("rawtypes")
+	Class getTargetClass();
   
   /**
    * Does value required deferred processing. Deferred processing
@@ -58,7 +59,8 @@ public interface ValueProxy {
   * Expected target value class
   * @param pClass Target value class
   */
- void setTargetClass(Class pClass);
+ @SuppressWarnings("rawtypes")
+void setTargetClass(Class pClass);
  
  /**
   * Ordered properties value from all layers
