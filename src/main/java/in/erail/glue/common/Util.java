@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.csv.CSVFormat;
@@ -38,8 +39,9 @@ public class Util {
 
   private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("windows");
 
-  private static final Logger logger = LogManager.getLogger(Util.class.getCanonicalName());
-  private static final MetricRegistry metricRegistry;
+  private static final Logger LOGGER = LogManager.getLogger(Util.class.getCanonicalName());
+  private static final MetricRegistry METRIC_REGISTRY;
+  private static final Properties GLUE_CONFIG = new Properties();
 
   static {
     String metricRegistryName = getEnvironmentValue(Constant.SystemProperties.METRIC_REGISTRY_NAME);
@@ -48,13 +50,26 @@ public class Util {
       metricRegistryName = "vertx-registry";
     }
 
-    metricRegistry = SharedMetricRegistries.getOrCreate(metricRegistryName);
+    METRIC_REGISTRY = SharedMetricRegistries.getOrCreate(metricRegistryName);
+
+    Path glueConfig = Paths.get(getEnvironmentValue(Constant.SystemProperties.GLUE_CONFIG, "glue.config"));
+
+    if (Files.exists(glueConfig)) {
+      try {
+        GLUE_CONFIG.load(Files.newInputStream(glueConfig));
+      } catch (IOException ex) {
+        LOGGER.error("Not able to load glue.config from " + glueConfig.toString(), ex);
+      }
+    } else {
+      LOGGER.info(glueConfig.toAbsolutePath().toString() + " not found. User Dir:" + System.getProperty("user.dir"));
+    }
+
   }
 
-  public static boolean isOSWindows(){
+  public static boolean isOSWindows() {
     return IS_WINDOWS;
   }
-  
+
   public static String buildSetPropertyName(String pProperty) {
     return "set" + pProperty.substring(0, 1).toUpperCase() + pProperty.substring(1, pProperty.length());
   }
@@ -69,18 +84,18 @@ public class Util {
   @SuppressWarnings("rawtypes")
   public static Method getMethod(Class pClass, String pMethodName) {
 
-    logger.debug(() -> "Trying to find Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
+    LOGGER.debug(() -> "Trying to find Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
 
     Method[] methods = pClass.getMethods();
 
     for (Method method : methods) {
       if (method.getName().equals(pMethodName)) {
-        logger.debug(() -> "Found Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
+        LOGGER.debug(() -> "Found Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
         return method;
       }
     }
 
-    logger.debug(() -> "Not Found Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
+    LOGGER.debug(() -> "Not Found Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
     return null;
   }
 
@@ -108,7 +123,7 @@ public class Util {
     return param[0].getType();
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public static Object createInstance(String pClass) {
 
     Object inst = null;
@@ -116,15 +131,15 @@ public class Util {
     try {
       Class clzz = Class.forName(pClass);
       inst = clzz.getDeclaredConstructor().newInstance();
-    } catch (ClassNotFoundException 
-            | InstantiationException 
-            | IllegalAccessException 
-            | NoSuchMethodException 
-            | SecurityException 
-            | IllegalArgumentException 
+    } catch (ClassNotFoundException
+            | InstantiationException
+            | IllegalAccessException
+            | NoSuchMethodException
+            | SecurityException
+            | IllegalArgumentException
             | InvocationTargetException ex) {
       throw new RuntimeException(ex);
-    } 
+    }
     return inst;
   }
 
@@ -145,11 +160,12 @@ public class Util {
   }
 
   public static MetricRegistry getMetricRegistry() {
-    return metricRegistry;
+    return METRIC_REGISTRY;
   }
 
   /**
-   * Get property value from Java System Properties, if not found then get it form environment variable.
+   * Get property value from Java System Properties, if not found then get it
+   * form environment variable.
    *
    * @param pName Name of system property
    * @param pDefault Default value
@@ -160,6 +176,10 @@ public class Util {
 
     if (Strings.isNullOrEmpty(value)) {
       value = System.getenv(pName.toUpperCase().replace(".", "_"));
+    }
+
+    if (Strings.isNullOrEmpty(value)) {
+      value = GLUE_CONFIG.getProperty(pName);
     }
 
     if (Strings.isNullOrEmpty(value)) {
@@ -206,6 +226,12 @@ public class Util {
   }
 
   public static String getLastValue(ListMultimap<String, ValueWithModifier> pMap, String pPropertyName) {
+
+    if (pMap == null) {
+      LOGGER.error("Value map expected for property:" + pPropertyName);
+      return null;
+    }
+
     return getLastValueWithModifier(pMap.get(pPropertyName)).getValue();
   }
 
@@ -218,7 +244,7 @@ public class Util {
   }
 
   public static String unzip(Path pZipFilePath, Path pDestinationPath) throws IOException {
-    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
+    try ( ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
 
       ZipEntry entry = zipIn.getNextEntry();
       // iterates over entries in the zip file
@@ -248,7 +274,7 @@ public class Util {
       return pDestinationPath.toString();
     }
   }
-  
+
   public static String convertDotToCamelCase(String pValue) {
     StringBuilder sb = new StringBuilder(pValue);
     int dotIndx = 0;
@@ -276,7 +302,7 @@ public class Util {
         return result;
       }
     } catch (IOException ex) {
-      logger.error(ex);
+      LOGGER.error(ex);
     }
     return new String[0];
   }
