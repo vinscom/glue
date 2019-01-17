@@ -32,6 +32,7 @@ public class Constant {
     public static final String LAYERS = "glue.layers";
     public static final String GLUE_SERIALIZATION_FACTORY = "glue.serialization.factory";
     public static final String VALUE_PROXY_CLASS = "glue.value.proxy.class";
+    public static final String GLUE_CONFIG = "glue.config";
 
   }
   
