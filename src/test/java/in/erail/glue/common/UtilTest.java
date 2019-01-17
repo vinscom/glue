@@ -15,4 +15,9 @@ public class UtilTest {
     assertEquals(result, Util.convertDotToCamelCase(source));
   }
   
+  @Test
+  public void testEnvironmentValue() {
+    assertEquals("a", Util.getEnvironmentValue("first"));
+    assertEquals("b", Util.getEnvironmentValue("second.dot"));
+  }
 }
