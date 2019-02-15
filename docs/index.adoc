@@ -1,21 +1,21 @@
 :toc: left
 :toclevels: 2
-:source-highlighter: pygments
+:source-highlighter: highlightjs
 :pygments-linenums-mode: inline
 :imagesdir: ./images
 
 = Glue
 Vinay Kumar
-v0.1
+v2.4.5
 
-Proven and opinionated programming, and configuration model for Java 
-and Vertx based applications. Inspired from ATG Nucleus, provides 
+Proven and opinionated programming, and configuration model for Java
+and Vertx based applications. Inspired from ATG Nucleus, provides
 powerful layer base configuration management using simple properties file.
 
 == What is Glue?
-You will use Glue for same reason you will use Spring (dependency injection) 
-in your application. But, in case of Glue, we have implemented few concepts 
-to make your life much easier from DevOps point of view.
+You will use Glue for same reason you will use Spring (dependency injection)
+in your application. But, in case of Glue, we have implemented few concepts
+to make your life much easier from development point of view.
 
 image::diag1.png[Simple Hello World]
 
@@ -41,9 +41,9 @@ want to create instance of `HelloWorld` class. Then, you will have to do below s
 . Then create `HelloWorldComponent.properties` file at
   `/home/glue/layer1/in/erail/example/HelloWorldComponent.properties`.
 . When you run your code, you will pass configuration layer to glue as java parameters.
-  `java -Dglue.layers=/home/glue/layer1`. Now whenever want to get instance of `HelloWorld`,
+  `java -Dglue.layers=/home/glue/layer1`. Now whenever you want to get instance of `HelloWorld`,
   `HelloWorld inst = Glue.instance().<HelloWorld>resolve("/in/erail/example/HelloWorldComponent")`.
-  `HelloWorld``` instance will be configured based on
+  `HelloWorld` instance will be configured based on
   `/home/glue/layer1/in/erail/example/HelloWorldComponent.properties` file.
 
 === Multiple Configuration Layers
@@ -64,6 +64,7 @@ propString=TestString
 [source,ini,linenums]
 ----
 #/in/erail/glue/test/component/MergedComponent
+$scope=GLOBAL
 propString=TestString2
 ----
 
@@ -72,36 +73,40 @@ propString=TestString2
 ----
 #/in/erail/glue/test/component/MergedComponent
 propString=TestString2
+$scope=GLOBAL
 ----
 
-As can be seen above, second layers has overridden propString property.
+As you can see above, second layer has overridden propString property.
 
 == Supported Property Type
 
 [options="header"]
-|==================================
-| Java Type         | Example
-| String                | propString=TestString
-| Array[String]     | propArray=a,b,c
-| List<String>      | propList=a,b,c
-| Map<String,String>    | propMap=a=b,c=d,e=f
-| Boolean and boolean | propBoolean=true
-| Enum                          | propEnum=TWO
-| Set<String>                | propSet=a,b,b,c
-| Integer and Int            | propInteger=2
-| Long and long             | propLong=2
+|=================================================================================
+| Java Type                         | Example
+| String                            | propString=TestString
+| Array[String]                     | propArray=a,b,c
+| Array[Component]                  | propArray=/abc/comp1,/abc/comp2
+| List<String>                      | propList=a,b,c
+| Map<String,String>                | propMap=a=b,c=d,e=f
+| Boolean and boolean               | propBoolean=true
+| Enum                              | propEnum=TWO
+| Set<String>                       | propSet=a,b,b,c
+| Integer and Int                   | propInteger=2
+| Long and long                     | propLong=2
 | File                              | propFile=testconfig.json
-| JsonObject (Vertx)      | propFile=testconfig.json
-| ServiceMap                 | Map of components
-| Logging                       | Logging component
-| Component                 | Reference to another component
+| JsonObject (Vertx)                | propFile=testconfig.json
+| ServiceMap                        | Map of components
+| Logging                           | Logging component
+| Component                         | Reference to another component
 | Null                              | Null value
-| Pattern                        | String will be compiled into Pattern
-| Timer (Dropwizard Metric)     | a timer will be created based on name given
-| Counter (Dropwizard Metric)   | a counter will be created based on name given
-| Meter (Dropwizard Metric)     | a meter will be created based on name given
-| Histogram (Dropwizard Metric) | a hitogram will be created based on name given
-|==================================
+| Pattern                           | String will be compiled into Pattern
+| Timer (Dropwizard Metric)         | a timer will be created based on name given
+| Counter (Dropwizard Metric)       | a counter will be created based on name given
+| Meter (Dropwizard Metric)         | a meter will be created based on name given
+| Histogram (Dropwizard Metric)     | a hitogram will be created based on name given
+| Class                             | propClass=java.lang.String
+|=================================================================================
+
 
 == Properties based configuration in detail
 
@@ -320,3 +325,53 @@ include::./../testdata/layer1/in/erail/glue/test/factory/TestComponentPC1.proper
 | constructor.param.type
 | Optional constructor parameter type
 |===
+
+== Advance
+=== Configuration using glue.config file
+Glue picks any configuration from three places in given order:
+
+1. From Java command line (e.g. -Dglue.layer)
+2. From Environment variable (e.g. GLUE_LAYER)
+3. glue.config file
+
+.glue.config example
+[source,ini,linenums]
+----
+glue.layers=/common
+----
+
+
+To pass glue.config use *-Dglue.config=/var/task/glue.config*
+
+=== Improve config loading performance
+Normally, all properties files are loaded from layer location each time glue is started. To imporove performance, Glue can cache loaded configuration in file file. On any future restarted, Glue will first try to load full configuration from cache configuration file.
+This setup can be used in production to save some load time.
+
+By default, configuration is always loaded from layers. To activate caching of configuration, you will have to use a different configuration loader as shown below.
+
+[source,sh,linenums]
+----
+-Dglue.serialization.factory=in.erail.glue.factory.LocalConfigSerializationFactory
+----
+
+.LocalConfigSerializationFactory additional param which can pass in command line
+[options="header"]
+|=================================================================================
+| Environment Variable                  | Default                   | Description  
+
+| local.config.factory.file.location    
+| Current working directoy  
+| Directory from where file is loaded or saved
+
+| local.config.factory.file.name        
+| glue.ser                  
+| Default file name
+
+| local.config.factory.identifier       
+| .default                  
+| While generating file. Files can be generated with different identifier to generated different config files (for example for different env) 
+
+| local.config.factory.disable.save     
+| false                     
+| If enable, then each time Glue     starts, all layers are saved into file, which can be used in future to load configuration.
+|=================================================================================
