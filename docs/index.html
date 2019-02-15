@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.6.1">
+<meta name="generator" content="Asciidoctor 1.5.5.dev">
 <meta name="author" content="Vinay Kumar">
 <title>Glue</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -18,6 +18,7 @@ audio:not([controls]){display:none;height:0}
 [hidden],template{display:none}
 script{display:none!important}
 html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+body{margin:0}
 a{background:transparent}
 a:focus{outline:thin dotted}
 a:active,a:hover{outline:0}
@@ -52,7 +53,7 @@ textarea{overflow:auto;vertical-align:top}
 table{border-collapse:collapse;border-spacing:0}
 *,*:before,*:after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
 html,body{font-size:100%}
-body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto}
 a:hover{cursor:pointer}
 img,object,embed{max-width:100%;height:auto}
 object,embed{height:100%}
@@ -64,6 +65,7 @@ img{-ms-interpolation-mode:bicubic}
 .text-center{text-align:center!important}
 .text-justify{text-align:justify!important}
 .hide{display:none}
+body{-webkit-font-smoothing:antialiased}
 img,object,svg{display:inline-block;vertical-align:middle}
 textarea{height:auto;min-height:50px}
 select{width:100%}
@@ -90,12 +92,13 @@ strong,b{font-weight:bold;line-height:inherit}
 small{font-size:60%;line-height:inherit}
 code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
 ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
-ul,ol{margin-left:1.5em}
+ul,ol,ul.no-bullet,ol.no-bullet{margin-left:1.5em}
 ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
 ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
 ul.square{list-style-type:square}
 ul.circle{list-style-type:circle}
 ul.disc{list-style-type:disc}
+ul.no-bullet{list-style:none}
 ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
 dl dt{margin-bottom:.3125em;font-weight:bold}
 dl dd{margin-bottom:1.25em}
@@ -117,25 +120,18 @@ table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:
 table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
 table tr.even,table tr.alt,table tr:nth-of-type(even){background:#f8f8f7}
 table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+body{tab-size:4}
 h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
 h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
 .clearfix:before,.clearfix:after,.float-group:before,.float-group:after{content:" ";display:table}
 .clearfix:after,.float-group:after{clear:both}
-*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
-*:not(pre)>code.nobreak{word-wrap:normal}
-*:not(pre)>code.nowrap{white-space:nowrap}
+*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
 pre,pre>code{line-height:1.45;color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;text-rendering:optimizeSpeed}
-em em{font-style:normal}
-strong strong{font-weight:400}
 .keyseq{color:rgba(51,51,51,.8)}
 kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
 .keyseq kbd:first-child{margin-left:0}
 .keyseq kbd:last-child{margin-right:0}
-.menuseq,.menuref{color:#000}
-.menuseq b:not(.caret),.menuref{font-weight:inherit}
-.menuseq{word-spacing:-.02em}
-.menuseq b.caret{font-size:1.25em;line-height:.8}
-.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+.menuseq,.menu{color:rgba(0,0,0,.8)}
 b.button:before,b.button:after{position:relative;top:-1px;font-weight:400}
 b.button:before{content:"[";padding:0 3px 0 2px}
 b.button:after{content:"]";padding:0 2px 0 3px}
@@ -202,7 +198,7 @@ table.tableblock>caption.title{white-space:nowrap;overflow:visible;max-width:0}
 table.tableblock #preamble>.sectionbody>.paragraph:first-of-type p{font-size:inherit}
 .admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
 .admonitionblock>table td.icon{text-align:center;width:80px}
-.admonitionblock>table td.icon img{max-width:initial}
+.admonitionblock>table td.icon img{max-width:none}
 .admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
 .admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #ddddd8;color:rgba(0,0,0,.6)}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
@@ -258,13 +254,13 @@ table.pyhltable .linenodiv{background:none!important;padding-right:0!important}
 table.tableblock{max-width:100%;border-collapse:separate}
 table.tableblock td>.paragraph:last-child p>p:last-child,table.tableblock th>p:last-child,table.tableblock td>p:last-child{margin-bottom:0}
 table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
-table.grid-all>thead>tr>.tableblock,table.grid-all>tbody>tr>.tableblock{border-width:0 1px 1px 0}
-table.grid-all>tfoot>tr>.tableblock{border-width:1px 1px 0 0}
-table.grid-cols>*>tr>.tableblock{border-width:0 1px 0 0}
-table.grid-rows>thead>tr>.tableblock,table.grid-rows>tbody>tr>.tableblock{border-width:0 0 1px 0}
-table.grid-rows>tfoot>tr>.tableblock{border-width:1px 0 0 0}
-table.grid-all>*>tr>.tableblock:last-child,table.grid-cols>*>tr>.tableblock:last-child{border-right-width:0}
-table.grid-all>tbody>tr:last-child>.tableblock,table.grid-all>thead:last-child>tr>.tableblock,table.grid-rows>tbody>tr:last-child>.tableblock,table.grid-rows>thead:last-child>tr>.tableblock{border-bottom-width:0}
+table.grid-all th.tableblock,table.grid-all td.tableblock{border-width:0 1px 1px 0}
+table.grid-all tfoot>tr>th.tableblock,table.grid-all tfoot>tr>td.tableblock{border-width:1px 1px 0 0}
+table.grid-cols th.tableblock,table.grid-cols td.tableblock{border-width:0 1px 0 0}
+table.grid-all *>tr>.tableblock:last-child,table.grid-cols *>tr>.tableblock:last-child{border-right-width:0}
+table.grid-rows th.tableblock,table.grid-rows td.tableblock{border-width:0 0 1px 0}
+table.grid-all tbody>tr:last-child>th.tableblock,table.grid-all tbody>tr:last-child>td.tableblock,table.grid-all thead:last-child>tr>th.tableblock,table.grid-rows tbody>tr:last-child>th.tableblock,table.grid-rows tbody>tr:last-child>td.tableblock,table.grid-rows thead:last-child>tr>th.tableblock{border-bottom-width:0}
+table.grid-rows tfoot>tr>th.tableblock,table.grid-rows tfoot>tr>td.tableblock{border-width:1px 0 0 0}
 table.frame-all{border-width:1px}
 table.frame-sides{border-width:0 1px}
 table.frame-topbot{border-width:1px 0}
@@ -285,12 +281,10 @@ ul li ol{margin-left:1.5em}
 dl dd{margin-left:1.125em}
 dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
 ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
-ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
-ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
-ul.unstyled,ol.unstyled{margin-left:0}
-ul.checklist{margin-left:.625em}
-ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
-ul.checklist li>p:first-child>input[type="checkbox"]:first-child{margin-right:.25em}
+ul.unstyled,ol.unnumbered,ul.checklist,ul.none{list-style-type:none}
+ul.unstyled,ol.unnumbered,ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1em;font-size:.85em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{width:1em;position:relative;top:1px}
 ul.inline{margin:0 auto .625em auto;margin-left:-1.375em;margin-right:0;padding:0;list-style:none;overflow:hidden}
 ul.inline>li{list-style:none;float:left;margin-left:1.375em;display:block}
 ul.inline>li>*{display:block}
@@ -307,8 +301,7 @@ ol.lowergreek{list-style-type:lower-greek}
 td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
 td.hdlist1{font-weight:bold;padding-bottom:1.25em}
 .literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
-.colist>table tr>td:first-of-type{padding:.4em .75em 0 .75em;line-height:1;vertical-align:top}
-.colist>table tr>td:first-of-type img{max-width:initial}
+.colist>table tr>td:first-of-type{padding:0 .75em;line-height:1}
 .colist>table tr>td:last-of-type{padding:.25em 0}
 .thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
 .imageblock.left,.imageblock[style*="float: left"]{margin:.25em .625em 1.25em 0}
@@ -371,7 +364,6 @@ div.unbreakable{page-break-inside:avoid}
 .yellow{color:#bfbf00}
 .yellow-background{background-color:#fafa00}
 span.icon>.fa{cursor:default}
-a span.icon>.fa{cursor:inherit}
 .admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
 .admonitionblock td.icon .icon-note:before{content:"\f05a";color:#19407c}
 .admonitionblock td.icon .icon-tip:before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
@@ -425,109 +417,45 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
-<style>
-.listingblock .pygments .hll { background-color: #ffffcc }
-.listingblock .pygments, .listingblock .pygments code { background: #f8f8f8; }
-.listingblock .pygments .tok-c { color: #408080; font-style: italic } /* Comment */
-.listingblock .pygments .tok-err { border: 1px solid #FF0000 } /* Error */
-.listingblock .pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
-.listingblock .pygments .tok-o { color: #666666 } /* Operator */
-.listingblock .pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
-.listingblock .pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
-.listingblock .pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
-.listingblock .pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
-.listingblock .pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
-.listingblock .pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
-.listingblock .pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
-.listingblock .pygments .tok-ge { font-style: italic } /* Generic.Emph */
-.listingblock .pygments .tok-gr { color: #FF0000 } /* Generic.Error */
-.listingblock .pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
-.listingblock .pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
-.listingblock .pygments .tok-go { color: #888888 } /* Generic.Output */
-.listingblock .pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
-.listingblock .pygments .tok-gs { font-weight: bold } /* Generic.Strong */
-.listingblock .pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
-.listingblock .pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
-.listingblock .pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
-.listingblock .pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
-.listingblock .pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
-.listingblock .pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
-.listingblock .pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
-.listingblock .pygments .tok-kt { color: #B00040 } /* Keyword.Type */
-.listingblock .pygments .tok-m { color: #666666 } /* Literal.Number */
-.listingblock .pygments .tok-s { color: #BA2121 } /* Literal.String */
-.listingblock .pygments .tok-na { color: #7D9029 } /* Name.Attribute */
-.listingblock .pygments .tok-nb { color: #008000 } /* Name.Builtin */
-.listingblock .pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
-.listingblock .pygments .tok-no { color: #880000 } /* Name.Constant */
-.listingblock .pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
-.listingblock .pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
-.listingblock .pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
-.listingblock .pygments .tok-nf { color: #0000FF } /* Name.Function */
-.listingblock .pygments .tok-nl { color: #A0A000 } /* Name.Label */
-.listingblock .pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
-.listingblock .pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
-.listingblock .pygments .tok-nv { color: #19177C } /* Name.Variable */
-.listingblock .pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
-.listingblock .pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
-.listingblock .pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
-.listingblock .pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
-.listingblock .pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
-.listingblock .pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
-.listingblock .pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
-.listingblock .pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
-.listingblock .pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
-.listingblock .pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
-.listingblock .pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
-.listingblock .pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
-.listingblock .pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
-.listingblock .pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
-.listingblock .pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
-.listingblock .pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
-.listingblock .pygments .tok-sx { color: #008000 } /* Literal.String.Other */
-.listingblock .pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
-.listingblock .pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
-.listingblock .pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
-.listingblock .pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
-.listingblock .pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
-.listingblock .pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
-.listingblock .pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
-.listingblock .pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
-.listingblock .pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
-.listingblock .pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
 <h1>Glue</h1>
 <div class="details">
 <span id="author" class="author">Vinay Kumar</span><br>
-<span id="revnumber">version 0.1</span>
+<span id="revnumber">version 2.4.5</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_what_is_glue">What is Glue?</a></li>
-<li><a href="#_configuration_layer">Configuration Layer</a>
+<li><a href="#truewhat-is-glue">What is Glue?</a></li>
+<li><a href="#trueconfiguration-layer">Configuration Layer</a>
 <ul class="sectlevel2">
-<li><a href="#_multiple_configuration_layers">Multiple Configuration Layers</a></li>
+<li><a href="#truemultiple-configuration-layers">Multiple Configuration Layers</a></li>
 </ul>
 </li>
-<li><a href="#_supported_property_type">Supported Property Type</a></li>
-<li><a href="#_properties_based_configuration_in_detail">Properties based configuration in detail</a>
+<li><a href="#truesupported-property-type">Supported Property Type</a></li>
+<li><a href="#trueproperties-based-configuration-in-detail">Properties based configuration in detail</a>
 <ul class="sectlevel2">
-<li><a href="#_basic_properties_file_configuration">Basic Properties File Configuration</a></li>
+<li><a href="#truebasic-properties-file-configuration">Basic Properties File Configuration</a></li>
 </ul>
 </li>
-<li><a href="#_configuration_layer_in_detail">Configuration layer in detail</a>
+<li><a href="#trueconfiguration-layer-in-detail">Configuration layer in detail</a>
 <ul class="sectlevel2">
-<li><a href="#_override_property_value">Override Property Value</a></li>
+<li><a href="#trueoverride-property-value">Override Property Value</a></li>
 </ul>
 </li>
-<li><a href="#_factory_based_creation_of_component">Factory based creation of Component</a>
+<li><a href="#truefactory-based-creation-of-component">Factory based creation of Component</a>
 <ul class="sectlevel2">
-<li><a href="#_methodinstancefactory">MethodInstanceFactory</a></li>
-<li><a href="#_parameterconstructorinstancefactory">ParameterConstructorInstanceFactory</a></li>
+<li><a href="#truemethodinstancefactory">MethodInstanceFactory</a></li>
+<li><a href="#trueparameterconstructorinstancefactory">ParameterConstructorInstanceFactory</a></li>
+</ul>
+</li>
+<li><a href="#trueadvance">Advance</a>
+<ul class="sectlevel2">
+<li><a href="#trueconfiguration-using-glue-config-file">Configuration using glue.config file</a></li>
+<li><a href="#trueimprove-config-loading-performance">Improve config loading performance</a></li>
 </ul>
 </li>
 </ul>
@@ -544,12 +472,12 @@ powerful layer base configuration management using simple properties file.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_what_is_glue">What is Glue?</h2>
+<h2 id="truewhat-is-glue"><a class="anchor" href="#truewhat-is-glue"></a>What is Glue?</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You will use Glue for same reason you will use Spring (dependency injection)
 in your application. But, in case of Glue, we have implemented few concepts
-to make your life much easier from DevOps point of view.</p>
+to make your life much easier from development point of view.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -580,7 +508,7 @@ defined in property file.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_configuration_layer">Configuration Layer</h2>
+<h2 id="trueconfiguration-layer"><a class="anchor" href="#trueconfiguration-layer"></a>Configuration Layer</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Configuration layer is root directory under which all configurations exists. For example, you
@@ -598,15 +526,15 @@ folder will become root folder for all configurations.</p>
 </li>
 <li>
 <p>When you run your code, you will pass configuration layer to glue as java parameters.
-<code>java -Dglue.layers=/home/glue/layer1</code>. Now whenever want to get instance of <code>HelloWorld</code>,
+<code>java -Dglue.layers=/home/glue/layer1</code>. Now whenever you want to get instance of <code>HelloWorld</code>,
 <code>HelloWorld inst = Glue.instance().&lt;HelloWorld&gt;resolve("/in/erail/example/HelloWorldComponent")</code>.
-<code>HelloWorld``</code> instance will be configured based on
+<code>HelloWorld</code> instance will be configured based on
 <code>/home/glue/layer1/in/erail/example/HelloWorldComponent.properties</code> file.</p>
 </li>
 </ol>
 </div>
 <div class="sect2">
-<h3 id="_multiple_configuration_layers">Multiple Configuration Layers</h3>
+<h3 id="truemultiple-configuration-layers"><a class="anchor" href="#truemultiple-configuration-layers"></a>Multiple Configuration Layers</h3>
 <div class="paragraph">
 <p>You can define multiple configuration layers. Properties file defined at same location inside
 all layers are merged. And last overridden value is taken as value of property.
@@ -615,34 +543,36 @@ for example:</p>
 <div class="listingblock">
 <div class="title">Layer 1 (/testdata/layer1/)</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno">1 </span><span class="tok-c1">#/in/erail/glue/test/component/MergedComponent</span>
-<span class="lineno">2 </span><span class="tok-na">$class</span><span class="tok-o">=</span><span class="tok-s">in.erail.glue.component.PropertiesComponent</span>
-<span class="lineno">3 </span><span class="tok-na">$scope</span><span class="tok-o">=</span><span class="tok-s">LOCAL</span>
-<span class="lineno">4 </span><span class="tok-na">propString</span><span class="tok-o">=</span><span class="tok-s">TestString</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">#/in/erail/glue/test/component/MergedComponent
+$class=in.erail.glue.component.PropertiesComponent
+$scope=LOCAL
+propString=TestString</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Layer 2 (/testdata/layer2/)</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno">1 </span><span class="tok-c1">#/in/erail/glue/test/component/MergedComponent</span>
-<span class="lineno">2 </span><span class="tok-na">propString</span><span class="tok-o">=</span><span class="tok-s">TestString2</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">#/in/erail/glue/test/component/MergedComponent
+$scope=GLOBAL
+propString=TestString2</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Final merged component configuration:</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno">1 </span><span class="tok-c1">#/in/erail/glue/test/component/MergedComponent</span>
-<span class="lineno">2 </span><span class="tok-na">propString</span><span class="tok-o">=</span><span class="tok-s">TestString2</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">#/in/erail/glue/test/component/MergedComponent
+propString=TestString2
+$scope=GLOBAL</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>As can be seen above, second layers has overridden propString property.</p>
+<p>As you can see above, second layer has overridden propString property.</p>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_supported_property_type">Supported Property Type</h2>
+<h2 id="truesupported-property-type"><a class="anchor" href="#truesupported-property-type"></a>Supported Property Type</h2>
 <div class="sectionbody">
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -663,6 +593,10 @@ for example:</p>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Array[String]</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">propArray=a,b,c</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Array[Component]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">propArray=/abc/comp1,/abc/comp2</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">List&lt;String&gt;</p></td>
@@ -736,44 +670,48 @@ for example:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Histogram (Dropwizard Metric)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">a hitogram will be created based on name given</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">propClass=java.lang.String</p></td>
+</tr>
 </tbody>
 </table>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_properties_based_configuration_in_detail">Properties based configuration in detail</h2>
+<h2 id="trueproperties-based-configuration-in-detail"><a class="anchor" href="#trueproperties-based-configuration-in-detail"></a>Properties based configuration in detail</h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="title">Example Property File</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno"> 1 </span><span class="tok-c1">#/in/erail/glue/test/component/PropertiesComponent</span>
-<span class="lineno"> 2 </span><span class="tok-na">$class</span><span class="tok-o">=</span><span class="tok-s">in.erail.glue.component.PropertiesComponent</span>
-<span class="lineno"> 3 </span><span class="tok-na">$scope</span><span class="tok-o">=</span><span class="tok-s">LOCAL</span>
-<span class="lineno"> 4 </span><span class="tok-na">propString</span><span class="tok-o">=</span><span class="tok-s">TestString</span>
-<span class="lineno"> 5 </span><span class="tok-na">propArray</span><span class="tok-o">=</span><span class="tok-s">a,b,\</span>
-<span class="lineno"> 6 </span><span class="tok-s">    c</span>
-<span class="lineno"> 7 </span><span class="tok-na">propList</span><span class="tok-o">=</span><span class="tok-s">a,b,\</span>
-<span class="lineno"> 8 </span><span class="tok-s">    c</span>
-<span class="lineno"> 9 </span><span class="tok-na">propMap</span><span class="tok-o">=</span><span class="tok-s">a=b,c=d,\</span>
-<span class="lineno">10 </span><span class="tok-s">    e=f</span>
-<span class="lineno">11 </span><span class="tok-na">propComponent</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/GlobalObjectByDefault</span>
-<span class="lineno">12 </span><span class="tok-na">propBoolean</span><span class="tok-o">=</span><span class="tok-s">true</span>
-<span class="lineno">13 </span><span class="tok-na">propEnum</span><span class="tok-o">=</span><span class="tok-s">TWO</span>
-<span class="lineno">14 </span><span class="tok-na">propSet</span><span class="tok-o">=</span><span class="tok-s">a,b,b,c</span>
-<span class="lineno">15 </span><span class="tok-na">propBoolean2</span><span class="tok-o">=</span><span class="tok-s">true</span>
-<span class="lineno">16 </span><span class="tok-na">propServiceMap</span><span class="tok-o">=</span><span class="tok-s">\</span>
-<span class="lineno">17 </span><span class="tok-s">    a=/in/erail/glue/test/component/GlobalObjectByDefault,\</span>
-<span class="lineno">18 </span><span class="tok-s">    b=/in/erail/glue/test/component/GlobalObjectByDefault,\</span>
-<span class="lineno">19 </span><span class="tok-s">    c=/in/erail/glue/test/component/GlobalObjectByDefault</span>
-<span class="lineno">20 </span><span class="tok-na">propInt</span><span class="tok-o">=</span><span class="tok-s">2</span>
-<span class="lineno">21 </span><span class="tok-na">propInteger</span><span class="tok-o">=</span><span class="tok-s">2</span>
-<span class="lineno">22 </span><span class="tok-na">propFile</span><span class="tok-o">=</span><span class="tok-s">testconfig.json</span>
-<span class="lineno">23 </span><span class="tok-na">propLong</span><span class="tok-o">=</span><span class="tok-s">2</span>
-<span class="lineno">24 </span><span class="tok-na">propLong2</span><span class="tok-o">=</span><span class="tok-s">2</span>
-<span class="lineno">25 </span><span class="tok-na">propLogger</span><span class="tok-o">=</span><span class="tok-s">true</span>
-<span class="lineno">26 </span><span class="tok-na">propNullString</span><span class="tok-o">=</span>
-<span class="lineno">27 </span><span class="tok-na">propNullServiceMap</span><span class="tok-o">=</span>
-<span class="lineno">28 </span><span class="tok-na">propNullComponent</span><span class="tok-o">=</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">#/in/erail/glue/test/component/PropertiesComponent
+$class=in.erail.glue.component.PropertiesComponent
+$scope=LOCAL
+propString=TestString
+propArray=a,b,\
+    c
+propList=a,b,\
+    c
+propMap=a=b,c=d,\
+    e=f
+propComponent=/in/erail/glue/test/component/GlobalObjectByDefault
+propBoolean=true
+propEnum=TWO
+propSet=a,b,b,c
+propBoolean2=true
+propServiceMap=\
+    a=/in/erail/glue/test/component/GlobalObjectByDefault,\
+    b=/in/erail/glue/test/component/GlobalObjectByDefault,\
+    c=/in/erail/glue/test/component/GlobalObjectByDefault
+propInt=2
+propInteger=2
+propFile=testconfig.json
+propLong=2
+propLong2=2
+propLogger=true
+propNullString=
+propNullServiceMap=
+propNullComponent=</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -787,7 +725,7 @@ point of component. In this case, PropertiesComponent is mounted at
 <code>/in/erail/glue/test/component/PropertiesComponent</code> path.</p>
 </div>
 <div class="sect2">
-<h3 id="_basic_properties_file_configuration">Basic Properties File Configuration</h3>
+<h3 id="truebasic-properties-file-configuration"><a class="anchor" href="#truebasic-properties-file-configuration"></a>Basic Properties File Configuration</h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 25%;">
@@ -831,9 +769,9 @@ required properties</p></td>
 <div class="listingblock">
 <div class="title">$basedOn Example</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno">1 </span><span class="tok-c1">#/in/erail/glue/test/component/BasedOnPropertiesComponent</span>
-<span class="lineno">2 </span><span class="tok-na">$basedOn</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent</span>
-<span class="lineno">3 </span><span class="tok-na">propString</span><span class="tok-o">=</span><span class="tok-s">TestString2</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">#/in/erail/glue/test/component/BasedOnPropertiesComponent
+$basedOn=/in/erail/glue/test/component/PropertiesComponent
+propString=TestString2</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -845,18 +783,18 @@ required properties</p></td>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_configuration_layer_in_detail">Configuration layer in detail</h2>
+<h2 id="trueconfiguration-layer-in-detail"><a class="anchor" href="#trueconfiguration-layer-in-detail"></a>Configuration layer in detail</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Layers are passed to Glue using JVM parameter</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno">1 </span><span class="tok-na">java -Dglue.layers</span><span class="tok-o">=</span><span class="tok-s">/testdata/layer1,/testdata/layer2</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">java -Dglue.layers=/testdata/layer1,/testdata/layer2</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_override_property_value">Override Property Value</h3>
+<h3 id="trueoverride-property-value"><a class="anchor" href="#trueoverride-property-value"></a>Override Property Value</h3>
 <div class="paragraph">
 <p>If we have two properties files at same location under different layers. Glue will try to
 override or merge property file in same order as configuration layers are defined.
@@ -865,38 +803,38 @@ For example:</p>
 <div class="listingblock">
 <div class="title">Layer 1 (/testdata/layer1/)</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno"> 1 </span><span class="tok-c1">#/in/erail/glue/test/component/MergedComponent</span>
-<span class="lineno"> 2 </span><span class="tok-na">$class</span><span class="tok-o">=</span><span class="tok-s">in.erail.glue.component.PropertiesComponent</span>
-<span class="lineno"> 3 </span><span class="tok-na">$scope</span><span class="tok-o">=</span><span class="tok-s">LOCAL</span>
-<span class="lineno"> 4 </span><span class="tok-na">propString</span><span class="tok-o">=</span><span class="tok-s">TestString</span>
-<span class="lineno"> 5 </span><span class="tok-na">propArray</span><span class="tok-o">=</span><span class="tok-s">a,b,\</span>
-<span class="lineno"> 6 </span><span class="tok-s">    c</span>
-<span class="lineno"> 7 </span><span class="tok-na">propList</span><span class="tok-o">=</span><span class="tok-s">a,b,\</span>
-<span class="lineno"> 8 </span><span class="tok-s">    c</span>
-<span class="lineno"> 9 </span><span class="tok-na">propMap</span><span class="tok-o">=</span><span class="tok-s">a=b,c=d,\</span>
-<span class="lineno">10 </span><span class="tok-s">    e=f</span>
-<span class="lineno">11 </span><span class="tok-na">propComponent</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent</span>
-<span class="lineno">12 </span><span class="tok-na">propJson</span><span class="tok-o">=</span><span class="tok-s">testconfig.json</span>
-<span class="lineno">13 </span><span class="tok-na">propSet</span><span class="tok-o">=</span><span class="tok-s">a,b,b,c</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">#/in/erail/glue/test/component/MergedComponent
+$class=in.erail.glue.component.PropertiesComponent
+$scope=LOCAL
+propString=TestString
+propArray=a,b,\
+    c
+propList=a,b,\
+    c
+propMap=a=b,c=d,\
+    e=f
+propComponent=/in/erail/glue/test/component/PropertiesComponent
+propJson=testconfig.json
+propSet=a,b,b,c</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Layer 2 (/testdata/layer2/)</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno"> 1 </span><span class="tok-c1">#/in/erail/glue/test/component/MergedComponent</span>
-<span class="lineno"> 2 </span><span class="tok-na">propString</span><span class="tok-o">=</span><span class="tok-s">TestString2</span>
-<span class="lineno"> 3 </span><span class="tok-na">propArray</span><span class="tok-o">=</span><span class="tok-s">a</span>
-<span class="lineno"> 4 </span><span class="tok-na">propList-</span><span class="tok-o">=</span><span class="tok-s">a</span>
-<span class="lineno"> 5 </span><span class="tok-na">propList+</span><span class="tok-o">=</span><span class="tok-s">b,c,d</span>
-<span class="lineno"> 6 </span><span class="tok-na">propMap-</span><span class="tok-o">=</span><span class="tok-s">a=b</span>
-<span class="lineno"> 7 </span><span class="tok-na">propMap+</span><span class="tok-o">=</span><span class="tok-s">z=b</span>
-<span class="lineno"> 8 </span><span class="tok-na">propComponent</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent2</span>
-<span class="lineno"> 9 </span><span class="tok-na">propSet-</span><span class="tok-o">=</span><span class="tok-s">a,b</span>
-<span class="lineno">10 </span><span class="tok-na">propSet+</span><span class="tok-o">=</span><span class="tok-s">e,f</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">#/in/erail/glue/test/component/MergedComponent
+propString=TestString2
+propArray=a
+propList-=a
+propList+=b,c,d
+propMap-=a=b
+propMap+=z=b
+propComponent=/in/erail/glue/test/component/PropertiesComponent2
+propSet-=a,b
+propSet+=e,f</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_override_property_value_2">Override Property Value</h4>
+<h4 id="trueoverride-property-value-2"><a class="anchor" href="#trueoverride-property-value-2"></a>Override Property Value</h4>
 <div class="paragraph">
 <p>In above example, when instance of  <code>/in/erail/glue/test/component/MergedComponent</code>
 is created,<code>PropertiesComponent.getPropString()</code> method will return <code>TestString2</code> instead
@@ -904,7 +842,7 @@ of <code>TestString</code>. As you can see in above example, <strong>Layer 2</st
 </div>
 </div>
 <div class="sect3">
-<h4 id="_merge_property_value">Merge Property Value</h4>
+<h4 id="truemerge-property-value"><a class="anchor" href="#truemerge-property-value"></a>Merge Property Value</h4>
 <div class="paragraph">
 <p>In case of List,Map,Set. Glue supports merge or deletion of property value. In above
 example, <code>PropertiesComponent.getPropList()</code> will return list with elements b,c,b,c,d.
@@ -913,14 +851,14 @@ add <strong>b,c,d</strong> elements to list. Same can be done in case of Map and
 </div>
 </div>
 <div class="sect3">
-<h4 id="_component_property">Component Property</h4>
+<h4 id="truecomponent-property"><a class="anchor" href="#truecomponent-property"></a>Component Property</h4>
 <div class="paragraph">
 <p>A component property can refer to another component property.As can be seen in
 <code>/in/erail/glue/test/component/PropertiesComponent</code>,</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno">1 </span><span class="tok-na">propComponent</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/GlobalObjectByDefault</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">propComponent=/in/erail/glue/test/component/GlobalObjectByDefault</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -929,21 +867,21 @@ component.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_component_property_referring_to_another_component_property">Component property referring to another component property</h4>
+<h4 id="truecomponent-property-referring-to-another-component-property"><a class="anchor" href="#truecomponent-property-referring-to-another-component-property"></a>Component property referring to another component property</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno"> 1 </span><span class="tok-c1">#/in/erail/glue/test/component/RefPropertiesComponent</span>
-<span class="lineno"> 2 </span><span class="tok-na">$class</span><span class="tok-o">=</span><span class="tok-s">in.erail.glue.component.PropertiesComponent</span>
-<span class="lineno"> 3 </span><span class="tok-na">$scope</span><span class="tok-o">=</span><span class="tok-s">LOCAL</span>
-<span class="lineno"> 4 </span><span class="tok-na">propString^</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent.propString</span>
-<span class="lineno"> 5 </span><span class="tok-na">propArray^</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent.propArray</span>
-<span class="lineno"> 6 </span><span class="tok-na">propList^</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent.propList</span>
-<span class="lineno"> 7 </span><span class="tok-na">propMap^</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent.propMap</span>
-<span class="lineno"> 8 </span><span class="tok-na">propComponent^</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent.propComponent</span>
-<span class="lineno"> 9 </span><span class="tok-na">propBoolean^</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent.propBoolean</span>
-<span class="lineno">10 </span><span class="tok-na">propEnum^</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent.propEnum</span>
-<span class="lineno">11 </span><span class="tok-na">propJson^</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/MergedComponent.propJson</span>
-<span class="lineno">12 </span><span class="tok-na">propServiceMap^</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/component/PropertiesComponent.propServiceMap</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">#/in/erail/glue/test/component/RefPropertiesComponent
+$class=in.erail.glue.component.PropertiesComponent
+$scope=LOCAL
+propString^=/in/erail/glue/test/component/PropertiesComponent.propString
+propArray^=/in/erail/glue/test/component/PropertiesComponent.propArray
+propList^=/in/erail/glue/test/component/PropertiesComponent.propList
+propMap^=/in/erail/glue/test/component/PropertiesComponent.propMap
+propComponent^=/in/erail/glue/test/component/PropertiesComponent.propComponent
+propBoolean^=/in/erail/glue/test/component/PropertiesComponent.propBoolean
+propEnum^=/in/erail/glue/test/component/PropertiesComponent.propEnum
+propJson^=/in/erail/glue/test/component/MergedComponent.propJson
+propServiceMap^=/in/erail/glue/test/component/PropertiesComponent.propServiceMap</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -955,25 +893,25 @@ component property.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_factory_based_creation_of_component">Factory based creation of Component</h2>
+<h2 id="truefactory-based-creation-of-component"><a class="anchor" href="#truefactory-based-creation-of-component"></a>Factory based creation of Component</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Glue supports two factory classes which you can use to create instance of classes requiring
 factory for creation. For more example, refer to test cases.</p>
 </div>
 <div class="sect2">
-<h3 id="_methodinstancefactory">MethodInstanceFactory</h3>
+<h3 id="truemethodinstancefactory"><a class="anchor" href="#truemethodinstancefactory"></a>MethodInstanceFactory</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno">1 </span><span class="tok-c1">#/in/erail/glue/test/factory/TestComponentPC2</span>
-<span class="lineno">2 </span><span class="tok-na">$class</span><span class="tok-o">=</span><span class="tok-s">in.erail.glue.factory.TestComponent</span>
-<span class="lineno">3 </span><span class="tok-na">$instanceFactory</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/factory/MethodInstanceFactory</span>
-<span class="lineno">4 </span><span class="tok-na">$factory.class</span><span class="tok-o">=</span><span class="tok-s">in.erail.glue.factory.TestFactory</span>
-<span class="lineno">5 </span><span class="tok-na">$factory.method.name</span><span class="tok-o">=</span><span class="tok-s">create</span>
-<span class="lineno">6 </span><span class="tok-na">$factory.param.values</span><span class="tok-o">=</span><span class="tok-s">ninja,5</span>
-<span class="lineno">7 </span><span class="tok-c1">#factory.param.type=</span>
-<span class="lineno">8 </span><span class="tok-c1">#factory.instance=</span>
-<span class="lineno">9 </span><span class="tok-na">$scope</span><span class="tok-o">=</span><span class="tok-s">GLOBAL</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">#/in/erail/glue/test/factory/TestComponentPC2
+$class=in.erail.glue.factory.TestComponent
+$instanceFactory=/in/erail/glue/test/factory/MethodInstanceFactory
+$factory.class=in.erail.glue.factory.TestFactory
+$factory.method.name=create
+$factory.param.values=ninja,5
+#factory.param.type=
+#factory.instance=
+$scope=GLOBAL</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all spread">
@@ -1016,14 +954,14 @@ factory for creation. For more example, refer to test cases.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_parameterconstructorinstancefactory">ParameterConstructorInstanceFactory</h3>
+<h3 id="trueparameterconstructorinstancefactory"><a class="anchor" href="#trueparameterconstructorinstancefactory"></a>ParameterConstructorInstanceFactory</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ini"><span></span><span class="lineno">1 </span><span class="tok-c1">#/in/erail/glue/test/factory/TestComponentPC1</span>
-<span class="lineno">2 </span><span class="tok-na">$class</span><span class="tok-o">=</span><span class="tok-s">in.erail.glue.factory.TestComponent2</span>
-<span class="lineno">3 </span><span class="tok-na">$instanceFactory</span><span class="tok-o">=</span><span class="tok-s">/in/erail/glue/test/factory/ParameterConstructorInstanceFactory</span>
-<span class="lineno">4 </span><span class="tok-na">$constructor.param.values</span><span class="tok-o">=</span><span class="tok-s">ninja,5,/in/erail/glue/test/component/PropertiesComponent,&quot;a,b&quot;</span>
-<span class="lineno">5 </span><span class="tok-na">$scope</span><span class="tok-o">=</span><span class="tok-s">GLOBAL</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">#/in/erail/glue/test/factory/TestComponentPC1
+$class=in.erail.glue.factory.TestComponent2
+$instanceFactory=/in/erail/glue/test/factory/ParameterConstructorInstanceFactory
+$constructor.param.values=ninja,5,/in/erail/glue/test/component/PropertiesComponent,"a,b"
+$scope=GLOBAL</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all spread">
@@ -1055,12 +993,100 @@ factory for creation. For more example, refer to test cases.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="trueadvance"><a class="anchor" href="#trueadvance"></a>Advance</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="trueconfiguration-using-glue-config-file"><a class="anchor" href="#trueconfiguration-using-glue-config-file"></a>Configuration using glue.config file</h3>
+<div class="paragraph">
+<p>Glue picks any configuration from three places in given order:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>From Java command line (e.g. -Dglue.layer)</p>
+</li>
+<li>
+<p>From Environment variable (e.g. GLUE_LAYER)</p>
+</li>
+<li>
+<p>glue.config file</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">glue.config example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ini" data-lang="ini">glue.layers=/common</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To pass glue.config use <strong>-Dglue.config=/var/task/glue.config</strong></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueimprove-config-loading-performance"><a class="anchor" href="#trueimprove-config-loading-performance"></a>Improve config loading performance</h3>
+<div class="paragraph">
+<p>Normally, all properties files are loaded from layer location each time glue is started. To imporove performance, Glue can cache loaded configuration in file file. On any future restarted, Glue will first try to load full configuration from cache configuration file.
+This setup can be used in production to save some load time.</p>
+</div>
+<div class="paragraph">
+<p>By default, configuration is always loaded from layers. To activate caching of configuration, you will have to use a different configuration loader as shown below.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh" data-lang="sh">-Dglue.serialization.factory=in.erail.glue.factory.LocalConfigSerializationFactory</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. LocalConfigSerializationFactory additional param which can pass in command line</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Environment Variable</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">local.config.factory.file.location</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Current working directoy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Directory from where file is loaded or saved</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">local.config.factory.file.name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">glue.ser</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default file name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">local.config.factory.identifier</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">.default</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">While generating file. Files can be generated with different identifier to generated different config files (for example for different env)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">local.config.factory.disable.save</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If enable, then each time Glue     starts, all layers are saved into file, which can be used in future to load configuration.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.1<br>
-Last updated 2018-04-24 22:45:07 BST
+Version 2.4.5<br>
+Last updated 2019-02-15 13:19:37 GMT+0000
 </div>
 </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+<script>hljs.initHighlighting()</script>
 </body>
 </html>
