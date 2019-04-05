@@ -34,7 +34,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <vertx.version>3.6.3</vertx.version>
+        <vertx.version>3.7.0</vertx.version>
         <argLine>-Dglue.layers=${project.basedir}/testdata/layer1,${project.basedir}/testdata/layer2,${project.basedir}/testdata/glue-1.0-SNAPSHOT.zip</argLine>
     </properties>
     <profiles>
