@@ -59,6 +59,7 @@ public class PropertiesComponent {
   public Timer propTimer;
   @SuppressWarnings("rawtypes")
   public Class propClass;
+  public String mMountPath;
 
   @StartService
   public void startup() {
@@ -409,6 +410,14 @@ public class PropertiesComponent {
   @SuppressWarnings("rawtypes")
   public void setPropClass(Class pPropClass) {
     this.propClass = pPropClass;
+  }
+
+  public String getMountPath() {
+    return mMountPath;
+  }
+
+  public void setMountPath(String pMountPath) {
+    this.mMountPath = pMountPath;
   }
 
 }

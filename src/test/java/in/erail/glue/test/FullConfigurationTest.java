@@ -286,4 +286,10 @@ public class FullConfigurationTest {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
     assertEquals(inst.getPropClass(), PropertiesRepository.class);
   }
+  
+  @Test
+  public void mountPathProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
+    assertEquals(inst.getMountPath(), "/in/erail/glue/test/component/PropertiesComponent");
+  }
 }

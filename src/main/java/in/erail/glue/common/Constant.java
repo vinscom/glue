@@ -11,7 +11,7 @@ public class Constant {
     public static final String INSTANCE_FACTORY = SPECIAL_PROPERTY + "instanceFactory";
     public static final String BASED_ON_SPECIAL_PROPERTIES = SPECIAL_PROPERTY + "_basedOn";
     public static final String COMPONENT_PATH_SPECIAL_PROPERTIES = SPECIAL_PROPERTY + "componentPath";
-    public static final String COMPONENT_PATH_PROPERTIES = "componentPath";
+    public static final String MOUNT_PATH_PROPERTIES = "mountPath";
 
     public static class Path {
 

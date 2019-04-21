@@ -366,7 +366,7 @@ public class PropertiesRepository {
 
                 ListMultimap<String, ValueWithModifier> properties = ArrayListMultimap.create();
                 properties.put(Constant.Component.COMPONENT_PATH_SPECIAL_PROPERTIES, new ValueWithModifier(key, PropertyValueModifier.NONE));
-                properties.put(Constant.Component.COMPONENT_PATH_PROPERTIES, new ValueWithModifier(key, PropertyValueModifier.NONE));
+                properties.put(Constant.Component.MOUNT_PATH_PROPERTIES, new ValueWithModifier(key, PropertyValueModifier.NONE));
                 pPropertiesRepository.put(key, properties);
                 return properties;
               } else {
