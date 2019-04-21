@@ -112,7 +112,12 @@ public class ComponentRepository implements Glue {
 
     } else {
       logger.debug(() -> "Component[" + pPropCtx.getComponentPath() + "]: Invoking Property without arguments :" + pPropCtx.getMethod().getName());
-      pPropCtx.getMethod().invoke(pPropCtx.getInstance());
+      try {
+        pPropCtx.getMethod().invoke(pPropCtx.getInstance());
+      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        logger.error("Not able to invoke method:" + pPropCtx.toString());
+        throw e;
+      }
     }
 
   }

@@ -1,8 +1,8 @@
 package in.erail.glue.common;
 
 import io.vertx.core.json.JsonObject;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 public class JsonLoaderTest {
   

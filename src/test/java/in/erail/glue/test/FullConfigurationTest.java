@@ -1,14 +1,5 @@
 package in.erail.glue.test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import in.erail.glue.Glue;
 import in.erail.glue.PropertiesRepository;
@@ -31,7 +23,7 @@ public class FullConfigurationTest {
   @Test
   public void loadGlobalComonentSetInPropertyFile() {
     Object inst = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectSetSpecifically");
-    assertNotNull("Load global scope component when set in property file", inst);
+    assertNotNull(inst, "Load global scope component when set in property file");
     assertEquals(inst.getClass(), Object.class);
 
     Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectSetSpecifically");
@@ -41,7 +33,7 @@ public class FullConfigurationTest {
   @Test
   public void loadGlobalComonentNotSetInPropertyFile() {
     Object inst = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault");
-    assertNotNull("Load global scope component when set in property file", inst);
+    assertNotNull(inst, "Load global scope component when set in property file");
     assertEquals(inst.getClass(), Object.class);
 
     Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/GlobalObjectByDefault");
@@ -51,7 +43,7 @@ public class FullConfigurationTest {
   @Test
   public void loadLocalScopeComponent() {
     Object inst = Glue.instance().<Object>resolve("/in/erail/glue/test/component/LocalObject");
-    assertNotNull("Load local scope component when set in property file", inst);
+    assertNotNull(inst, "Load local scope component when set in property file");
     assertEquals(inst.getClass(), Object.class);
 
     Object inst2 = Glue.instance().<Object>resolve("/in/erail/glue/test/component/LocalObject");
@@ -270,28 +262,34 @@ public class FullConfigurationTest {
     assertNotNull(inst.getPropHistogram());
     assertNotNull(inst.getPropMeter());
   }
-  
+
   @Test
   public void componentArrayProperty() {
     PropertiesComponent inst2 = Glue.instance().resolve("/in/erail/glue/test/component/RefPropertiesComponent");
     Object[] objs = inst2.getPropComponentArray();
-    assertEquals(objs[0].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent1");
-    assertEquals(objs[1].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent2");
-    assertEquals(objs[2].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent3");
+    assertEquals(objs[0].getClass().getCanonicalName(), "in.erail.glue.component.ArrayComponent1");
+    assertEquals(objs[1].getClass().getCanonicalName(), "in.erail.glue.component.ArrayComponent2");
+    assertEquals(objs[2].getClass().getCanonicalName(), "in.erail.glue.component.ArrayComponent3");
   }
-  
+
   @Test
   public void varArgComponentArrayProperty() {
     PropertiesComponent inst2 = Glue.instance().resolve("/in/erail/glue/test/component/RefPropertiesComponent");
     Object[] objs = inst2.getPropVarArgComponentArray();
-    assertEquals(objs[0].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent1");
-    assertEquals(objs[1].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent2");
-    assertEquals(objs[2].getClass().getCanonicalName(),"in.erail.glue.component.ArrayComponent3");
+    assertEquals(objs[0].getClass().getCanonicalName(), "in.erail.glue.component.ArrayComponent1");
+    assertEquals(objs[1].getClass().getCanonicalName(), "in.erail.glue.component.ArrayComponent2");
+    assertEquals(objs[2].getClass().getCanonicalName(), "in.erail.glue.component.ArrayComponent3");
   }
-  
+
   @Test
   public void classProperty() {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
-    assertEquals(inst.getPropClass(),PropertiesRepository.class);
+    assertEquals(inst.getPropClass(), PropertiesRepository.class);
+  }
+  
+  @Test
+  public void mountPathProperty() {
+    PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
+    assertEquals(inst.getGlueMountPath(), "/in/erail/glue/test/component/PropertiesComponent");
   }
 }

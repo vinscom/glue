@@ -26,3 +26,5 @@ hs_err_pid*
 .project
 nbactions.xml
 nb-configuration.xml
+.DS_Store
+.factorypath
