@@ -1,39 +1,40 @@
 package in.erail.glue.common;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.google.common.base.Strings;
 import com.google.common.collect.ListMultimap;
+
 import in.erail.glue.ConfigSerializationFactory;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.lang.reflect.Parameter;
-import java.util.Collection;
 import in.erail.glue.enumeration.PropertyValueModifier;
 import in.erail.glue.factory.DefaultConfigSerializationFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 
 public class Util {
 
@@ -123,13 +124,12 @@ public class Util {
     return param[0].getType();
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   public static Object createInstance(String pClass) {
 
     Object inst = null;
 
     try {
-      Class clzz = Class.forName(pClass);
+      Class<?> clzz = Class.forName(pClass);
       inst = clzz.getDeclaredConstructor().newInstance();
     } catch (ClassNotFoundException
             | InstantiationException
@@ -140,6 +140,24 @@ public class Util {
             | InvocationTargetException ex) {
       throw new RuntimeException(ex);
     }
+    return inst;
+  }
+
+  public static Object createInstance(Class<?> pClass) {
+
+    Object inst = null;
+
+    try {
+      inst = pClass.getDeclaredConstructor().newInstance();
+    } catch (NoSuchMethodException
+            | SecurityException
+            | InstantiationException
+            | IllegalAccessException
+            | IllegalArgumentException
+            | InvocationTargetException ex) {
+      throw new RuntimeException(ex);
+    }
+
     return inst;
   }
 
