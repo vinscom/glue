@@ -1,10 +1,10 @@
 package in.erail.glue;
 
 import java.util.Arrays;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import in.erail.glue.common.Constant;
 import in.erail.glue.common.Util;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  *
