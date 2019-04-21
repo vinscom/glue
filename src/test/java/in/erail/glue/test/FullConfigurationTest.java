@@ -290,6 +290,6 @@ public class FullConfigurationTest {
   @Test
   public void mountPathProperty() {
     PropertiesComponent inst = Glue.instance().<PropertiesComponent>resolve("/in/erail/glue/test/component/PropertiesComponent");
-    assertEquals(inst.getMountPath(), "/in/erail/glue/test/component/PropertiesComponent");
+    assertEquals(inst.getGlueMountPath(), "/in/erail/glue/test/component/PropertiesComponent");
   }
 }

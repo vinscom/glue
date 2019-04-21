@@ -59,7 +59,7 @@ public class PropertiesComponent {
   public Timer propTimer;
   @SuppressWarnings("rawtypes")
   public Class propClass;
-  public String mMountPath;
+  public String mGlueMountPath;
 
   @StartService
   public void startup() {
@@ -412,12 +412,12 @@ public class PropertiesComponent {
     this.propClass = pPropClass;
   }
 
-  public String getMountPath() {
-    return mMountPath;
+  public String getGlueMountPath() {
+    return mGlueMountPath;
   }
 
-  public void setMountPath(String pMountPath) {
-    this.mMountPath = pMountPath;
+  public void setGlueMountPath(String pGlueMountPath) {
+    this.mGlueMountPath = pGlueMountPath;
   }
 
 }
