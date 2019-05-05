@@ -5,7 +5,7 @@ pipeline {
       steps {
          withSonarQubeEnv('SonarCloud') {
             withMaven(maven: 'M3') {
-               sh 'mvn clean package sonar:sonar -Dsonar.projectKey=vinscom_glue -Dsonar.organization=vinscom-github'
+               sh "mvn clean package sonar:sonar -Dsonar.projectKey=vinscom_glue -Dsonar.organization=vinscom-github -Dsonar.pullrequest.branch=${GIT_BRANCH}"
             }
          }
       }
