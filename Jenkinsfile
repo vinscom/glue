@@ -22,15 +22,15 @@ pipeline {
       }
     }
     stage('Deploy Release') {
-      /*
       when {
-        branch 'master'
+        //branch 'master'
         tag '[0-9]+.[0-9]+.[0-9]+'
       }
-      */
       steps {
         withMaven(maven: 'M3') {
           sh "mvn versions:set -DnewVersion=${TAG_NAME}"
+          sh "mvn deploy -P pgp,release"
+          sh "mvn nexus-staging:release -P pgp,release"
         }
       }
     }
