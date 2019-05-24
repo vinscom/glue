@@ -23,7 +23,6 @@ pipeline {
     }
     stage('Deploy Release') {
       when {
-        branch 'master'
         expression {
           env.TAG_NAME =~ /[0-9]+.[0-9]+.[0-9]+/
         }
