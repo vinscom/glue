@@ -24,7 +24,9 @@ pipeline {
     stage('Deploy Release') {
       when {
         //branch 'master'
-        tag '[0-9]+.[0-9]+.[0-9]+'
+        expression {
+          env.TAG_NAME =~ /[0-9]+.[0-9]+.[0-9]+/
+        }
       }
       steps {
         withMaven(maven: 'M3') {
