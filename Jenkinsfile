@@ -1,11 +1,11 @@
 pipeline {
   agent any
   stages {
-    stage('install') {
+    stage('Deploy Snapshot') {
       steps {
          withSonarQubeEnv('SonarCloud') {
             withMaven(maven: 'M3') {
-               sh "mvn clean install sonar:sonar -Dsonar.projectKey=vinscom_glue -Dsonar.organization=vinscom-github -Dsonar.branch.name=${GIT_BRANCH}"
+               sh "mvn clean deploy sonar:sonar -Dsonar.projectKey=vinscom_glue -Dsonar.organization=vinscom-github -Dsonar.branch.name=${GIT_BRANCH} -Prelease"
             }
          }
       }
