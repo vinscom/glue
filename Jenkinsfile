@@ -1,18 +1,31 @@
 pipeline {
   agent any
   stages {
-    stage('Deploy Snapshot') {
+    stage('Build') {
       steps {
          withSonarQubeEnv('SonarCloud') {
             withMaven(maven: 'M3') {
-               sh "mvn clean deploy sonar:sonar -Dsonar.projectKey=vinscom_glue -Dsonar.organization=vinscom-github -Dsonar.branch.name=${GIT_BRANCH} -P pgp,release"
+               sh "mvn clean package sonar:sonar -Dsonar.projectKey=vinscom_glue -Dsonar.organization=vinscom-github -Dsonar.branch.name=${GIT_BRANCH}"
             }
          }
       }
     }
     stage("Quality Gate") {
+      when {
+        branch 'master'
+      }
       steps {
          junit 'target/surefire-reports/TEST-*.xml'
+      }
+    }
+    stage('Deploy Snapshot') {
+      when {
+        branch 'master'
+      }
+      steps {
+        withMaven(maven: 'M3') {
+          sh "mvn deploy -P pgp,release"
+        }
       }
     }
   }
