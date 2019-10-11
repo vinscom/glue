@@ -82,8 +82,7 @@ public class Util {
     return "get" + pProperty.substring(0, 1).toUpperCase() + pProperty.substring(1, pProperty.length());
   }
 
-  @SuppressWarnings("rawtypes")
-  public static Method getMethod(Class pClass, String pMethodName) {
+  public static Method getMethod(Class<?> pClass, String pMethodName) {
 
     LOGGER.debug(() -> "Trying to find Method:" + pMethodName + " in class:" + pClass.getCanonicalName());
 
@@ -100,8 +99,7 @@ public class Util {
     return null;
   }
 
-  @SuppressWarnings("rawtypes")
-  public static <T extends Annotation> Method getMethodWithAnnotation(Class pClass, Class<T> pAnnotation) {
+  public static <T extends Annotation> Method getMethodWithAnnotation(Class<?> pClass, Class<T> pAnnotation) {
 
     Method[] methods = pClass.getMethods();
 
@@ -115,8 +113,7 @@ public class Util {
     return null;
   }
 
-  @SuppressWarnings("rawtypes")
-  public static Class getMethodFirstArgumentClass(Method pMethod) {
+  public static Class<?> getClassOfFirstParameterOfMethod(Method pMethod) {
     Parameter[] param = pMethod.getParameters();
     if (param.length == 0) {
       throw new RuntimeException("No arguments in method:" + pMethod.getName());
@@ -126,29 +123,21 @@ public class Util {
 
   public static Object createInstance(String pClass) {
 
-    Object inst = null;
-
     try {
       Class<?> clzz = Class.forName(pClass);
-      inst = clzz.getDeclaredConstructor().newInstance();
+      return createInstance(clzz);
     } catch (ClassNotFoundException
-            | InstantiationException
-            | IllegalAccessException
-            | NoSuchMethodException
             | SecurityException
-            | IllegalArgumentException
-            | InvocationTargetException ex) {
+            | IllegalArgumentException ex) {
       throw new RuntimeException(ex);
     }
-    return inst;
+
   }
 
   public static Object createInstance(Class<?> pClass) {
 
-    Object inst = null;
-
     try {
-      inst = pClass.getDeclaredConstructor().newInstance();
+      return pClass.getDeclaredConstructor().newInstance();
     } catch (NoSuchMethodException
             | SecurityException
             | InstantiationException
@@ -158,7 +147,24 @@ public class Util {
       throw new RuntimeException(ex);
     }
 
-    return inst;
+  }
+
+  public static String[] convertCSVIntoArray(String pValue) {
+    try {
+      CSVParser parser = CSVParser.parse(pValue, CSVFormat.DEFAULT);
+      Iterator<CSVRecord> itrRecord = parser.iterator();
+      if (itrRecord.hasNext()) {  //Only one record is expected
+        CSVRecord record = itrRecord.next();
+        String[] result = new String[record.size()];
+        for (int i = 0; i < result.length; i++) {
+          result[i] = record.get(i);
+        }
+        return result;
+      }
+    } catch (IOException ex) {
+      LOGGER.error(ex);
+    }
+    return new String[0];
   }
 
   public static Map<String, String> getMapFromValue(String pValue) {
@@ -185,7 +191,8 @@ public class Util {
    * Get property value from Java System Properties, if not found then get it
    * form environment variable.
    *
-   * @param pName Name of system property
+   * @param pName Name of system property. "abc.xyz". Corresponding to this
+   * property "ABC_XYZ" env variable will be checked
    * @param pDefault Default value
    * @return Return environment value
    */
@@ -262,7 +269,7 @@ public class Util {
   }
 
   public static String unzip(Path pZipFilePath, Path pDestinationPath) throws IOException {
-    try ( ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
+    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
 
       ZipEntry entry = zipIn.getNextEntry();
       // iterates over entries in the zip file
@@ -305,24 +312,6 @@ public class Util {
       sb.setCharAt(dotIndx, Character.toUpperCase(sb.charAt(dotIndx)));
     }
     return sb.toString();
-  }
-
-  public static String[] convertCSVIntoArray(String pValue) {
-    try {
-      CSVParser parser = CSVParser.parse(pValue, CSVFormat.DEFAULT);
-      Iterator<CSVRecord> itrRecord = parser.iterator();
-      if (itrRecord.hasNext()) {  //Only one record is expected
-        CSVRecord record = itrRecord.next();
-        String[] result = new String[record.size()];
-        for (int i = 0; i < result.length; i++) {
-          result[i] = record.get(i);
-        }
-        return result;
-      }
-    } catch (IOException ex) {
-      LOGGER.error(ex);
-    }
-    return new String[0];
   }
 
 }

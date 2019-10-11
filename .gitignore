@@ -28,3 +28,4 @@ nbactions.xml
 nb-configuration.xml
 .DS_Store
 .factorypath
+.idea
