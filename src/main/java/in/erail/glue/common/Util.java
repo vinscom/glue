@@ -35,6 +35,7 @@ import com.google.common.collect.ListMultimap;
 import in.erail.glue.ConfigSerializationFactory;
 import in.erail.glue.enumeration.PropertyValueModifier;
 import in.erail.glue.factory.DefaultConfigSerializationFactory;
+import java.util.LinkedHashMap;
 
 public class Util {
 
@@ -168,19 +169,25 @@ public class Util {
   }
 
   public static Map<String, String> getMapFromValue(String pValue) {
+    return getMapFromValue(pValue, new HashMap<>());
+  }
+
+  public static Map<String, String> getOrderedMapFromValue(String pValue) {
+    return getMapFromValue(pValue, new LinkedHashMap<>());
+  }
+
+  public static Map<String, String> getMapFromValue(String pValue, Map<String, String> pOut) {
 
     if (Strings.isNullOrEmpty(pValue)) {
       return Collections.emptyMap();
     }
 
-    Map<String, String> result = new HashMap<>();
-
     for (String s : convertCSVIntoArray(pValue)) {
       String[] keyvalue = s.split("=");
-      result.put(keyvalue[0], keyvalue[1]);
+      pOut.put(keyvalue[0], keyvalue[1]);
     }
 
-    return result;
+    return pOut;
   }
 
   public static MetricRegistry getMetricRegistry() {

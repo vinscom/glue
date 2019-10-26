@@ -20,9 +20,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
@@ -64,7 +66,7 @@ public class ProxyValueResolverRegistry {
 
     //ServiceMap
     classToValue.put(ServiceMap.class, (t, u) -> {
-      return new ServiceMap((Map) classToValue.get(Map.class).apply(t, u));
+      return new ServiceMap((Map) classToValue.get(LinkedHashMap.class).apply(t, u));
     });
 
     //Enum
@@ -198,6 +200,8 @@ public class ProxyValueResolverRegistry {
 
     //Map
     createMap(HashMap.class);
+    createMap(TreeMap.class);
+    createMap(LinkedHashMap.class);
     classToValue.put(Map.class, createMap(HashMap.class));
 
     //Set
@@ -265,7 +269,7 @@ public class ProxyValueResolverRegistry {
           if (Strings.isNullOrEmpty(vwm.getValue())) {
             return;
           }
-          Map<String, String> m = Util.getMapFromValue(vwm.getValue());
+          Map<String, String> m = Util.getOrderedMapFromValue(vwm.getValue());
           switch (vwm.getPropertyValueModifier()) {
             case PLUS:
               result.putAll(m);
