@@ -1,9 +1,9 @@
 package in.erail.glue.component;
 
 import java.util.Map;
-import java.util.TreeMap;
 import in.erail.glue.Glue;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 
 /**
  *
@@ -28,7 +28,7 @@ public class ServiceMap {
 
   public synchronized Map<String, Object> getServices() {
     if (mResolvedServices == null) {
-      mResolvedServices = new TreeMap<>();
+      mResolvedServices = new LinkedHashMap<>();
       mServices
               .entrySet()
               .stream()
