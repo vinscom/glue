@@ -88,6 +88,7 @@ class UtilTest {
     assertThrows(RuntimeException.class, () -> {
       Util.resolveFilePath("po.xml").toString();
     });
+    assertTrue(Util.resolveFilePath("pom*.xml").toAbsolutePath().endsWith("pom.xml"));
     assertTrue(Util.resolveFilePath("po*.xml").toAbsolutePath().endsWith("pom.xml"));
     assertTrue(Util.resolveFilePath("pom.xml").toAbsolutePath().endsWith("pom.xml"));
   }

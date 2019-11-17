@@ -345,9 +345,9 @@ public class Util {
         return file;
       }
     } catch (IOException ex) {
-      throw new RuntimeException("Problem scanning" + pPath, ex);
+      throw new RuntimeException("Problem scanning" + path, ex);
     }
 
-    throw new RuntimeException("No file found:" + pPath);
+    throw new RuntimeException("No file found:" + path);
   }
 }
