@@ -1,5 +1,6 @@
 package in.erail.glue;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 public class PropertiesRepository {
 
   protected Logger logger = LogManager.getLogger(PropertiesRepository.class.getCanonicalName());
+  protected static Logger loggerStatic = LogManager.getLogger(PropertiesRepository.class.getCanonicalName() + "-static");
 
   public static List<String> layers;
   private static final Pattern COMPONENT_PATH_REGEX = Pattern.compile("^(?<path>.*)\\.properties$");
@@ -414,6 +416,8 @@ public class PropertiesRepository {
   }
 
   public static void setLayers(List<String> pLayer) {
+    loggerStatic.debug(() -> "Building config layer list from:" + Joiner.on(",").join(pLayer));
+
     layers = pLayer
             .stream()
             .map((path) -> {
@@ -430,7 +434,7 @@ public class PropertiesRepository {
                   }
                   return null;
                 } catch (IOException ex) {
-                  LogManager.getLogger(PropertiesRepository.class.getCanonicalName()).error(path);
+                  loggerStatic.error(path);
                 }
 
               }
@@ -438,6 +442,8 @@ public class PropertiesRepository {
             })
             .filter((path) -> !Strings.isNullOrEmpty(path))
             .collect(Collectors.toList());
+
+    loggerStatic.debug(() -> "Final config layer list :" + Joiner.on(",").join(layers));
   }
 
   @Override
