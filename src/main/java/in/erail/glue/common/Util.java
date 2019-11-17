@@ -35,6 +35,7 @@ import com.google.common.collect.ListMultimap;
 import in.erail.glue.ConfigSerializationFactory;
 import in.erail.glue.enumeration.PropertyValueModifier;
 import in.erail.glue.factory.DefaultConfigSerializationFactory;
+import java.nio.file.DirectoryStream;
 import java.util.LinkedHashMap;
 
 public class Util {
@@ -276,7 +277,7 @@ public class Util {
   }
 
   public static String unzip(Path pZipFilePath, Path pDestinationPath) throws IOException {
-    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
+    try ( ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
 
       ZipEntry entry = zipIn.getNextEntry();
       // iterates over entries in the zip file
@@ -321,4 +322,32 @@ public class Util {
     return sb.toString();
   }
 
+  /**
+   * If file is present then file is returned. If not, then directory is scanned
+   * with simple regular expression.
+   *
+   * @param pPath
+   * @return Path to file
+   */
+  public static Path resolveFilePath(String pPath) {
+    return resolveFilePath(Paths.get(pPath));
+  }
+
+  public static Path resolveFilePath(Path pPath) {
+    Path path = pPath.toAbsolutePath();
+
+    if (Files.exists(path)) {
+      return path;
+    }
+
+    try ( DirectoryStream<Path> files = Files.newDirectoryStream(path.getParent(), path.getFileName().toString())) {
+      for (Path file : files) {
+        return file;
+      }
+    } catch (IOException ex) {
+      throw new RuntimeException("Problem scanning" + pPath, ex);
+    }
+
+    throw new RuntimeException("No file found:" + pPath);
+  }
 }
