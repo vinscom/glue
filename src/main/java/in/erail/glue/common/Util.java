@@ -136,8 +136,8 @@ public class Util {
 
   }
 
-  public static Object createInstance(Class<?> pClass) {
-
+  public static <T> T createInstance(Class<T> pClass) {
+    
     try {
       return pClass.getDeclaredConstructor().newInstance();
     } catch (NoSuchMethodException
