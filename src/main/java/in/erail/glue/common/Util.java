@@ -137,7 +137,7 @@ public class Util {
   }
 
   public static <T> T createInstance(Class<T> pClass) {
-    
+
     try {
       return pClass.getDeclaredConstructor().newInstance();
     } catch (NoSuchMethodException
@@ -184,7 +184,7 @@ public class Util {
     }
 
     for (String s : convertCSVIntoArray(pValue)) {
-      String[] keyvalue = s.split("=");
+      String[] keyvalue = s.split("=", 2);
       pOut.put(keyvalue[0], keyvalue[1]);
     }
 
@@ -277,7 +277,7 @@ public class Util {
   }
 
   public static String unzip(Path pZipFilePath, Path pDestinationPath) throws IOException {
-    try ( ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
+    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
 
       ZipEntry entry = zipIn.getNextEntry();
       // iterates over entries in the zip file
@@ -340,7 +340,7 @@ public class Util {
       return path;
     }
 
-    try ( DirectoryStream<Path> files = Files.newDirectoryStream(path.getParent(), path.getFileName().toString())) {
+    try (DirectoryStream<Path> files = Files.newDirectoryStream(path.getParent(), path.getFileName().toString())) {
       for (Path file : files) {
         return file;
       }
