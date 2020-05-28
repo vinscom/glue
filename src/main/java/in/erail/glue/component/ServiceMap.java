@@ -8,11 +8,12 @@ import java.util.LinkedHashMap;
 /**
  *
  * @author vinay
+ * @param <T>
  */
-public class ServiceMap {
+public class ServiceMap<T> {
 
   private final Map<String, String> mServices;
-  private Map<String, Object> mResolvedServices;
+  private Map<String, T> mResolvedServices;
 
   public ServiceMap(Map<String, String> pServices) {
     if (pServices == null) {
@@ -26,14 +27,14 @@ public class ServiceMap {
     return getServices().get(pKey);
   }
 
-  public synchronized Map<String, Object> getServices() {
+  public synchronized Map<String, T> getServices() {
     if (mResolvedServices == null) {
       mResolvedServices = new LinkedHashMap<>();
       mServices
               .entrySet()
               .stream()
               .forEach((kv) -> {
-                Object component = Glue.instance().resolve(kv.getValue());
+                T component = (T) Glue.instance().resolve(kv.getValue());
                 mResolvedServices.put(kv.getKey(), component);
               });
     }
