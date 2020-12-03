@@ -1,5 +1,12 @@
 package in.erail.glue.common;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.google.common.base.Strings;
+import com.google.common.collect.ListMultimap;
+import in.erail.glue.ConfigSerializationFactory;
+import in.erail.glue.enumeration.PropertyValueModifier;
+import in.erail.glue.factory.DefaultConfigSerializationFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,6 +14,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,28 +23,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.google.common.base.Strings;
-import com.google.common.collect.ListMultimap;
-
-import in.erail.glue.ConfigSerializationFactory;
-import in.erail.glue.enumeration.PropertyValueModifier;
-import in.erail.glue.factory.DefaultConfigSerializationFactory;
-import java.nio.file.DirectoryStream;
-import java.util.LinkedHashMap;
 
 public class Util {
 
@@ -196,11 +193,10 @@ public class Util {
   }
 
   /**
-   * Get property value from Java System Properties, if not found then get it
-   * form environment variable.
+   * Get property value from Java System Properties, if not found then get it form environment variable.
    *
-   * @param pName Name of system property. "abc.xyz". Corresponding to this
-   * property "ABC_XYZ" env variable will be checked
+   * @param pName Name of system property. "abc.xyz". Corresponding to this property "ABC_XYZ" env variable will be
+   * checked
    * @param pDefault Default value
    * @return Return environment value
    */
@@ -277,7 +273,7 @@ public class Util {
   }
 
   public static String unzip(Path pZipFilePath, Path pDestinationPath) throws IOException {
-    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
+    try ( ZipInputStream zipIn = new ZipInputStream(new FileInputStream(pZipFilePath.toFile()))) {
 
       ZipEntry entry = zipIn.getNextEntry();
       // iterates over entries in the zip file
@@ -323,8 +319,7 @@ public class Util {
   }
 
   /**
-   * If file is present then file is returned. If not, then directory is scanned
-   * with simple regular expression.
+   * If file is present then file is returned. If not, then directory is scanned with simple regular expression.
    *
    * @param pPath
    * @return Path to file
@@ -340,7 +335,7 @@ public class Util {
       return path;
     }
 
-    try (DirectoryStream<Path> files = Files.newDirectoryStream(path.getParent(), path.getFileName().toString())) {
+    try ( DirectoryStream<Path> files = Files.newDirectoryStream(path.getParent(), path.getFileName().toString())) {
       for (Path file : files) {
         return file;
       }
